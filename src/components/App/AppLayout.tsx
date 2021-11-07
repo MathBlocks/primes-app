@@ -4,20 +4,28 @@ import styled from 'styled-components'
 import { useEthers } from '@usedapp/core'
 import ReactTooltip from 'react-tooltip'
 
+import { truncateAddress } from '../../utils'
+
 const LayoutContainer = styled.div`
   height: 100vh;
-  margin: 0 auto;
-  max-width: 120ch;
-
-  main {
-    padding: 1rem;
-  }
 
   header {
     display: flex;
     gap: 1rem;
     justify-content: space-between;
     align-items: center;
+    height: 6rem;
+  }
+
+  footer {
+    height: 6rem;
+  }
+
+  header,
+  footer,
+  main {
+    max-width: 100ch;
+    margin: 0 auto;
   }
 
   nav {
@@ -30,16 +38,17 @@ const LayoutContainer = styled.div`
       text-transform: lowercase;
     }
   }
-`
 
-export const truncateAddress = (address: string): string =>
-  `${address.slice(0, 6)}…${address.slice(-4)}`
+  main {
+    height: calc(100% - 12rem);
+  }
+`
 
 const WalletButton: FC = () => {
   const { activateBrowserWallet, deactivate, account } = useEthers()
   return (
     <li>
-      {account && <>Connected: {truncateAddress(account)} </>}
+      {account && <>Connected: {truncateAddress(account)}</>}
       {account ? (
         <button
           onClick={() => {
@@ -64,7 +73,9 @@ const WalletButton: FC = () => {
 export const AppLayout: FC = ({ children }) => (
   <LayoutContainer>
     <header>
-      <img src="/primes.svg" alt="Primes" />
+      <NavLink to="/">
+        <img src="/primes.svg" alt="Primes" />
+      </NavLink>
       <nav>
         <ul>
           <WalletButton />

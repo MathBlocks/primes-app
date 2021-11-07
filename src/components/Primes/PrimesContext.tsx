@@ -1,20 +1,12 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { createStateContext, useTimeoutFn, useTitle } from 'react-use'
 import ReactTooltip from 'react-tooltip'
 
+import { usePrimesFromLastIdQuery } from '../../graphql/subgraph/subgraph'
+import { createExclusiveSet } from '../../utils'
 import { generateAttributes, Attributes } from '../../attributes'
 import { N_MAX } from './constants'
-
-const createExclusiveSet = (sets: Set<number>[]): Set<number> => {
-  const result = new Set<number>()
-  for (let i = 1; i <= N_MAX; i++) {
-    if (sets.every((set) => set.has(i))) {
-      result.add(i)
-    }
-  }
-  return result
-}
 
 export const [useAttributes, AttributesProvider] = createStateContext<
   Attributes | undefined
@@ -27,6 +19,10 @@ export const [useSelectedTokenId, SelectedTokenIdProvider] = createStateContext<
   number | undefined
 >(undefined)
 
+export const [useHoveredTokenId, HoveredTokenIdProvider] = createStateContext<
+  number | undefined
+>(undefined)
+
 export const [useVisible, VisibleProvider] = createStateContext<Set<number>>(
   new Set(),
 )
@@ -34,6 +30,37 @@ export const [useVisible, VisibleProvider] = createStateContext<Set<number>>(
 export const [useRouteTokenId, RouteTokenIdProvider] = createStateContext<
   number | undefined
 >(undefined)
+
+export const [useMintedPrimes, MintedPrimesProvider] = createStateContext<
+  Set<number>
+>(new Set())
+
+const MintedPrimesUpdater: FC = () => {
+  const [lastID, setLastID] = useState<string>('0')
+  const [mintedPrimes, setMintedPrimes] = useMintedPrimes()
+
+  // Just get this data cached
+  usePrimesFromLastIdQuery({
+    variables: { lastID },
+    onCompleted: (data) => {
+      if (!data.primes) return
+
+      setMintedPrimes(
+        new Set([
+          ...mintedPrimes.values(),
+          ...data.primes.map((p) => parseInt(p.id)),
+        ]),
+      )
+
+      const last = data.primes[data.primes.length - 1]
+      if (last?.id) {
+        setLastID(last.id)
+      }
+    },
+  })
+
+  return null
+}
 
 const Updater: FC = () => {
   const [attributes, setAttributes] = useAttributes()
@@ -45,7 +72,9 @@ const Updater: FC = () => {
 
   useTimeoutFn(() => {
     // Delay generating the attributes because it's heavy
-    setAttributes(generateAttributes())
+    const attrs = generateAttributes()
+    console.log(attrs)
+    setAttributes(attrs)
   }, 1000)
 
   useEffect(() => {
@@ -76,15 +105,20 @@ const Updater: FC = () => {
 
 export const PrimesContext: FC = ({ children }) => (
   <RouteTokenIdProvider>
-    <AttributesProvider>
-      <SelectedAttributesProvider>
-        <VisibleProvider>
-          <SelectedTokenIdProvider>
-            {children}
-            <Updater />
-          </SelectedTokenIdProvider>
-        </VisibleProvider>
-      </SelectedAttributesProvider>
-    </AttributesProvider>
+    <MintedPrimesProvider>
+      <AttributesProvider>
+        <SelectedAttributesProvider>
+          <VisibleProvider>
+            <SelectedTokenIdProvider>
+              <HoveredTokenIdProvider>
+                {children}
+                <Updater />
+                <MintedPrimesUpdater />
+              </HoveredTokenIdProvider>
+            </SelectedTokenIdProvider>
+          </VisibleProvider>
+        </SelectedAttributesProvider>
+      </AttributesProvider>
+    </MintedPrimesProvider>
   </RouteTokenIdProvider>
 )

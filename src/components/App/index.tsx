@@ -7,6 +7,7 @@ import { AppLayout } from './AppLayout'
 import { AppRoutes } from './AppRoutes'
 import { config } from '../../config'
 import { ApolloProvider } from './ApolloProvider'
+import { ContractsProvider } from './ContractsProvider'
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -27,12 +28,14 @@ export const App: FC = () => {
   return (
     <DAppProvider config={config}>
       <ApolloProvider>
-        <Router>
-          <GlobalStyle />
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
+        <ContractsProvider>
+          <Router>
+            <GlobalStyle />
+            <AppLayout>
+              <AppRoutes />
+            </AppLayout>
+          </Router>
+        </ContractsProvider>
       </ApolloProvider>
     </DAppProvider>
   )

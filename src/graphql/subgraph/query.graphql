@@ -68,3 +68,47 @@ query Prime($tokenId: ID!) {
         whitelistOnly
     }
 }
+
+query PrimesFromLastID($lastID: ID!) {
+    primes(first: 1000, where: { id_gt: $lastID }) {
+        id
+    }
+}
+
+query AllPrimes {
+    primes {
+        id
+    }
+}
+
+query AuctionStatus {
+    primesAuctionHouses {
+        id
+        address
+        minBidIncrementPercentage
+        breedingCooldown
+        currentPrimeAuction {
+            id
+            bidder
+            bids(orderDirection: desc, orderBy: value) {
+                id
+                sender
+                value
+            }
+            amount
+            settled
+            startTime
+            endTime
+            winner
+        }
+        reservePrice
+        timeBuffer
+    }
+    primeBatches(where: { active: true }) {
+        id
+        whitelist
+        remaining
+    }
+}
+
+

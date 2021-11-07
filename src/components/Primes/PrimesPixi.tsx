@@ -8,10 +8,24 @@ import { GlowFilter } from '@pixi/filter-glow'
 
 import { getSVGDataURI } from '../PrimeSVG'
 
-import { N_MAX, CANVAS_SIZE, N_SIZE, SCALE } from './constants'
-import { useSelectedTokenId, useAttributes, useVisible } from './PrimesContext'
+import { N_MAX, N_SIZE, SCALE } from './constants'
+import {
+  useSelectedTokenId,
+  useAttributes,
+  useVisible,
+  useHoveredTokenId,
+  useMintedPrimes,
+} from './PrimesContext'
+import { useWindowSize } from 'react-use'
 
-const PixiContainer = styled.div``
+const PixiContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
+`
 
 enum Direction {
   Right,
@@ -26,6 +40,8 @@ export const PrimesPixi: FC = () => {
   const [attributes] = useAttributes()
   const [visible] = useVisible()
   const [selectedTokenId, setSelectedTokenId] = useSelectedTokenId()
+  const [, setHoveredTokenId] = useHoveredTokenId()
+  const [mintedPrimes] = useMintedPrimes()
 
   // Refs for Pixi
   const app = useRef<PIXI.Application>()
@@ -34,24 +50,20 @@ export const PrimesPixi: FC = () => {
   const container = useRef<HTMLDivElement>(null)
   const selectedTokenIdRef = useRef<number | undefined>(selectedTokenId)
 
-  // Local state
-  // const [hoveredTokenId, setHoveredTokenId] = useSelectedTokenId()
-
   useEffect(() => {
     if (!attributes) return
 
     app.current = new PIXI.Application({
-      width: CANVAS_SIZE,
-      height: CANVAS_SIZE,
-      backgroundColor: 0x232323,
+      resizeTo: container.current as HTMLDivElement,
+      backgroundColor: 0x191919,
     })
     const app_ = app.current
 
     container.current?.appendChild(app_.view)
 
     viewport.current = new Viewport({
-      screenWidth: CANVAS_SIZE,
-      screenHeight: CANVAS_SIZE,
+      screenWidth: app_.view.width,
+      screenHeight: app_.view.height,
       worldWidth: SCALE * N_SIZE,
       worldHeight: SCALE * N_SIZE,
       interaction: app_.renderer.plugins.interaction,
@@ -76,7 +88,6 @@ export const PrimesPixi: FC = () => {
     // Build spiral
     ;(() => {
       const addSprite = (tokenId: number, posX: number, posY: number) => {
-        if (tokenId > N_MAX) return
         const prime = attributes.prime.has(tokenId)
 
         const container = viewport_.addChild(
@@ -85,11 +96,21 @@ export const PrimesPixi: FC = () => {
         container.width = container.height = SCALE - 50
         container.position.set(posX * SCALE + 25, posY * SCALE + 25)
         container.interactive = true
-
         // @ts-ignore
         container.data = { tokenId, prime, svg: getSVGDataURI(tokenId) }
 
+        const square = new PIXI.Sprite(PIXI.Texture.WHITE)
+        square.width = 1
+        square.height = 1
+        square.tint = prime ? 0xffffff : 0x000000
+        container.addChild(square)
+
+        const detail = new PIXI.Sprite()
+        detail.visible = false
+        square.addChild(detail)
+
         container.on('mouseover', () => {
+          if (!square.visible) return
           container.filters = [
             new GlowFilter({
               distance: 16,
@@ -97,12 +118,18 @@ export const PrimesPixi: FC = () => {
               quality: 1,
             }),
           ]
+          setHoveredTokenId(tokenId)
         })
+
         container.on('mouseout', () => {
+          if (!square.visible) return
           container.filters = []
+          setHoveredTokenId(undefined)
         })
 
         const onClick = () => {
+          if (!square.visible) return
+
           if (!viewport_.moving) {
             viewport_.animate({
               time: 1000,
@@ -126,18 +153,7 @@ export const PrimesPixi: FC = () => {
           selectedTokenIdRef.current = tokenId
         }
         container.on('click', onClick)
-        container.on('touchstart', onClick)
-
-        const square = new PIXI.Sprite(PIXI.Texture.WHITE)
-        square.width = 1
-        square.height = 1
-        square.tint = prime ? 0xffffff : 0x000000
-
-        container.addChild(square)
-
-        const detail = new PIXI.Sprite()
-        detail.visible = false
-        square.addChild(detail)
+        container.on('touchend', onClick)
       }
 
       const arr: number[][] = []
@@ -237,18 +253,38 @@ export const PrimesPixi: FC = () => {
     return () => {
       app_?.destroy(true, true)
     }
-  }, [attributes, history, setSelectedTokenId])
+  }, [attributes, history, setHoveredTokenId, setSelectedTokenId])
 
+  // Set visibility of squares
   useEffect(() => {
-    if (!viewport.current || !cull.current) return
+    if (!viewport.current) return
 
-    // Set visibility of squares
     viewport.current.children.forEach((child) => {
       ;(child as PIXI.Sprite).children[0].visible = visible.has(
         (child as any).data.tokenId,
       )
     })
-  }, [visible, viewport, cull])
+  }, [visible])
+
+  // Set minted state
+  useEffect(() => {
+    if (!viewport.current) return
+
+    viewport.current.children.forEach((child) => {
+      ;(child as PIXI.Sprite).children[0].alpha = mintedPrimes.has(
+        (child as any).data.tokenId,
+      )
+        ? 1
+        : 0.4
+    })
+  }, [mintedPrimes])
+
+  const windowSize = useWindowSize()
+  useEffect(() => {
+    if (!viewport.current || !app.current) return
+
+    viewport.current.resize(app.current.view.width, app.current.view.height)
+  }, [windowSize])
 
   return <PixiContainer ref={container} />
 }

@@ -18,6 +18,8 @@ const retryIf = (error: { statusCode: number }) => {
   return !!error && !doNotRetryCodes.includes(error.statusCode)
 }
 
+const cache = new InMemoryCache()
+
 export const ApolloProvider: FC = ({ children }) => {
   const graphQLEndpoints = useGraphQlEndpoints()
 
@@ -50,7 +52,7 @@ export const ApolloProvider: FC = ({ children }) => {
     const link = ApolloLink.from([errorLink, retryLink, timeoutLink, httpLink])
 
     return new ApolloClient<NormalizedCacheObject>({
-      cache: new InMemoryCache(),
+      cache,
       link,
     })
   }, [graphQLEndpoints])
