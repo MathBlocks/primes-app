@@ -1,0 +1,70 @@
+query Prime($tokenId: ID!) {
+    prime(id: $tokenId) {
+        childrenAsParent1 {
+            id
+        }
+        childrenAsParent2 {
+            id
+        }
+        claimed
+        colossallyAbundantNumber
+        cousins {
+            id
+        }
+        deadline
+        emirp
+        eulersLuckyNumber
+        evilNumber
+        fibonacciNumber
+        friendlyNumber
+        frugalNumber
+        goodPrime
+        happyNumber
+        harshadNumber
+        id
+        image
+        isListed
+        isPrime
+        isRentable
+        lastBred
+        luckyNumber
+        magicNumber
+        owner {
+            id
+            address
+        }
+        parent1 {
+            id
+        }
+        parent2 {
+            id
+        }
+        perfectNumber
+        primeFactorCount
+        primeFactors {
+            id
+        }
+        primeIndex
+        repdigitNumber
+        semiperfectNumber
+        sexyPrimes {
+            id
+        }
+        sophieGermainPrime
+        squareNumber
+        strongPrime
+        studFee
+        suitors {
+            id
+        }
+        taxicabNumber
+        triangularNumber
+        twins {
+            id
+        }
+        uniquePrime
+        untouchableNumber
+        weirdNumber
+        whitelistOnly
+    }
+}

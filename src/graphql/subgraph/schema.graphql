@@ -1,0 +1,934 @@
+schema {
+  query: Query
+  subscription: Subscription
+}
+
+directive @derivedFrom(field: String) on FIELD_DEFINITION
+
+directive @entity on OBJECT
+
+directive @subgraphId(id: String) on OBJECT
+
+type Account {
+  address: Bytes!
+  id: ID!
+  primes(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
+}
+
+input Account_filter {
+  address: Bytes
+  address_contains: Bytes
+  address_in: [Bytes!]
+  address_not: Bytes
+  address_not_contains: Bytes
+  address_not_in: [Bytes!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+}
+
+enum Account_orderBy {
+  address
+  id
+  primes
+}
+
+scalar BigDecimal
+
+scalar BigInt
+
+input Block_height {
+  hash: Bytes
+  number: Int
+}
+
+scalar Bytes
+
+enum OrderDirection {
+  asc
+  desc
+}
+
+type Prime {
+  childrenAsParent1(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
+  childrenAsParent2(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
+  claimed: Boolean!
+  colossallyAbundantNumber: Boolean!
+  cousins(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
+  deadline: BigInt
+  emirp: Boolean!
+  eulersLuckyNumber: Boolean!
+  evilNumber: Boolean!
+  fibonacciNumber: Boolean!
+  friendlyNumber: Boolean!
+  frugalNumber: Boolean!
+  goodPrime: Boolean!
+  happyNumber: Boolean!
+  harshadNumber: Boolean!
+  id: ID!
+  image: String!
+  isListed: Boolean!
+  isPrime: Boolean!
+  isRentable: Boolean!
+  lastBred: BigInt!
+  luckyNumber: Boolean!
+  magicNumber: Boolean!
+  owner: Account!
+  parent1: Prime
+  parent2: Prime
+  perfectNumber: Boolean!
+  primeFactorCount: Int!
+  primeFactors(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
+  primeIndex: Int
+  repdigitNumber: Boolean!
+  semiperfectNumber: Boolean!
+  sexyPrimes(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
+  sophieGermainPrime: Boolean!
+  squareNumber: Boolean!
+  strongPrime: Boolean!
+  studFee: BigInt
+  suitors(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
+  taxicabNumber: Boolean!
+  triangularNumber: Boolean!
+  twins(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
+  uniquePrime: Boolean!
+  untouchableNumber: Boolean!
+  weirdNumber: Boolean!
+  whitelistOnly: Boolean!
+}
+
+type PrimeAuction {
+  amount: BigInt
+  bidder: Bytes
+  bids(first: Int = 100, orderBy: PrimeAuctionBid_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: PrimeAuctionBid_filter): [PrimeAuctionBid!]!
+  endTime: BigInt!
+  id: ID!
+  prime: Prime!
+  settled: Boolean!
+  startTime: BigInt!
+  winner: Bytes
+}
+
+type PrimeAuctionBid {
+  extended: Boolean!
+  id: ID!
+  primeAuction: PrimeAuction!
+  sender: Bytes!
+  value: BigInt!
+}
+
+input PrimeAuctionBid_filter {
+  extended: Boolean
+  extended_in: [Boolean!]
+  extended_not: Boolean
+  extended_not_in: [Boolean!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  primeAuction: String
+  primeAuction_contains: String
+  primeAuction_ends_with: String
+  primeAuction_gt: String
+  primeAuction_gte: String
+  primeAuction_in: [String!]
+  primeAuction_lt: String
+  primeAuction_lte: String
+  primeAuction_not: String
+  primeAuction_not_contains: String
+  primeAuction_not_ends_with: String
+  primeAuction_not_in: [String!]
+  primeAuction_not_starts_with: String
+  primeAuction_starts_with: String
+  sender: Bytes
+  sender_contains: Bytes
+  sender_in: [Bytes!]
+  sender_not: Bytes
+  sender_not_contains: Bytes
+  sender_not_in: [Bytes!]
+  value: BigInt
+  value_gt: BigInt
+  value_gte: BigInt
+  value_in: [BigInt!]
+  value_lt: BigInt
+  value_lte: BigInt
+  value_not: BigInt
+  value_not_in: [BigInt!]
+}
+
+enum PrimeAuctionBid_orderBy {
+  extended
+  id
+  primeAuction
+  sender
+  value
+}
+
+input PrimeAuction_filter {
+  amount: BigInt
+  amount_gt: BigInt
+  amount_gte: BigInt
+  amount_in: [BigInt!]
+  amount_lt: BigInt
+  amount_lte: BigInt
+  amount_not: BigInt
+  amount_not_in: [BigInt!]
+  bidder: Bytes
+  bidder_contains: Bytes
+  bidder_in: [Bytes!]
+  bidder_not: Bytes
+  bidder_not_contains: Bytes
+  bidder_not_in: [Bytes!]
+  endTime: BigInt
+  endTime_gt: BigInt
+  endTime_gte: BigInt
+  endTime_in: [BigInt!]
+  endTime_lt: BigInt
+  endTime_lte: BigInt
+  endTime_not: BigInt
+  endTime_not_in: [BigInt!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  prime: String
+  prime_contains: String
+  prime_ends_with: String
+  prime_gt: String
+  prime_gte: String
+  prime_in: [String!]
+  prime_lt: String
+  prime_lte: String
+  prime_not: String
+  prime_not_contains: String
+  prime_not_ends_with: String
+  prime_not_in: [String!]
+  prime_not_starts_with: String
+  prime_starts_with: String
+  settled: Boolean
+  settled_in: [Boolean!]
+  settled_not: Boolean
+  settled_not_in: [Boolean!]
+  startTime: BigInt
+  startTime_gt: BigInt
+  startTime_gte: BigInt
+  startTime_in: [BigInt!]
+  startTime_lt: BigInt
+  startTime_lte: BigInt
+  startTime_not: BigInt
+  startTime_not_in: [BigInt!]
+  winner: Bytes
+  winner_contains: Bytes
+  winner_in: [Bytes!]
+  winner_not: Bytes
+  winner_not_contains: Bytes
+  winner_not_in: [Bytes!]
+}
+
+enum PrimeAuction_orderBy {
+  amount
+  bidder
+  bids
+  endTime
+  id
+  prime
+  settled
+  startTime
+  winner
+}
+
+type PrimeBatch {
+  active: Boolean!
+  id: ID!
+  remaining: Int!
+  whitelist: Bytes
+}
+
+input PrimeBatch_filter {
+  active: Boolean
+  active_in: [Boolean!]
+  active_not: Boolean
+  active_not_in: [Boolean!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  remaining: Int
+  remaining_gt: Int
+  remaining_gte: Int
+  remaining_in: [Int!]
+  remaining_lt: Int
+  remaining_lte: Int
+  remaining_not: Int
+  remaining_not_in: [Int!]
+  whitelist: Bytes
+  whitelist_contains: Bytes
+  whitelist_in: [Bytes!]
+  whitelist_not: Bytes
+  whitelist_not_contains: Bytes
+  whitelist_not_in: [Bytes!]
+}
+
+enum PrimeBatch_orderBy {
+  active
+  id
+  remaining
+  whitelist
+}
+
+input Prime_filter {
+  claimed: Boolean
+  claimed_in: [Boolean!]
+  claimed_not: Boolean
+  claimed_not_in: [Boolean!]
+  colossallyAbundantNumber: Boolean
+  colossallyAbundantNumber_in: [Boolean!]
+  colossallyAbundantNumber_not: Boolean
+  colossallyAbundantNumber_not_in: [Boolean!]
+  cousins: [String!]
+  cousins_contains: [String!]
+  cousins_not: [String!]
+  cousins_not_contains: [String!]
+  deadline: BigInt
+  deadline_gt: BigInt
+  deadline_gte: BigInt
+  deadline_in: [BigInt!]
+  deadline_lt: BigInt
+  deadline_lte: BigInt
+  deadline_not: BigInt
+  deadline_not_in: [BigInt!]
+  emirp: Boolean
+  emirp_in: [Boolean!]
+  emirp_not: Boolean
+  emirp_not_in: [Boolean!]
+  eulersLuckyNumber: Boolean
+  eulersLuckyNumber_in: [Boolean!]
+  eulersLuckyNumber_not: Boolean
+  eulersLuckyNumber_not_in: [Boolean!]
+  evilNumber: Boolean
+  evilNumber_in: [Boolean!]
+  evilNumber_not: Boolean
+  evilNumber_not_in: [Boolean!]
+  fibonacciNumber: Boolean
+  fibonacciNumber_in: [Boolean!]
+  fibonacciNumber_not: Boolean
+  fibonacciNumber_not_in: [Boolean!]
+  friendlyNumber: Boolean
+  friendlyNumber_in: [Boolean!]
+  friendlyNumber_not: Boolean
+  friendlyNumber_not_in: [Boolean!]
+  frugalNumber: Boolean
+  frugalNumber_in: [Boolean!]
+  frugalNumber_not: Boolean
+  frugalNumber_not_in: [Boolean!]
+  goodPrime: Boolean
+  goodPrime_in: [Boolean!]
+  goodPrime_not: Boolean
+  goodPrime_not_in: [Boolean!]
+  happyNumber: Boolean
+  happyNumber_in: [Boolean!]
+  happyNumber_not: Boolean
+  happyNumber_not_in: [Boolean!]
+  harshadNumber: Boolean
+  harshadNumber_in: [Boolean!]
+  harshadNumber_not: Boolean
+  harshadNumber_not_in: [Boolean!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  image: String
+  image_contains: String
+  image_ends_with: String
+  image_gt: String
+  image_gte: String
+  image_in: [String!]
+  image_lt: String
+  image_lte: String
+  image_not: String
+  image_not_contains: String
+  image_not_ends_with: String
+  image_not_in: [String!]
+  image_not_starts_with: String
+  image_starts_with: String
+  isListed: Boolean
+  isListed_in: [Boolean!]
+  isListed_not: Boolean
+  isListed_not_in: [Boolean!]
+  isPrime: Boolean
+  isPrime_in: [Boolean!]
+  isPrime_not: Boolean
+  isPrime_not_in: [Boolean!]
+  isRentable: Boolean
+  isRentable_in: [Boolean!]
+  isRentable_not: Boolean
+  isRentable_not_in: [Boolean!]
+  lastBred: BigInt
+  lastBred_gt: BigInt
+  lastBred_gte: BigInt
+  lastBred_in: [BigInt!]
+  lastBred_lt: BigInt
+  lastBred_lte: BigInt
+  lastBred_not: BigInt
+  lastBred_not_in: [BigInt!]
+  luckyNumber: Boolean
+  luckyNumber_in: [Boolean!]
+  luckyNumber_not: Boolean
+  luckyNumber_not_in: [Boolean!]
+  magicNumber: Boolean
+  magicNumber_in: [Boolean!]
+  magicNumber_not: Boolean
+  magicNumber_not_in: [Boolean!]
+  owner: String
+  owner_contains: String
+  owner_ends_with: String
+  owner_gt: String
+  owner_gte: String
+  owner_in: [String!]
+  owner_lt: String
+  owner_lte: String
+  owner_not: String
+  owner_not_contains: String
+  owner_not_ends_with: String
+  owner_not_in: [String!]
+  owner_not_starts_with: String
+  owner_starts_with: String
+  parent1: String
+  parent1_contains: String
+  parent1_ends_with: String
+  parent1_gt: String
+  parent1_gte: String
+  parent1_in: [String!]
+  parent1_lt: String
+  parent1_lte: String
+  parent1_not: String
+  parent1_not_contains: String
+  parent1_not_ends_with: String
+  parent1_not_in: [String!]
+  parent1_not_starts_with: String
+  parent1_starts_with: String
+  parent2: String
+  parent2_contains: String
+  parent2_ends_with: String
+  parent2_gt: String
+  parent2_gte: String
+  parent2_in: [String!]
+  parent2_lt: String
+  parent2_lte: String
+  parent2_not: String
+  parent2_not_contains: String
+  parent2_not_ends_with: String
+  parent2_not_in: [String!]
+  parent2_not_starts_with: String
+  parent2_starts_with: String
+  perfectNumber: Boolean
+  perfectNumber_in: [Boolean!]
+  perfectNumber_not: Boolean
+  perfectNumber_not_in: [Boolean!]
+  primeFactorCount: Int
+  primeFactorCount_gt: Int
+  primeFactorCount_gte: Int
+  primeFactorCount_in: [Int!]
+  primeFactorCount_lt: Int
+  primeFactorCount_lte: Int
+  primeFactorCount_not: Int
+  primeFactorCount_not_in: [Int!]
+  primeFactors: [String!]
+  primeFactors_contains: [String!]
+  primeFactors_not: [String!]
+  primeFactors_not_contains: [String!]
+  primeIndex: Int
+  primeIndex_gt: Int
+  primeIndex_gte: Int
+  primeIndex_in: [Int!]
+  primeIndex_lt: Int
+  primeIndex_lte: Int
+  primeIndex_not: Int
+  primeIndex_not_in: [Int!]
+  repdigitNumber: Boolean
+  repdigitNumber_in: [Boolean!]
+  repdigitNumber_not: Boolean
+  repdigitNumber_not_in: [Boolean!]
+  semiperfectNumber: Boolean
+  semiperfectNumber_in: [Boolean!]
+  semiperfectNumber_not: Boolean
+  semiperfectNumber_not_in: [Boolean!]
+  sexyPrimes: [String!]
+  sexyPrimes_contains: [String!]
+  sexyPrimes_not: [String!]
+  sexyPrimes_not_contains: [String!]
+  sophieGermainPrime: Boolean
+  sophieGermainPrime_in: [Boolean!]
+  sophieGermainPrime_not: Boolean
+  sophieGermainPrime_not_in: [Boolean!]
+  squareNumber: Boolean
+  squareNumber_in: [Boolean!]
+  squareNumber_not: Boolean
+  squareNumber_not_in: [Boolean!]
+  strongPrime: Boolean
+  strongPrime_in: [Boolean!]
+  strongPrime_not: Boolean
+  strongPrime_not_in: [Boolean!]
+  studFee: BigInt
+  studFee_gt: BigInt
+  studFee_gte: BigInt
+  studFee_in: [BigInt!]
+  studFee_lt: BigInt
+  studFee_lte: BigInt
+  studFee_not: BigInt
+  studFee_not_in: [BigInt!]
+  suitors: [String!]
+  suitors_contains: [String!]
+  suitors_not: [String!]
+  suitors_not_contains: [String!]
+  taxicabNumber: Boolean
+  taxicabNumber_in: [Boolean!]
+  taxicabNumber_not: Boolean
+  taxicabNumber_not_in: [Boolean!]
+  triangularNumber: Boolean
+  triangularNumber_in: [Boolean!]
+  triangularNumber_not: Boolean
+  triangularNumber_not_in: [Boolean!]
+  twins: [String!]
+  twins_contains: [String!]
+  twins_not: [String!]
+  twins_not_contains: [String!]
+  uniquePrime: Boolean
+  uniquePrime_in: [Boolean!]
+  uniquePrime_not: Boolean
+  uniquePrime_not_in: [Boolean!]
+  untouchableNumber: Boolean
+  untouchableNumber_in: [Boolean!]
+  untouchableNumber_not: Boolean
+  untouchableNumber_not_in: [Boolean!]
+  weirdNumber: Boolean
+  weirdNumber_in: [Boolean!]
+  weirdNumber_not: Boolean
+  weirdNumber_not_in: [Boolean!]
+  whitelistOnly: Boolean
+  whitelistOnly_in: [Boolean!]
+  whitelistOnly_not: Boolean
+  whitelistOnly_not_in: [Boolean!]
+}
+
+enum Prime_orderBy {
+  childrenAsParent1
+  childrenAsParent2
+  claimed
+  colossallyAbundantNumber
+  cousins
+  deadline
+  emirp
+  eulersLuckyNumber
+  evilNumber
+  fibonacciNumber
+  friendlyNumber
+  frugalNumber
+  goodPrime
+  happyNumber
+  harshadNumber
+  id
+  image
+  isListed
+  isPrime
+  isRentable
+  lastBred
+  luckyNumber
+  magicNumber
+  owner
+  parent1
+  parent2
+  perfectNumber
+  primeFactorCount
+  primeFactors
+  primeIndex
+  repdigitNumber
+  semiperfectNumber
+  sexyPrimes
+  sophieGermainPrime
+  squareNumber
+  strongPrime
+  studFee
+  suitors
+  taxicabNumber
+  triangularNumber
+  twins
+  uniquePrime
+  untouchableNumber
+  weirdNumber
+  whitelistOnly
+}
+
+type PrimesAuctionHouse {
+  address: Bytes!
+  breedingCooldown: BigInt!
+  currentPrimeAuction: PrimeAuction
+  id: ID!
+  minBidIncrementPercentage: BigInt!
+  paused: Boolean!
+  primes: Bytes!
+  reservePrice: BigInt!
+  timeBuffer: BigInt!
+}
+
+input PrimesAuctionHouse_filter {
+  address: Bytes
+  address_contains: Bytes
+  address_in: [Bytes!]
+  address_not: Bytes
+  address_not_contains: Bytes
+  address_not_in: [Bytes!]
+  breedingCooldown: BigInt
+  breedingCooldown_gt: BigInt
+  breedingCooldown_gte: BigInt
+  breedingCooldown_in: [BigInt!]
+  breedingCooldown_lt: BigInt
+  breedingCooldown_lte: BigInt
+  breedingCooldown_not: BigInt
+  breedingCooldown_not_in: [BigInt!]
+  currentPrimeAuction: String
+  currentPrimeAuction_contains: String
+  currentPrimeAuction_ends_with: String
+  currentPrimeAuction_gt: String
+  currentPrimeAuction_gte: String
+  currentPrimeAuction_in: [String!]
+  currentPrimeAuction_lt: String
+  currentPrimeAuction_lte: String
+  currentPrimeAuction_not: String
+  currentPrimeAuction_not_contains: String
+  currentPrimeAuction_not_ends_with: String
+  currentPrimeAuction_not_in: [String!]
+  currentPrimeAuction_not_starts_with: String
+  currentPrimeAuction_starts_with: String
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  minBidIncrementPercentage: BigInt
+  minBidIncrementPercentage_gt: BigInt
+  minBidIncrementPercentage_gte: BigInt
+  minBidIncrementPercentage_in: [BigInt!]
+  minBidIncrementPercentage_lt: BigInt
+  minBidIncrementPercentage_lte: BigInt
+  minBidIncrementPercentage_not: BigInt
+  minBidIncrementPercentage_not_in: [BigInt!]
+  paused: Boolean
+  paused_in: [Boolean!]
+  paused_not: Boolean
+  paused_not_in: [Boolean!]
+  primes: Bytes
+  primes_contains: Bytes
+  primes_in: [Bytes!]
+  primes_not: Bytes
+  primes_not_contains: Bytes
+  primes_not_in: [Bytes!]
+  reservePrice: BigInt
+  reservePrice_gt: BigInt
+  reservePrice_gte: BigInt
+  reservePrice_in: [BigInt!]
+  reservePrice_lt: BigInt
+  reservePrice_lte: BigInt
+  reservePrice_not: BigInt
+  reservePrice_not_in: [BigInt!]
+  timeBuffer: BigInt
+  timeBuffer_gt: BigInt
+  timeBuffer_gte: BigInt
+  timeBuffer_in: [BigInt!]
+  timeBuffer_lt: BigInt
+  timeBuffer_lte: BigInt
+  timeBuffer_not: BigInt
+  timeBuffer_not_in: [BigInt!]
+}
+
+enum PrimesAuctionHouse_orderBy {
+  address
+  breedingCooldown
+  currentPrimeAuction
+  id
+  minBidIncrementPercentage
+  paused
+  primes
+  reservePrice
+  timeBuffer
+}
+
+type Query {
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+  account(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Account
+  accounts(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Account_filter
+  ): [Account!]!
+  prime(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Prime
+  primeAuction(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PrimeAuction
+  primeAuctionBid(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PrimeAuctionBid
+  primeAuctionBids(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: PrimeAuctionBid_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PrimeAuctionBid_filter
+  ): [PrimeAuctionBid!]!
+  primeAuctions(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: PrimeAuction_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PrimeAuction_filter
+  ): [PrimeAuction!]!
+  primeBatch(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PrimeBatch
+  primeBatches(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: PrimeBatch_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PrimeBatch_filter
+  ): [PrimeBatch!]!
+  primes(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: Prime_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Prime_filter
+  ): [Prime!]!
+  primesAuctionHouse(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PrimesAuctionHouse
+  primesAuctionHouses(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: PrimesAuctionHouse_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PrimesAuctionHouse_filter
+  ): [PrimesAuctionHouse!]!
+}
+
+type Subscription {
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+  account(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Account
+  accounts(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Account_filter
+  ): [Account!]!
+  prime(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Prime
+  primeAuction(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PrimeAuction
+  primeAuctionBid(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PrimeAuctionBid
+  primeAuctionBids(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: PrimeAuctionBid_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PrimeAuctionBid_filter
+  ): [PrimeAuctionBid!]!
+  primeAuctions(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: PrimeAuction_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PrimeAuction_filter
+  ): [PrimeAuction!]!
+  primeBatch(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PrimeBatch
+  primeBatches(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: PrimeBatch_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PrimeBatch_filter
+  ): [PrimeBatch!]!
+  primes(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: Prime_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: Prime_filter
+  ): [Prime!]!
+  primesAuctionHouse(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    id: ID!
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): PrimesAuctionHouse
+  primesAuctionHouses(
+    """The block at which the query should be executed. Can either be an `{ number: Int }` containing the block number or a `{ hash: Bytes }` value containing a block hash. Defaults to the latest block when omitted."""
+    block: Block_height
+    first: Int = 100
+    orderBy: PrimesAuctionHouse_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: PrimesAuctionHouse_filter
+  ): [PrimesAuctionHouse!]!
+}
+
+type _Block_ {
+  """The hash of the block"""
+  hash: Bytes
+  """The block number"""
+  number: Int!
+}
+
+"""The type for the top-level _meta field"""
+type _Meta_ {
+  """
+  Information about a specific subgraph block. The hash of the block
+  will be null if the _meta field has a block constraint that asks for
+  a block number. It will be filled if the _meta field has no block constraint
+  and therefore asks for the latest  block
+  
+  """
+  block: _Block_!
+  """The deployment ID"""
+  deployment: String!
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
+}
+
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+  """If the subgraph has indexing errors, data will be omitted. The default."""
+  deny
+}

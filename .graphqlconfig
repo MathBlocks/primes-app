@@ -1,0 +1,17 @@
+{
+  "name": "Primes",
+  "projects": {
+    "subgraph": {
+      "includes": ["./src/subgraph/*"],
+      "schemaPath": "remote-schema.graphql",
+      "extensions": {
+        "endpoints": {
+          "default": {
+            "url": "https://api.thegraph.com/subgraphs/name/jameslefrere/stealth-launch-nft-shhh",
+            "introspect": false
+          }
+        }
+      }
+    }
+  }
+}

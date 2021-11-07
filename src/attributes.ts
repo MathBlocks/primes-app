@@ -1,5 +1,7 @@
 // @ts-ignore
 import isPrime from 'is-prime'
+// @ts-ignore
+import getPrimeFactors from 'get-prime-factors'
 
 interface PackedAttributes {
   taxicabNumber: Set<number>
@@ -23,7 +25,7 @@ interface PackedAttributes {
   happyNumber: Set<number>
   untouchableNumber: Set<number>
   semiperfectNumber: Set<number>
-  abundantNumber: Set<number>
+  harshadNumber: Set<number>
   evilNumber: Set<number>
 }
 
@@ -34,41 +36,41 @@ interface CoreAttributes {
 
 export type Attributes = PackedAttributes & CoreAttributes
 
-const packedAttributeNames: Record<keyof PackedAttributes, string> = {
-  taxicabNumber: 'Taxicab Number',
-  perfectNumber: 'Perfect Number',
-  eulersLuckyNumbers: "Euler's Lucky Numbers",
-  uniquePrimeNumber: 'Unique Prime Number',
-  friendlyNumber: 'Friendly Number',
-  colossallyAbundantNumber: 'Colossally Abundant Number',
-  fibonacciNumber: 'Fibonacci Number',
-  repdigit: 'Repdigit',
-  weirdNumber: 'Weird Number',
-  triangularNumber: 'Triangular Number',
-  sophieGermainPrime: 'Sophie-Germain Prime',
-  strongPrime: 'Strong Prime',
-  frugalNumber: 'Frugal Number',
-  squareNumber: 'Square Number',
-  emirp: 'EMIRP',
-  magicNumber: 'Magic Number',
-  luckyNumber: 'Lucky Number',
-  goodPrime: 'Good Prime',
-  happyNumber: 'Happy Number',
-  untouchableNumber: 'Untouchable Number',
-  semiperfectNumber: 'Semiperfect Number',
-  abundantNumber: 'Abundant Number',
-  evilNumber: 'Evil Number',
+const packedAttributeNames: Record<keyof PackedAttributes, [string, string]> = {
+  taxicabNumber: ['Taxicab Number', '🚕'],
+  perfectNumber: ['Perfect Number', '💯'],
+  eulersLuckyNumbers: ["Euler's Lucky Numbers", '🧧'],
+  uniquePrimeNumber: ['Unique Prime Number', '❄️'],
+  friendlyNumber: ['Friendly Number', '😊'],
+  colossallyAbundantNumber: ['Colossally Abundant Number', '🌊'],
+  fibonacciNumber: ['Fibonacci Number', '🐚'],
+  repdigit: ['Repdigit', '🔁'],
+  weirdNumber: ['Weird Number', '👽'],
+  triangularNumber: ['Triangular Number', '📐'],
+  sophieGermainPrime: ['Sophie-Germain Prime', '🔐'],
+  strongPrime: ['Strong Prime', '💪'],
+  frugalNumber: ['Frugal Number', '🤜'],
+  squareNumber: ['Square Number', '⬜'],
+  emirp: ['EMIRP', '⏮️'],
+  magicNumber: ['Magic Number', '🪄'],
+  luckyNumber: ['Lucky Number', '🍀'],
+  goodPrime: ['Good Prime', '😇'],
+  happyNumber: ['Happy Number', '🙂'],
+  untouchableNumber: ['Untouchable Number‍️', '🙅'],
+  semiperfectNumber: ['Semiperfect Number', '🥈'],
+  harshadNumber: ['Harshad Number', '🥳'],
+  evilNumber: ['Evil Number', '😈'],
 }
 
-const coreAttributeNames: Record<keyof CoreAttributes, string> = {
-  prime: 'Prime',
-  composite: 'Composite',
+const coreAttributeNames: Record<keyof CoreAttributes, [string, string]> = {
+  prime: ['Prime', '⚪'],
+  composite: ['Composite', '⚫'],
 }
 
 // Starts at 0
 const PACKED = Uint32Array.from([
   4235968, 369344, 558308, 4294348, 41088, 4883652, 5276338, 360576, 32960,
-  43009284489728, 134284, 7372848, 344128, 32768, 4260352, 40960, 4343812,
+  4300928, 4489728, 134284, 7372848, 344128, 32768, 4260352, 40960, 4343812,
   7372800, 262144, 7372800, 66112, 32896, 4457472, 7372816, 73728, 32768,
   4194304, 1344018, 4328448, 7372816, 344064, 294912, 4259968, 4227136, 0,
   7381504, 215048, 32768, 4194304, 7372816, 134148, 3178512, 4259840, 295040,
@@ -1695,7 +1697,7 @@ const generatePackedAttributes = (): PackedAttributes => {
   const entries = Object.keys(packedAttributeNames).map((id, attrIdx) => {
     const members = PACKED.reduce<number[]>(
       (prev, packedValue, n) =>
-        ((packedValue >> attrIdx) & 1) === 1 ? [...prev, n + 1] : prev,
+        ((packedValue >> attrIdx) & 1) === 1 ? [...prev, n] : prev,
       [],
     )
     return [id, new Set<number>(members)]
@@ -1711,25 +1713,16 @@ const generateCoreAttributes = () => {
   }
 }
 
+export const ATTRIBUTE_NAMES = {
+  ...coreAttributeNames,
+  ...packedAttributeNames,
+}
+
 export const generateAttributes = (): Attributes => ({
   ...generateCoreAttributes(),
   ...generatePackedAttributes(),
 })
 
-export const attributeNames = { ...coreAttributeNames, ...packedAttributeNames }
-
-export const generateFactors = (): Record<number, Set<number>> => {
-  const getFactors = (n: number): number[] => {
-    let factors = []
-
-    for (let i = 2; i <= Math.ceil(n / 2); i++) {
-      if (n % i === 0) factors.push(i)
-    }
-
-    if (n !== 1) factors.push(n)
-
-    return factors
-  }
-
-  return Object.fromEntries(NUMBERS.map((n) => [n, new Set(getFactors(n))]))
-}
+export const generateFactors = (): Record<number, Set<number>> =>
+  Object.fromEntries(NUMBERS.map((n) => [n, new Set(getPrimeFactors(n))]))
+// export const FACTORS = generateFactors()

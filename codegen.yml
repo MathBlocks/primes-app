@@ -1,0 +1,29 @@
+config:
+  skipTypename: true
+  withComponent: false
+  withHOC: false
+  withHooks: true
+  scalars:
+    BigInt: string
+    Bytes: string
+    Address: string
+    ID: string
+
+generates:
+  ./src/graphql/subgraph/schema.graphql:
+    overwrite: true
+    schema: https://api.thegraph.com/subgraphs/name/jameslefrere/stealth-launch-nft-shhh
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
+  ./src/graphql/subgraph/subgraph.tsx:
+    overwrite: true
+    schema: https://api.thegraph.com/subgraphs/name/jameslefrere/stealth-launch-nft-shhh
+    documents: 'src/graphql/subgraph/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
