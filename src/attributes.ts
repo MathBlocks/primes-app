@@ -36,35 +36,41 @@ interface CoreAttributes {
 
 export type Attributes = PackedAttributes & CoreAttributes
 
-const packedAttributeNames: Record<keyof PackedAttributes, [string, string]> = {
-  taxicabNumber: ['Taxicab Number', '🚕'],
-  perfectNumber: ['Perfect Number', '💯'],
-  eulersLuckyNumbers: ["Euler's Lucky Numbers", '🧧'],
-  uniquePrimeNumber: ['Unique Prime Number', '❄️'],
-  friendlyNumber: ['Friendly Number', '😊'],
-  colossallyAbundantNumber: ['Colossally Abundant Number', '🌊'],
-  fibonacciNumber: ['Fibonacci Number', '🐚'],
-  repdigit: ['Repdigit', '🔁'],
-  weirdNumber: ['Weird Number', '👽'],
-  triangularNumber: ['Triangular Number', '📐'],
-  sophieGermainPrime: ['Sophie-Germain Prime', '🔐'],
-  strongPrime: ['Strong Prime', '💪'],
-  frugalNumber: ['Frugal Number', '🤜'],
-  squareNumber: ['Square Number', '⬜'],
-  emirp: ['EMIRP', '⏮️'],
-  magicNumber: ['Magic Number', '🪄'],
-  luckyNumber: ['Lucky Number', '🍀'],
-  goodPrime: ['Good Prime', '😇'],
-  happyNumber: ['Happy Number', '🙂'],
-  untouchableNumber: ['Untouchable Number‍️', '🙅'],
-  semiperfectNumber: ['Semiperfect Number', '🥈'],
-  harshadNumber: ['Harshad Number', '🥳'],
-  evilNumber: ['Evil Number', '😈'],
+export const packedAttributeNames: Record<
+  keyof PackedAttributes,
+  [string, string, string]
+> = {
+  taxicabNumber: ['Taxicab Number', '🚕', '#ffb60a'],
+  perfectNumber: ['Perfect Number', '💯', '#0c74ff'],
+  eulersLuckyNumbers: ["Euler's Lucky Numbers", '🧧', '#0cff00'],
+  uniquePrimeNumber: ['Unique Prime Number', '❄️', '#6622a6'],
+  friendlyNumber: ['Friendly Number', '😊', '#ffa012'],
+  colossallyAbundantNumber: ['Colossally Abundant Number', '🌊', '#011f5d'],
+  fibonacciNumber: ['Fibonacci Number', '🐚', '#265224'],
+  repdigit: ['Repdigit', '🔁', '#701d1d'],
+  weirdNumber: ['Weird Number', '👽', '#7d9457'],
+  triangularNumber: ['Triangular Number', '📐', '#1e317e'],
+  sophieGermainPrime: ['Sophie-Germain Prime', '🔐', '#ff5454'],
+  strongPrime: ['Strong Prime', '💪', '#570000'],
+  frugalNumber: ['Frugal Number', '🤜', '#768565'],
+  squareNumber: ['Square Number', '⬜', '#336996'],
+  emirp: ['EMIRP', '⏮️', '#888888'],
+  magicNumber: ['Magic Number', '🪄', '#6500ff'],
+  luckyNumber: ['Lucky Number', '🍀', '#3e9814'],
+  goodPrime: ['Good Prime', '😇', '#48ff00'],
+  happyNumber: ['Happy Number', '🙂', '#c06d00'],
+  untouchableNumber: ['Untouchable Number‍️', '🙅', '#193a4f'],
+  semiperfectNumber: ['Semiperfect Number', '🥈', '#917c4e'],
+  harshadNumber: ['Harshad Number', '🥳', '#8d1d9d'],
+  evilNumber: ['Evil Number', '😈', '#ab0000'],
 }
 
-const coreAttributeNames: Record<keyof CoreAttributes, [string, string]> = {
-  prime: ['Prime', '⚪'],
-  composite: ['Composite', '⚫'],
+const coreAttributeNames: Record<
+  keyof CoreAttributes,
+  [string, string, string]
+> = {
+  prime: ['Prime', '⚪', '#000000'],
+  composite: ['Composite', '⚫', '#ffffff'],
 }
 
 // Starts at 0
@@ -1750,4 +1756,3 @@ export const generateAttributes = (): Attributes => ({
 
 export const generateFactors = (): Record<number, Set<number>> =>
   Object.fromEntries(NUMBERS.map((n) => [n, new Set(getPrimeFactors(n))]))
-// export const FACTORS = generateFactors()

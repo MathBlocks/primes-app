@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import ReactTooltip from 'react-tooltip'
 
@@ -11,7 +11,10 @@ import {
   useVisible,
   useHoveredTokenId,
   useMintedPrimes,
-} from './PrimesContext'
+  useMyPrimes,
+} from '../App/PrimesContext'
+import { useEthers } from '@usedapp/core'
+import { usePrimesForAccountQuery } from '../../graphql/subgraph/subgraph'
 
 const AttrButtons = styled.div`
   display: flex;
@@ -45,6 +48,7 @@ const ActiveSet = styled.h3`
 const AttributesSelectorContainer = styled.div`
   display: flex;
   justify-content: space-between;
+
   > :last-child {
     width: 33rem;
   }
@@ -126,10 +130,32 @@ const AttributesSelector: FC = () => {
   )
 }
 
-const Container = styled.div``
+const MyPrimesSelector: FC = () => {
+  const [hoveredTokenId] = useHoveredTokenId()
+  const [myPrimes, setMyPrimes] = useMyPrimes()
 
-export const PrimesOverlay: FC = () => (
+  return (
+    <AttrButton
+      onClick={() => {
+        setMyPrimes({ ...myPrimes, enabled: !myPrimes.enabled })
+      }}
+      active={myPrimes.enabled}
+      hovered={hoveredTokenId ? myPrimes.set.has(hoveredTokenId) : false}
+      data-tip={`Owned by me (${myPrimes.set.size})`}
+    >
+      My Primes
+    </AttrButton>
+  )
+}
+
+const Container = styled.div`
+  display: flex;
+  gap: 2rem;
+`
+
+export const Overlay: FC = () => (
   <Container>
     <AttributesSelector />
+    <MyPrimesSelector />
   </Container>
 )

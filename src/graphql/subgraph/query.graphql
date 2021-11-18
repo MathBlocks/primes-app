@@ -1,71 +1,79 @@
+fragment PrimeAttributes on Prime {
+    colossallyAbundantNumber
+    emirp
+    eulersLuckyNumber
+    evilNumber
+    fibonacciNumber
+    friendlyNumber
+    frugalNumber
+    goodPrime
+    happyNumber
+    harshadNumber
+    luckyNumber
+    magicNumber
+    perfectNumber
+    repdigitNumber
+    semiperfectNumber
+    sophieGermainPrime
+    squareNumber
+    strongPrime
+    taxicabNumber
+    triangularNumber
+    uniquePrime
+    untouchableNumber
+    weirdNumber
+}
+
+fragment PrimeAll on Prime {
+    id
+    childrenAsParent1 {
+        id
+    }
+    childrenAsParent2 {
+        id
+    }
+    claimed
+    cousins {
+        id
+    }
+    deadline
+    image
+    isListed
+    isPrime
+    isRentable
+    lastBred
+
+    owner {
+        id
+        address
+    }
+    parent1 {
+        id
+    }
+    parent2 {
+        id
+    }
+    primeFactorCount
+    primeIndex
+    primeFactors {
+        id
+    }
+    sexyPrimes {
+        id
+    }
+    studFee
+    suitors {
+        id
+    }
+    twins {
+        id
+    }
+    whitelistOnly
+}
+
 query Prime($tokenId: ID!) {
     prime(id: $tokenId) {
-        childrenAsParent1 {
-            id
-        }
-        childrenAsParent2 {
-            id
-        }
-        claimed
-        colossallyAbundantNumber
-        cousins {
-            id
-        }
-        deadline
-        emirp
-        eulersLuckyNumber
-        evilNumber
-        fibonacciNumber
-        friendlyNumber
-        frugalNumber
-        goodPrime
-        happyNumber
-        harshadNumber
-        id
-        image
-        isListed
-        isPrime
-        isRentable
-        lastBred
-        luckyNumber
-        magicNumber
-        owner {
-            id
-            address
-        }
-        parent1 {
-            id
-        }
-        parent2 {
-            id
-        }
-        perfectNumber
-        primeFactorCount
-        primeFactors {
-            id
-        }
-        primeIndex
-        repdigitNumber
-        semiperfectNumber
-        sexyPrimes {
-            id
-        }
-        sophieGermainPrime
-        squareNumber
-        strongPrime
-        studFee
-        suitors {
-            id
-        }
-        taxicabNumber
-        triangularNumber
-        twins {
-            id
-        }
-        uniquePrime
-        untouchableNumber
-        weirdNumber
-        whitelistOnly
+        ...PrimeAll
     }
 }
 
@@ -111,4 +119,9 @@ query AuctionStatus {
     }
 }
 
+query PrimesForAccount($account: String!) {
+    primes(where: { owner: $account }) {
+        ...PrimeAll
+    }
+}
 

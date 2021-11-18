@@ -1,5 +1,6 @@
 import { FC, useEffect, useRef } from 'react'
 import { useHistory } from 'react-router'
+import { useWindowSize } from 'react-use'
 import styled from 'styled-components'
 import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
@@ -15,26 +16,21 @@ import {
   useVisible,
   useHoveredTokenId,
   useMintedPrimes,
-} from './PrimesContext'
-import { useWindowSize } from 'react-use'
+} from '../App/PrimesContext'
+import { ulamSpiral } from '../../ulamSpiral'
+import { ATTRIBUTE_NAMES, Attributes } from '../../attributes'
 
 const PixiContainer = styled.div`
   width: 100%;
   height: 100%;
+
   canvas {
     width: 100%;
     height: 100%;
   }
 `
 
-enum Direction {
-  Right,
-  Up,
-  Left,
-  Down,
-}
-
-export const PrimesPixi: FC = () => {
+export const Spiral: FC = () => {
   // Context
   const history = useHistory()
   const [attributes] = useAttributes()
@@ -85,140 +81,6 @@ export const PrimesPixi: FC = () => {
     const cull_ = cull.current
     cull_.addList(viewport_.children)
 
-    // Build spiral
-    ;(() => {
-      const addSprite = (tokenId: number, posX: number, posY: number) => {
-        const prime = attributes.prime.has(tokenId)
-
-        const container = viewport_.addChild(
-          new PIXI.Sprite(PIXI.Texture.EMPTY),
-        )
-        container.width = container.height = SCALE - 50
-        container.position.set(posX * SCALE + 25, posY * SCALE + 25)
-        container.interactive = true
-        // @ts-ignore
-        container.data = { tokenId, prime, svg: getSVGDataURI(tokenId) }
-
-        const square = new PIXI.Sprite(PIXI.Texture.WHITE)
-        square.width = 1
-        square.height = 1
-        square.tint = prime ? 0xffffff : 0x000000
-        container.addChild(square)
-
-        const detail = new PIXI.Sprite()
-        detail.visible = false
-        square.addChild(detail)
-
-        container.on('mouseover', () => {
-          if (!square.visible) return
-          container.filters = [
-            new GlowFilter({
-              distance: 16,
-              outerStrength: 4,
-              quality: 1,
-            }),
-          ]
-          setHoveredTokenId(tokenId)
-        })
-
-        container.on('mouseout', () => {
-          if (!square.visible) return
-          container.filters = []
-          setHoveredTokenId(undefined)
-        })
-
-        const onClick = () => {
-          if (!square.visible) return
-
-          if (!viewport_.moving) {
-            viewport_.animate({
-              time: 1000,
-              position: new PIXI.Point(
-                container.x + container.width / 2,
-                container.y + container.height / 2,
-              ),
-              width: container.width,
-              height: container.height,
-              scale: 1,
-              ease: 'easeInOutSine',
-              removeOnInterrupt: true,
-            })
-          }
-
-          if (selectedTokenIdRef.current === tokenId) {
-            history.push(`/primes/${tokenId}`)
-          }
-
-          setSelectedTokenId(tokenId)
-          selectedTokenIdRef.current = tokenId
-        }
-        container.on('click', onClick)
-        container.on('touchend', onClick)
-      }
-
-      const arr: number[][] = []
-      for (let i = 0; i < N_MAX; i++) {
-        arr[i] = Array(N_SIZE).fill(undefined)
-      }
-
-      let i = 2
-      let direction: Direction = Direction.Right
-
-      let y = N_SIZE / 2
-      let x = N_SIZE % 2 === 0 ? y - 1 : y
-
-      // Place first
-      addSprite(1, x, y)
-
-      for (let j = i; j < N_MAX + i; j++) {
-        arr[y][x] = j
-
-        switch (direction) {
-          case Direction.Up: {
-            if (arr[y][x - 1] === undefined) {
-              direction = Direction.Left
-            }
-            break
-          }
-          case Direction.Right: {
-            if (x <= N_MAX - 1 && arr[y - 1][x] === undefined && j > i) {
-              direction = Direction.Up
-            }
-            break
-          }
-          case Direction.Left: {
-            if (x === 0 || arr[y + 1][x] === undefined) {
-              direction = Direction.Down
-            }
-            break
-          }
-          case Direction.Down: {
-            if (arr[y][x + 1] === undefined) {
-              direction = Direction.Right
-            }
-            break
-          }
-        }
-
-        switch (direction) {
-          case Direction.Right:
-            x += 1
-            break
-          case Direction.Up:
-            y -= 1
-            break
-          case Direction.Left:
-            x -= 1
-            break
-          case Direction.Down:
-            y += 1
-            break
-        }
-
-        addSprite(j, x, y)
-      }
-    })()
-
     app_.start()
 
     PIXI.Ticker.shared.add(() => {
@@ -255,6 +117,92 @@ export const PrimesPixi: FC = () => {
     }
   }, [attributes, history, setHoveredTokenId, setSelectedTokenId])
 
+  useEffect(() => {
+    for (const [tokenId, posX, posY] of ulamSpiral(N_MAX, N_SIZE)) {
+      if (!attributes || !viewport.current) return
+
+      const prime = attributes.prime.has(tokenId)
+
+      const container = (viewport.current as Viewport).addChild(
+        new PIXI.Sprite(PIXI.Texture.EMPTY),
+      )
+      container.width = container.height = SCALE - 50
+      container.position.set(posX * SCALE + 25, posY * SCALE + 25)
+      container.interactive = true
+      // @ts-ignore
+      container.data = {
+        tokenId,
+        prime,
+        // FIXME optimise primeAttributes
+        svg: getSVGDataURI(
+          tokenId,
+          Object.entries(attributes)
+            .filter(([_, set]) => set.has(tokenId))
+            .map(([key]) => {
+              const [name, symbol, fill] =
+                ATTRIBUTE_NAMES[key as keyof Attributes]
+              return { key, name, symbol, fill }
+            }),
+        ),
+      }
+
+      const square = new PIXI.Sprite(PIXI.Texture.WHITE)
+      square.width = 1
+      square.height = 1
+      square.tint = prime ? 0xffffff : 0x000000
+      square.alpha = 0.4
+      container.addChild(square)
+
+      const detail = new PIXI.Sprite()
+      detail.visible = false
+      square.addChild(detail)
+
+      container.on('mouseover', () => {
+        if (!square.visible) return
+        container.filters = [
+          new GlowFilter({
+            distance: 16,
+            outerStrength: 4,
+            quality: 1,
+          }),
+        ]
+        setHoveredTokenId(tokenId)
+      })
+
+      container.on('mouseout', () => {
+        if (!square.visible) return
+        container.filters = []
+        setHoveredTokenId(undefined)
+      })
+
+      container.on('click', () => {
+        if (!square.visible) return
+
+        if (!(viewport.current as Viewport).moving) {
+          ;(viewport.current as Viewport).animate({
+            time: 1000,
+            position: new PIXI.Point(
+              container.x + container.width / 2,
+              container.y + container.height / 2,
+            ),
+            width: container.width,
+            height: container.height,
+            scale: 1,
+            ease: 'easeInOutSine',
+            removeOnInterrupt: true,
+          })
+        }
+
+        if (selectedTokenIdRef.current === tokenId) {
+          history.push(`/primes/${tokenId}`)
+        }
+
+        setSelectedTokenId(tokenId)
+        selectedTokenIdRef.current = tokenId
+      })
+    }
+  }, [attributes, history, setHoveredTokenId, setSelectedTokenId])
+
   // Set visibility of squares
   useEffect(() => {
     if (!viewport.current) return
@@ -268,14 +216,14 @@ export const PrimesPixi: FC = () => {
 
   // Set minted state
   useEffect(() => {
-    if (!viewport.current) return
+    if (!viewport.current || mintedPrimes.size === 0) return
 
     viewport.current.children.forEach((child) => {
       ;(child as PIXI.Sprite).children[0].alpha = mintedPrimes.has(
         (child as any).data.tokenId,
       )
         ? 1
-        : 0.4
+        : 0.25
     })
   }, [mintedPrimes])
 

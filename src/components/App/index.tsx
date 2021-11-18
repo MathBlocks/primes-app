@@ -8,6 +8,8 @@ import { AppRoutes } from './AppRoutes'
 import { config } from '../../config'
 import { ApolloProvider } from './ApolloProvider'
 import { ContractsProvider } from './ContractsProvider'
+import { Primes } from '../Primes'
+import { PrimesContext } from './PrimesContext'
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -15,9 +17,11 @@ const GlobalStyle = createGlobalStyle`
     background: #191919;
     color: white;
   }
+
   * {
     font-family: 'Roboto', sans-serif;
   }
+
   a {
     color: white;
     text-decoration: none;
@@ -29,12 +33,14 @@ export const App: FC = () => {
     <DAppProvider config={config}>
       <ApolloProvider>
         <ContractsProvider>
-          <Router>
-            <GlobalStyle />
-            <AppLayout>
-              <AppRoutes />
-            </AppLayout>
-          </Router>
+          <PrimesContext>
+            <Router>
+              <GlobalStyle />
+              <AppLayout>
+                <AppRoutes />
+              </AppLayout>
+            </Router>
+          </PrimesContext>
         </ContractsProvider>
       </ApolloProvider>
     </DAppProvider>

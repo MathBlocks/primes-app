@@ -1061,12 +1061,16 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
+export type PrimeAttributesFragment = { colossallyAbundantNumber: boolean, emirp: boolean, eulersLuckyNumber: boolean, evilNumber: boolean, fibonacciNumber: boolean, friendlyNumber: boolean, frugalNumber: boolean, goodPrime: boolean, happyNumber: boolean, harshadNumber: boolean, luckyNumber: boolean, magicNumber: boolean, perfectNumber: boolean, repdigitNumber: boolean, semiperfectNumber: boolean, sophieGermainPrime: boolean, squareNumber: boolean, strongPrime: boolean, taxicabNumber: boolean, triangularNumber: boolean, uniquePrime: boolean, untouchableNumber: boolean, weirdNumber: boolean };
+
+export type PrimeAllFragment = { id: string, claimed: boolean, deadline?: string | null | undefined, image: string, isListed: boolean, isPrime: boolean, isRentable: boolean, lastBred: string, primeFactorCount: number, primeIndex?: number | null | undefined, studFee?: string | null | undefined, whitelistOnly: boolean, childrenAsParent1: Array<{ id: string }>, childrenAsParent2: Array<{ id: string }>, cousins: Array<{ id: string }>, owner: { id: string, address: string }, parent1?: { id: string } | null | undefined, parent2?: { id: string } | null | undefined, primeFactors: Array<{ id: string }>, sexyPrimes: Array<{ id: string }>, suitors: Array<{ id: string }>, twins: Array<{ id: string }> };
+
 export type PrimeQueryVariables = Exact<{
   tokenId: Scalars['ID'];
 }>;
 
 
-export type PrimeQuery = { prime?: { claimed: boolean, colossallyAbundantNumber: boolean, deadline?: string | null | undefined, emirp: boolean, eulersLuckyNumber: boolean, evilNumber: boolean, fibonacciNumber: boolean, friendlyNumber: boolean, frugalNumber: boolean, goodPrime: boolean, happyNumber: boolean, harshadNumber: boolean, id: string, image: string, isListed: boolean, isPrime: boolean, isRentable: boolean, lastBred: string, luckyNumber: boolean, magicNumber: boolean, perfectNumber: boolean, primeFactorCount: number, primeIndex?: number | null | undefined, repdigitNumber: boolean, semiperfectNumber: boolean, sophieGermainPrime: boolean, squareNumber: boolean, strongPrime: boolean, studFee?: string | null | undefined, taxicabNumber: boolean, triangularNumber: boolean, uniquePrime: boolean, untouchableNumber: boolean, weirdNumber: boolean, whitelistOnly: boolean, childrenAsParent1: Array<{ id: string }>, childrenAsParent2: Array<{ id: string }>, cousins: Array<{ id: string }>, owner: { id: string, address: string }, parent1?: { id: string } | null | undefined, parent2?: { id: string } | null | undefined, primeFactors: Array<{ id: string }>, sexyPrimes: Array<{ id: string }>, suitors: Array<{ id: string }>, twins: Array<{ id: string }> } | null | undefined };
+export type PrimeQuery = { prime?: { id: string, claimed: boolean, deadline?: string | null | undefined, image: string, isListed: boolean, isPrime: boolean, isRentable: boolean, lastBred: string, primeFactorCount: number, primeIndex?: number | null | undefined, studFee?: string | null | undefined, whitelistOnly: boolean, childrenAsParent1: Array<{ id: string }>, childrenAsParent2: Array<{ id: string }>, cousins: Array<{ id: string }>, owner: { id: string, address: string }, parent1?: { id: string } | null | undefined, parent2?: { id: string } | null | undefined, primeFactors: Array<{ id: string }>, sexyPrimes: Array<{ id: string }>, suitors: Array<{ id: string }>, twins: Array<{ id: string }> } | null | undefined };
 
 export type PrimesFromLastIdQueryVariables = Exact<{
   lastID: Scalars['ID'];
@@ -1085,79 +1089,94 @@ export type AuctionStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AuctionStatusQuery = { primesAuctionHouses: Array<{ id: string, address: string, minBidIncrementPercentage: string, breedingCooldown: string, reservePrice: string, timeBuffer: string, currentPrimeAuction?: { id: string, bidder?: string | null | undefined, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, winner?: string | null | undefined, bids: Array<{ id: string, sender: string, value: string }> } | null | undefined }>, primeBatches: Array<{ id: string, whitelist?: string | null | undefined, remaining: number }> };
 
+export type PrimesForAccountQueryVariables = Exact<{
+  account: Scalars['String'];
+}>;
 
+
+export type PrimesForAccountQuery = { primes: Array<{ id: string, claimed: boolean, deadline?: string | null | undefined, image: string, isListed: boolean, isPrime: boolean, isRentable: boolean, lastBred: string, primeFactorCount: number, primeIndex?: number | null | undefined, studFee?: string | null | undefined, whitelistOnly: boolean, childrenAsParent1: Array<{ id: string }>, childrenAsParent2: Array<{ id: string }>, cousins: Array<{ id: string }>, owner: { id: string, address: string }, parent1?: { id: string } | null | undefined, parent2?: { id: string } | null | undefined, primeFactors: Array<{ id: string }>, sexyPrimes: Array<{ id: string }>, suitors: Array<{ id: string }>, twins: Array<{ id: string }> }> };
+
+export const PrimeAttributesFragmentDoc = gql`
+    fragment PrimeAttributes on Prime {
+  colossallyAbundantNumber
+  emirp
+  eulersLuckyNumber
+  evilNumber
+  fibonacciNumber
+  friendlyNumber
+  frugalNumber
+  goodPrime
+  happyNumber
+  harshadNumber
+  luckyNumber
+  magicNumber
+  perfectNumber
+  repdigitNumber
+  semiperfectNumber
+  sophieGermainPrime
+  squareNumber
+  strongPrime
+  taxicabNumber
+  triangularNumber
+  uniquePrime
+  untouchableNumber
+  weirdNumber
+}
+    `;
+export const PrimeAllFragmentDoc = gql`
+    fragment PrimeAll on Prime {
+  id
+  childrenAsParent1 {
+    id
+  }
+  childrenAsParent2 {
+    id
+  }
+  claimed
+  cousins {
+    id
+  }
+  deadline
+  image
+  isListed
+  isPrime
+  isRentable
+  lastBred
+  owner {
+    id
+    address
+  }
+  parent1 {
+    id
+  }
+  parent2 {
+    id
+  }
+  primeFactorCount
+  primeIndex
+  primeFactors {
+    id
+  }
+  sexyPrimes {
+    id
+  }
+  studFee
+  suitors {
+    id
+  }
+  twins {
+    id
+  }
+  whitelistOnly
+}
+    `;
 export const PrimeDocument = gql`
     query Prime($tokenId: ID!) {
   prime(id: $tokenId) {
-    childrenAsParent1 {
-      id
-    }
-    childrenAsParent2 {
-      id
-    }
-    claimed
-    colossallyAbundantNumber
-    cousins {
-      id
-    }
-    deadline
-    emirp
-    eulersLuckyNumber
-    evilNumber
-    fibonacciNumber
-    friendlyNumber
-    frugalNumber
-    goodPrime
-    happyNumber
-    harshadNumber
-    id
-    image
-    isListed
-    isPrime
-    isRentable
-    lastBred
-    luckyNumber
-    magicNumber
-    owner {
-      id
-      address
-    }
-    parent1 {
-      id
-    }
-    parent2 {
-      id
-    }
-    perfectNumber
-    primeFactorCount
-    primeFactors {
-      id
-    }
-    primeIndex
-    repdigitNumber
-    semiperfectNumber
-    sexyPrimes {
-      id
-    }
-    sophieGermainPrime
-    squareNumber
-    strongPrime
-    studFee
-    suitors {
-      id
-    }
-    taxicabNumber
-    triangularNumber
-    twins {
-      id
-    }
-    uniquePrime
-    untouchableNumber
-    weirdNumber
-    whitelistOnly
+    ...PrimeAll
   }
 }
-    `;
+    ${PrimeAllFragmentDoc}`;
 
 /**
  * __usePrimeQuery__
@@ -1313,3 +1332,38 @@ export function useAuctionStatusLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type AuctionStatusQueryHookResult = ReturnType<typeof useAuctionStatusQuery>;
 export type AuctionStatusLazyQueryHookResult = ReturnType<typeof useAuctionStatusLazyQuery>;
 export type AuctionStatusQueryResult = Apollo.QueryResult<AuctionStatusQuery, AuctionStatusQueryVariables>;
+export const PrimesForAccountDocument = gql`
+    query PrimesForAccount($account: String!) {
+  primes(where: {owner: $account}) {
+    ...PrimeAll
+  }
+}
+    ${PrimeAllFragmentDoc}`;
+
+/**
+ * __usePrimesForAccountQuery__
+ *
+ * To run a query within a React component, call `usePrimesForAccountQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePrimesForAccountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePrimesForAccountQuery({
+ *   variables: {
+ *      account: // value for 'account'
+ *   },
+ * });
+ */
+export function usePrimesForAccountQuery(baseOptions: Apollo.QueryHookOptions<PrimesForAccountQuery, PrimesForAccountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PrimesForAccountQuery, PrimesForAccountQueryVariables>(PrimesForAccountDocument, options);
+      }
+export function usePrimesForAccountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PrimesForAccountQuery, PrimesForAccountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PrimesForAccountQuery, PrimesForAccountQueryVariables>(PrimesForAccountDocument, options);
+        }
+export type PrimesForAccountQueryHookResult = ReturnType<typeof usePrimesForAccountQuery>;
+export type PrimesForAccountLazyQueryHookResult = ReturnType<typeof usePrimesForAccountLazyQuery>;
+export type PrimesForAccountQueryResult = Apollo.QueryResult<PrimesForAccountQuery, PrimesForAccountQueryVariables>;

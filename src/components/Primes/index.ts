@@ -1,1 +1,0 @@
-export { Primes } from './Primes'

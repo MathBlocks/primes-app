@@ -1,6 +1,5 @@
 import { FC, useMemo } from 'react'
 import { useEthers } from '@usedapp/core'
-import { formatEther } from 'ethers/lib/utils'
 
 import { useContracts } from '../App/ContractsProvider'
 import { createTreeWithAccounts, getAccountProof } from '../../merkleTree'
@@ -31,6 +30,29 @@ const MintRandomPrimeButton: FC = () => {
         }}
       >
         Mint random prime
+      </button>
+      <span>{state.status}</span>
+    </div>
+  )
+}
+
+const RescueSaleButton: FC = () => {
+  const { Primes } = useContracts<true>()
+
+  const { send, state } = useContractFunction(Primes, 'rescueSale', {
+    transactionName: 'Rescue sale',
+  })
+
+  return (
+    <div>
+      <button
+        onClick={() => {
+          send().catch((error) => {
+            console.error(error)
+          })
+        }}
+      >
+        Rescue sale
       </button>
       <span>{state.status}</span>
     </div>
@@ -78,5 +100,6 @@ export const Home: FC = () => (
   <div>
     <AuctionStatus />
     <MintRandomPrime />
+    <RescueSaleButton />
   </div>
 )
