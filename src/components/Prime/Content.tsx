@@ -1,6 +1,8 @@
-import { FC, useMemo } from 'react'
+import { FC, ReactChild, useMemo } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
+// @ts-ignore
+import isPrime from 'is-prime'
 
 import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
 import { ATTRIBUTE_NAMES, Attributes } from '../../attributes'
@@ -8,30 +10,72 @@ import { useAttributes } from '../App/PrimesContext'
 import { getSVGDataURI } from '../PrimeSVG'
 import { useRouteTokenId } from './Context'
 import { Rental } from './Rental'
+import { truncateAddress } from '../../utils'
 
-// Attributes
-// [x] List
-// [x] Icons for attributes
-// [ ] Rarity for each attribute
-// [ ] Prime factors
-// [ ] Prime factor count
-// [ ] Prime/composite/unit
-// [ ] Twins
-// [ ] Cousins
-// [ ] Sexy primes
-//
-// On-chain stuff
-// [x] Owner
-// [-] Rental
-//
-// [ ] Breeding
-//   [ ] lastBred
-//   [ ] n breeds
-//   [ ] Children
-//   [ ] Forms!
-//
-// [ ] Other
-//   [ ] OpenSea link
+const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
+  <div>
+    {tokenId > 1 && <Link to={`/primes/${tokenId - 1}`}>Previous</Link>}{' '}
+    {tokenId < 16383 && <Link to={`/primes/${tokenId + 1}`}>Next</Link>}
+  </div>
+)
+
+const PrimeImage = styled.div`
+  min-width: 24rem;
+
+  > div {
+    border-radius: 0.75rem;
+    border: 1px #444 solid;
+    overflow: hidden;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+`
+
+const ListContainer = styled.div`
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  h3 {
+  }
+  li {
+  }
+`
+
+const List: FC<{ title: string; items: { id: string; value: ReactChild }[] }> = ({ title, items }) => (
+  <ListContainer>
+    <h3>{title}</h3>
+    <ul>{items.length ? items.map((item) => <li key={item.id}>{item.value}</li>) : <li>None</li>}</ul>
+  </ListContainer>
+)
+
+const PrimeLinkContainer = styled(Link)`
+  border: 1px white solid;
+  border-radius: 1rem;
+  padding: 0.25rem 1rem;
+  color: white;
+`
+
+const Attribute = styled.div`
+  border: 1px white solid;
+  border-radius: 1rem;
+  padding: 0.25rem 1rem;
+  color: white;
+`
+
+const PrimeLink: FC<{ id: string }> = ({ id }) => (
+  <PrimeLinkContainer className="monospace" to={`/primes/${id}`}>
+    {id}
+  </PrimeLinkContainer>
+)
 
 const Container = styled.div`
   display: flex;
@@ -39,11 +83,6 @@ const Container = styled.div`
   justify-content: space-between;
 
   > :first-child {
-    flex-basis: 60%;
-    img {
-      width: 100%;
-      height: auto;
-    }
   }
 
   > :last-child {
@@ -58,84 +97,85 @@ export const Content: FC = () => {
     variables: { tokenId: tokenId.toString() },
   })
 
-  const primeAttributes = useMemo<
-    { key: string; name: string; symbol: string; fill: string }[]
-  >(() => {
+  const primeAttributes = useMemo<{ key: string; name: string; symbol: string; fill: string }[]>(() => {
     if (!attributes) return []
 
     return Object.keys(attributes)
-      .filter((key) =>
-        attributes[key as keyof Attributes].has(tokenId as number),
-      )
+      .filter((key) => attributes[key as keyof Attributes].has(tokenId as number))
       .map((key) => {
         const [name, symbol, fill] = ATTRIBUTE_NAMES[key as keyof Attributes]
         return { key, name, symbol, fill }
       })
   }, [attributes, tokenId])
 
+  const prime = useMemo<boolean>(() => isPrime(tokenId), [tokenId])
+
   return (
     <Container>
-      <div>
-        <img
-          src={getSVGDataURI(tokenId as number, primeAttributes)}
-          alt="Prime"
-        />
-        {/*<img src={data.prime.image} alt={tokenId} />*/}
-      </div>
+      <PrimeImage>
+        <div>
+          <img src={getSVGDataURI(tokenId as number, primeAttributes)} alt="Prime" />
+          {/*<img src={data.prime.image} alt={tokenId} />*/}
+        </div>
+      </PrimeImage>
 
       <div>
         <div>
-          <h1>Primes #{tokenId}</h1>
-          <div>
-            {tokenId > 1 && <Link to={`/primes/${tokenId - 1}`}>Previous</Link>}{' '}
-            {tokenId < 16383 && <Link to={`/primes/${tokenId + 1}`}>Next</Link>}
-          </div>
+          <h1>
+            {tokenId === 1 ? '' : prime ? 'Prime' : 'Composite'} #{tokenId}
+          </h1>
+          <Navigation tokenId={tokenId} />
         </div>
         <div>
-          <h3>Owner</h3>
-          <div>{data?.prime?.owner.address ?? 'none'}</div>
+          {data?.prime?.owner.address ? (
+            <span>
+              Owned by{' '}
+              <a className="monospace" href={`https://etherscan.io/address/${data.prime.owner.address}`}>
+                {truncateAddress(data.prime.owner.address)}
+              </a>
+            </span>
+          ) : (
+            <span>Not owned</span>
+          )}
         </div>
-        <Rental />
-        <div>
-          <h3>Properties</h3>
-          {primeAttributes.map(({ key, name, fill }) => (
-            <div key={key} style={{ color: fill }}>
-              {name}
-            </div>
-          ))}
-        </div>
-        {data?.prime?.primeFactors.length ? (
-          <div>
-            <h3>Prime Factors</h3>
-            {data.prime.primeFactors.map(({ id }) => (
-              <div key={id}>{id}</div>
-            ))}
-          </div>
-        ) : null}
-        {data?.prime?.twins.length ? (
-          <div>
-            <h3>Twins</h3>
-            {data.prime.twins.map(({ id }) => (
-              <div key={id}>{id}</div>
-            ))}
-          </div>
-        ) : null}
-        {data?.prime?.cousins.length ? (
-          <div>
-            <h3>Cousins</h3>
-            {data.prime.cousins.map(({ id }) => (
-              <div key={id}>{id}</div>
-            ))}
-          </div>
-        ) : null}
-        {data?.prime?.sexyPrimes.length ? (
-          <div>
-            <h3>Sexy Primes</h3>
-            {data.prime.sexyPrimes.map(({ id }) => (
-              <div key={id}>{id}</div>
-            ))}
-          </div>
-        ) : null}
+        {/*<Rental />*/}
+        <List title="Attributes" items={primeAttributes.map((attr) => ({ id: attr.key, value: <Attribute>{attr.name}</Attribute> }))} />
+        {prime ? (
+          <>
+            <List
+              title="Twin Primes"
+              items={(data?.prime?.twins ?? []).map(({ id }) => ({
+                id,
+                value: <PrimeLink id={id} />,
+              }))}
+            />
+            <List
+              title="Cousin Primes"
+              items={(data?.prime?.cousins ?? []).map(({ id }) => ({
+                id,
+                value: <PrimeLink id={id} />,
+              }))}
+            />
+            <List
+              title="Sexy Primes"
+              items={(data?.prime?.sexyPrimes ?? []).map(({ id }) => ({
+                id,
+                value: <PrimeLink id={id} />,
+              }))}
+            />
+          </>
+        ) : (
+          <>
+            <List
+              title="Prime Factors"
+              // items={(data?.prime?.primeFactors ?? []).map(({ id }) => ({
+              //   id,
+              //   value: <PrimeLink id={id} />,
+              // }))}
+              items={[]}
+            />
+          </>
+        )}
       </div>
     </Container>
   )

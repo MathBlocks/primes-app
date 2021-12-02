@@ -1,28 +1,39 @@
 import { FC, useMemo } from 'react'
 import styled from 'styled-components'
-import { ErrorMessage, Field, Form, Formik, useFormikContext } from 'formik'
+import {
+  ErrorMessage,
+  Field,
+  Form,
+  Formik,
+  useFormikContext,
+} from 'formik'
 import { useEthers } from '@usedapp/core'
 
 import { useContracts } from '../App/ContractsProvider'
 import { useContractFunction } from '../../hooks'
 import { useMintedPrimes, useMyPrimes } from '../App/PrimesContext'
-import { createTreeWithAccounts, getAccountProof } from '../../merkleTree'
+import {
+  createTreeWithAccounts,
+  getAccountProof,
+} from '../../merkleTree'
+import { BreedingOutput, BreedingSelect } from './BreedingSelect'
+import { Values } from './types'
 
-interface Values {
-  otherTokenId?: number
-  tokenId?: number
-}
-
-const OutputNumber: FC = () => {
+const BreedingFormUpdater: FC = () => {
   const {
-    values: { tokenId, otherTokenId },
+    values: { tokenId, otherTokenId, desiredOutput },
+    setFieldValue,
   } = useFormikContext<Values>()
-  return (
-    <div className="output">
-      {tokenId && otherTokenId ? tokenId * otherTokenId : '–'}
-    </div>
-  )
+
+  // for the output, set its value if the other fields change...
+  // maybe that should go in an updater
+
+  return null
 }
+
+const StyledForm = styled(Form)`
+  max-width: 40rem;
+`
 
 const BreedingForm: FC = () => {
   const { account } = useEthers()
@@ -30,22 +41,40 @@ const BreedingForm: FC = () => {
   const [mintedPrimes] = useMintedPrimes()
   const [myPrimes] = useMyPrimes()
 
-  const crossBreed = useContractFunction(contracts.Primes, 'crossBreed', {
-    transactionName: 'Cross-breed',
-  })
+  const crossBreed = useContractFunction(
+    contracts.Primes,
+    'crossBreed',
+    {
+      transactionName: 'Cross-breed',
+    },
+  )
 
-  const breedPrimes = useContractFunction(contracts.Primes, 'breedPrimes', {
-    transactionName: 'Breed',
-  })
+  const breedPrimes = useContractFunction(
+    contracts.Primes,
+    'breedPrimes',
+    {
+      transactionName: 'Breed',
+    },
+  )
 
   const myBreedablePrimes = useMemo(
-    () => [...myPrimes.set.values()].filter((id) => id <= 8192),
+    () =>
+      [...myPrimes.set.values()]
+        .filter((id) => id <= 8192)
+        .sort((a, b) => a - b)
+        .map((n) => ({ label: n.toString(), value: n })),
     [myPrimes.set],
   )
 
+  // TODO allBreedablePrimes = myBreedablePrimes + listedPrimes
+  const allBreedablePrimes = myBreedablePrimes
+
   return (
     <Formik
-      initialValues={{ tokenId: myBreedablePrimes[0] }}
+      initialValues={{
+        tokenId: myBreedablePrimes[0]?.value,
+        desiredOutput: 0,
+      }}
       onSubmit={() => {}}
       validate={async (values: Values) => {
         const errors: {
@@ -62,7 +91,9 @@ const BreedingForm: FC = () => {
           errors.tokenId = 'Required'
           return errors
         } else {
-          values.tokenId = parseInt(values.tokenId as never as string)
+          values.tokenId = parseInt(
+            values.tokenId as never as string,
+          )
         }
 
         if (!values.otherTokenId) {
@@ -94,7 +125,12 @@ const BreedingForm: FC = () => {
           return errors
         }
 
-        if (account && contracts && values.tokenId && values.otherTokenId) {
+        if (
+          account &&
+          contracts &&
+          values.tokenId &&
+          values.otherTokenId
+        ) {
           let otherOwner
           try {
             otherOwner = (
@@ -125,13 +161,16 @@ const BreedingForm: FC = () => {
               values.otherTokenId,
               0,
               [],
-              { from: account },
+              {
+                from: account,
+              },
             )
           } catch (error) {
             if (error.error?.message) {
               errors.tokenId =
-                error.error.message.split('execution reverted: ')[1] ??
-                error.error.message
+                error.error.message.split(
+                  'execution reverted: ',
+                )[1] ?? error.error.message
             }
           }
         }
@@ -139,33 +178,51 @@ const BreedingForm: FC = () => {
         return errors
       }}
     >
-      {({ isSubmitting, isValid }) => {
+      {(form) => {
+        const {
+          isSubmitting,
+          isValid,
+          getFieldMeta,
+          getFieldProps,
+          handleChange,
+          handleBlur,
+          values,
+        } = form
         return (
-          <Form>
-            <Field type="number" as="select" name="tokenId">
-              <option value="">Select</option>
-              {myBreedablePrimes.map((id) => (
-                <option value={id} key={id}>
-                  {id}
-                </option>
-              ))}
-            </Field>
+          <StyledForm>
+            <BreedingSelect
+              options={myBreedablePrimes}
+              field={getFieldProps('tokenId')}
+              form={form}
+              meta={getFieldMeta('tokenId')}
+              placeholder="Parent 1"
+            />
             <div className="symbol">x</div>
-            <Field
-              type="number"
-              name="otherTokenId"
-              increment={1}
-              min={1}
-              max={16383}
+            <BreedingSelect
+              options={allBreedablePrimes}
+              field={getFieldProps('otherTokenId')}
+              form={form}
+              meta={getFieldMeta('otherTokenId')}
+              placeholder="Parent 2"
             />
             <div className="symbol">=</div>
-            <OutputNumber />
+            <BreedingOutput
+              name="desiredOutput"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.desiredOutput}
+              placeholder="Progeny"
+            />
+            <BreedingFormUpdater />
             <ErrorMessage name="tokenId" component="div" />
             <ErrorMessage name="otherTokenId" component="div" />
-            <button type="submit" disabled={isSubmitting || !isValid}>
+            <button
+              type="submit"
+              disabled={isSubmitting || !isValid}
+            >
               Breed
             </button>
-          </Form>
+          </StyledForm>
         )
       }}
     </Formik>
@@ -182,3 +239,12 @@ export const Breeding: FC = () => {
     </Container>
   )
 }
+
+// <Field type="number" as="select" name="tokenId">
+//   <option value="">Select</option>
+//   {myBreedablePrimes.map((id) => (
+//     <option value={id} key={id}>
+//       {id}
+//     </option>
+//   ))}
+// </Field>

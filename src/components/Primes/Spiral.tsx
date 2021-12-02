@@ -150,7 +150,7 @@ export const Spiral: FC = () => {
       square.width = 1
       square.height = 1
       square.tint = prime ? 0xffffff : 0x000000
-      square.alpha = 0.4
+      // square.alpha = 0.4
       container.addChild(square)
 
       const detail = new PIXI.Sprite()
@@ -180,7 +180,7 @@ export const Spiral: FC = () => {
 
         if (!(viewport.current as Viewport).moving) {
           ;(viewport.current as Viewport).animate({
-            time: 1000,
+            time: 10000,
             position: new PIXI.Point(
               container.x + container.width / 2,
               container.y + container.height / 2,
@@ -218,13 +218,13 @@ export const Spiral: FC = () => {
   useEffect(() => {
     if (!viewport.current || mintedPrimes.size === 0) return
 
-    viewport.current.children.forEach((child) => {
-      ;(child as PIXI.Sprite).children[0].alpha = mintedPrimes.has(
-        (child as any).data.tokenId,
-      )
-        ? 1
-        : 0.25
-    })
+    // viewport.current.children.forEach((child) => {
+    //   ;(child as PIXI.Sprite).children[0].alpha = mintedPrimes.has(
+    //     (child as any).data.tokenId,
+    //   )
+    //     ? 1
+    //     : 0.25
+    // })
   }, [mintedPrimes])
 
   const windowSize = useWindowSize()

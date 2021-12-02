@@ -3,12 +3,11 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import { createGlobalStyle } from 'styled-components'
 import { DAppProvider } from '@usedapp/core'
 
+import { config } from '../../config'
 import { AppLayout } from './AppLayout'
 import { AppRoutes } from './AppRoutes'
-import { config } from '../../config'
 import { ApolloProvider } from './ApolloProvider'
 import { ContractsProvider } from './ContractsProvider'
-import { Primes } from '../Primes'
 import { PrimesContext } from './PrimesContext'
 
 const GlobalStyle = createGlobalStyle`
@@ -19,7 +18,11 @@ const GlobalStyle = createGlobalStyle`
   }
 
   * {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  
+  .monospace {
+    font-family: 'Space Mono', monospace;
   }
 
   a {
@@ -35,8 +38,8 @@ export const App: FC = () => {
         <ContractsProvider>
           <PrimesContext>
             <Router>
-              <GlobalStyle />
               <AppLayout>
+                <GlobalStyle />
                 <AppRoutes />
               </AppLayout>
             </Router>

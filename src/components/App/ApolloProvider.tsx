@@ -1,4 +1,6 @@
-import { FC, useMemo } from 'react'
+import { FC, useEffect, useMemo } from 'react'
+import { useToggle } from 'react-use'
+
 import {
   ApolloClient,
   ApolloLink,
@@ -7,6 +9,10 @@ import {
   NormalizedCacheObject,
   ApolloProvider as BaseApolloProvider,
 } from '@apollo/client'
+import {
+  persistCache,
+  LocalStorageWrapper,
+} from 'apollo3-cache-persist'
 import { RetryLink } from '@apollo/client/link/retry'
 import { onError } from '@apollo/client/link/error'
 import ApolloLinkTimeout from 'apollo-link-timeout'
@@ -22,11 +28,26 @@ const cache = new InMemoryCache()
 
 export const ApolloProvider: FC = ({ children }) => {
   const graphQLEndpoints = useGraphQlEndpoints()
+  const [persisted, setPersisted] = useToggle(false)
+
+  useEffect(() => {
+    persistCache({
+      cache,
+      storage: new LocalStorageWrapper(window.localStorage),
+    })
+      .then(() => {
+        setPersisted(true)
+      })
+      .catch((error) => {
+        setPersisted(true)
+        console.error(error)
+      })
+  }, [setPersisted])
 
   const client = useMemo<
     ApolloClient<NormalizedCacheObject> | undefined
   >(() => {
-    if (!graphQLEndpoints) return undefined
+    if (!graphQLEndpoints || !persisted) return undefined
 
     const timeoutLink = new ApolloLinkTimeout(30000)
 
@@ -49,15 +70,24 @@ export const ApolloProvider: FC = ({ children }) => {
       }
     })
 
-    const link = ApolloLink.from([errorLink, retryLink, timeoutLink, httpLink])
+    const link = ApolloLink.from([
+      errorLink,
+      retryLink,
+      timeoutLink,
+      httpLink,
+    ])
 
     return new ApolloClient<NormalizedCacheObject>({
       cache,
       link,
     })
-  }, [graphQLEndpoints])
+  }, [graphQLEndpoints, persisted])
 
   return client ? (
-    <BaseApolloProvider client={client}>{children}</BaseApolloProvider>
-  ) : null
+    <BaseApolloProvider client={client}>
+      {children}
+    </BaseApolloProvider>
+  ) : (
+    <div>Loading...</div>
+  )
 }

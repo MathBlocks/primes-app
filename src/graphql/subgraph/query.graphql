@@ -55,9 +55,7 @@ fragment PrimeAll on Prime {
     }
     primeFactorCount
     primeIndex
-    primeFactors {
-        id
-    }
+    primeFactors
     sexyPrimes {
         id
     }
@@ -120,7 +118,7 @@ query AuctionStatus {
 }
 
 query PrimesForAccount($account: String!) {
-    primes(where: { owner: $account }) {
+    primes(where: { owner: $account }, first: 1000) {
         ...PrimeAll
     }
 }
