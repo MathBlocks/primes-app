@@ -35,7 +35,10 @@ export const ContractsProvider: FC = ({ children }) => {
     }
 
     return {
-      Primes: Primes__factory.connect(contractAddresses.Primes, library),
+      Primes: Primes__factory.connect(
+        contractAddresses.Primes,
+        library,
+      ),
       PrimesAuctionHouse: PrimesAuctionHouse__factory.connect(
         contractAddresses.PrimesAuctionHouse,
         library,
@@ -44,5 +47,9 @@ export const ContractsProvider: FC = ({ children }) => {
     }
   }, [contractAddresses, library])
 
-  return <contractsCtx.Provider value={value}>{children}</contractsCtx.Provider>
+  return (
+    <contractsCtx.Provider value={value}>
+      {children}
+    </contractsCtx.Provider>
+  )
 }

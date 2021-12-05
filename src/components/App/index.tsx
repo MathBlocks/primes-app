@@ -29,6 +29,22 @@ const GlobalStyle = createGlobalStyle`
     color: white;
     text-decoration: none;
   }
+
+  h1, h2, h3, h4, h5 {
+    margin-top: 0;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  h3 {
+    font-size: 1.6rem;
+  }
+  
+  h4 {
+    font-size: 1.3rem;
+  }
 `
 
 export const App: FC = () => {

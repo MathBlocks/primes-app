@@ -87,6 +87,34 @@ query AllPrimes {
     }
 }
 
+fragment PrimeAuctionAll on PrimeAuction {
+    id
+    bidder {
+        id
+    }
+    amount
+    settled
+    startTime
+    endTime
+    winner {
+        id
+    }
+}
+
+query PrimeAuction($id: ID!) {
+    primeAuction(id: $id) {
+        ...PrimeAuctionAll
+        bids(orderDirection: desc, orderBy: value) {
+            id
+            sender {
+                id
+            }
+            value
+            timestamp
+        }
+    }
+}
+
 query AuctionStatus {
     primesAuctionHouses {
         id
@@ -94,32 +122,37 @@ query AuctionStatus {
         minBidIncrementPercentage
         breedingCooldown
         currentPrimeAuction {
-            id
-            bidder
-            bids(orderDirection: desc, orderBy: value) {
-                id
-                sender
-                value
-            }
-            amount
-            settled
-            startTime
-            endTime
-            winner
+            ...PrimeAuctionAll
         }
         reservePrice
         timeBuffer
     }
-    primeBatches(where: { active: true }) {
+    primeBatches {
         id
-        whitelist
+        active
+    }
+}
+
+query PrimeBatch($id: ID!) {
+    primeBatch(id: $id) {
+        id
+        active
         remaining
+        whitelist
     }
 }
 
 query PrimesForAccount($account: String!) {
-    primes(where: { owner: $account }, first: 1000) {
+    primes(where: { owner: $account }, orderBy: number, orderDirection: asc, first: 1000) {
         ...PrimeAll
     }
 }
 
+
+query Account($account: ID!) {
+    account(id: $account) {
+        primes(orderBy: number, orderDirection: asc) {
+            id
+        }
+    }
+}

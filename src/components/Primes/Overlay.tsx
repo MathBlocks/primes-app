@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef } from 'react'
+import { FC, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import ReactTooltip from 'react-tooltip'
 
@@ -13,8 +13,8 @@ import {
   useMintedPrimes,
   useMyPrimes,
 } from '../App/PrimesContext'
-import { useEthers } from '@usedapp/core'
-import { usePrimesForAccountQuery } from '../../graphql/subgraph/subgraph'
+// import { useEthers } from '@usedapp/core'
+// import { usePrimesForAccountQuery } from '../../graphql/subgraph/subgraph'
 
 const AttrButtons = styled.div`
   display: flex;
@@ -22,12 +22,16 @@ const AttrButtons = styled.div`
   gap: 0.1rem;
 `
 
-const AttrButton = styled.button<{ active?: boolean; hovered?: boolean }>`
+const AttrButton = styled.button<{
+  active?: boolean
+  hovered?: boolean
+}>`
   border-radius: 4px;
   background: ${({ active }) => (active ? '#444' : 'transparent')};
   appearance: none;
   color: ${({ active }) => (active ? 'white' : '#444')};
-  border: 1px ${({ hovered }) => (hovered ? '#888' : 'transparent')} solid;
+  border: 1px ${({ hovered }) => (hovered ? '#888' : 'transparent')}
+    solid;
   font-size: 1.5rem;
 `
 
@@ -56,7 +60,8 @@ const AttributesSelectorContainer = styled.div`
 
 const AttributesSelector: FC = () => {
   const [attributes] = useAttributes()
-  const [selectedAttributes, setSelectedAttributes] = useSelectedAttributes()
+  const [selectedAttributes, setSelectedAttributes] =
+    useSelectedAttributes()
   const [visible] = useVisible()
   const [mintedPrimes] = useMintedPrimes()
   const [hoveredTokenId] = useHoveredTokenId()
@@ -91,7 +96,9 @@ const AttributesSelector: FC = () => {
           <>
             <span>&#123;</span>
             {activeAttributes.map((id) => (
-              <span key={id}>{ATTRIBUTE_NAMES[id as keyof Attributes][1]}</span>
+              <span key={id}>
+                {ATTRIBUTE_NAMES[id as keyof Attributes][1]}
+              </span>
             ))}
             <span>&#125;</span>
           </>
@@ -101,7 +108,9 @@ const AttributesSelector: FC = () => {
         = {visible.size}
         <br />Σ<span>&#123;</span>
         {activeAttributes.map((id) => (
-          <span key={id}>{ATTRIBUTE_NAMES[id as keyof Attributes][1]}</span>
+          <span key={id}>
+            {ATTRIBUTE_NAMES[id as keyof Attributes][1]}
+          </span>
         ))}
         <span>⛏️</span>
         <span>&#125;</span>= {visibleMinted.size}
@@ -110,7 +119,8 @@ const AttributesSelector: FC = () => {
         {attributes &&
           Object.entries(attributes).map(([id]) => {
             const set = attributes[id as keyof Attributes]
-            const [name, symbol] = ATTRIBUTE_NAMES[id as keyof Attributes]
+            const [name, symbol] =
+              ATTRIBUTE_NAMES[id as keyof Attributes]
             return (
               <AttrButton
                 key={id}
@@ -118,7 +128,9 @@ const AttributesSelector: FC = () => {
                   toggleAttribute(id as keyof Attributes)
                 }}
                 active={selectedAttributes[id as keyof Attributes]}
-                hovered={hoveredTokenId ? set.has(hoveredTokenId) : false}
+                hovered={
+                  hoveredTokenId ? set.has(hoveredTokenId) : false
+                }
                 data-tip={`${name} (${set.size})`}
               >
                 {symbol}
@@ -140,7 +152,9 @@ const MyPrimesSelector: FC = () => {
         setMyPrimes({ ...myPrimes, enabled: !myPrimes.enabled })
       }}
       active={myPrimes.enabled}
-      hovered={hoveredTokenId ? myPrimes.set.has(hoveredTokenId) : false}
+      hovered={
+        hoveredTokenId ? myPrimes.set.has(hoveredTokenId) : false
+      }
       data-tip={`Owned by me (${myPrimes.set.size})`}
     >
       My Primes

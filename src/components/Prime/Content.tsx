@@ -14,8 +14,12 @@ import { truncateAddress } from '../../utils'
 
 const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
   <div>
-    {tokenId > 1 && <Link to={`/primes/${tokenId - 1}`}>Previous</Link>}{' '}
-    {tokenId < 16383 && <Link to={`/primes/${tokenId + 1}`}>Next</Link>}
+    {tokenId > 1 && (
+      <Link to={`/primes/${tokenId - 1}`}>Previous</Link>
+    )}{' '}
+    {tokenId < 16383 && (
+      <Link to={`/primes/${tokenId + 1}`}>Next</Link>
+    )}
   </div>
 )
 
@@ -50,10 +54,19 @@ const ListContainer = styled.div`
   }
 `
 
-const List: FC<{ title: string; items: { id: string; value: ReactChild }[] }> = ({ title, items }) => (
+const List: FC<{
+  title: string
+  items: { id: string; value: ReactChild }[]
+}> = ({ title, items }) => (
   <ListContainer>
     <h3>{title}</h3>
-    <ul>{items.length ? items.map((item) => <li key={item.id}>{item.value}</li>) : <li>None</li>}</ul>
+    <ul>
+      {items.length ? (
+        items.map((item) => <li key={item.id}>{item.value}</li>)
+      ) : (
+        <li>None</li>
+      )}
+    </ul>
   </ListContainer>
 )
 
@@ -97,13 +110,18 @@ export const Content: FC = () => {
     variables: { tokenId: tokenId.toString() },
   })
 
-  const primeAttributes = useMemo<{ key: string; name: string; symbol: string; fill: string }[]>(() => {
+  const primeAttributes = useMemo<
+    { key: string; name: string; symbol: string; fill: string }[]
+  >(() => {
     if (!attributes) return []
 
     return Object.keys(attributes)
-      .filter((key) => attributes[key as keyof Attributes].has(tokenId as number))
+      .filter((key) =>
+        attributes[key as keyof Attributes].has(tokenId as number),
+      )
       .map((key) => {
-        const [name, symbol, fill] = ATTRIBUTE_NAMES[key as keyof Attributes]
+        const [name, symbol, fill] =
+          ATTRIBUTE_NAMES[key as keyof Attributes]
         return { key, name, symbol, fill }
       })
   }, [attributes, tokenId])
@@ -114,7 +132,10 @@ export const Content: FC = () => {
     <Container>
       <PrimeImage>
         <div>
-          <img src={getSVGDataURI(tokenId as number, primeAttributes)} alt="Prime" />
+          <img
+            src={getSVGDataURI(tokenId as number, primeAttributes)}
+            alt="Prime"
+          />
           {/*<img src={data.prime.image} alt={tokenId} />*/}
         </div>
       </PrimeImage>
@@ -122,7 +143,8 @@ export const Content: FC = () => {
       <div>
         <div>
           <h1>
-            {tokenId === 1 ? '' : prime ? 'Prime' : 'Composite'} #{tokenId}
+            {tokenId === 1 ? '' : prime ? 'Prime' : 'Composite'} #
+            {tokenId}
           </h1>
           <Navigation tokenId={tokenId} />
         </div>
@@ -130,7 +152,10 @@ export const Content: FC = () => {
           {data?.prime?.owner.address ? (
             <span>
               Owned by{' '}
-              <a className="monospace" href={`https://etherscan.io/address/${data.prime.owner.address}`}>
+              <a
+                className="monospace"
+                href={`https://etherscan.io/address/${data.prime.owner.address}`}
+              >
                 {truncateAddress(data.prime.owner.address)}
               </a>
             </span>
@@ -139,7 +164,13 @@ export const Content: FC = () => {
           )}
         </div>
         {/*<Rental />*/}
-        <List title="Attributes" items={primeAttributes.map((attr) => ({ id: attr.key, value: <Attribute>{attr.name}</Attribute> }))} />
+        <List
+          title="Attributes"
+          items={primeAttributes.map((attr) => ({
+            id: attr.key,
+            value: <Attribute>{attr.name}</Attribute>,
+          }))}
+        />
         {prime ? (
           <>
             <List
@@ -158,10 +189,12 @@ export const Content: FC = () => {
             />
             <List
               title="Sexy Primes"
-              items={(data?.prime?.sexyPrimes ?? []).map(({ id }) => ({
-                id,
-                value: <PrimeLink id={id} />,
-              }))}
+              items={(data?.prime?.sexyPrimes ?? []).map(
+                ({ id }) => ({
+                  id,
+                  value: <PrimeLink id={id} />,
+                }),
+              )}
             />
           </>
         ) : (

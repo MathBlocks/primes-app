@@ -12,6 +12,7 @@ directive @subgraphId(id: String) on OBJECT
 type Account {
   address: Bytes!
   id: ID!
+  primeAuctionBids(first: Int = 100, orderBy: PrimeAuctionBid_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: PrimeAuctionBid_filter): [PrimeAuctionBid!]!
   primes(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
 }
 
@@ -35,6 +36,7 @@ input Account_filter {
 enum Account_orderBy {
   address
   id
+  primeAuctionBids
   primes
 }
 
@@ -106,29 +108,26 @@ type Prime {
 
 type PrimeAuction {
   amount: BigInt
-  bidder: Bytes
+  bidder: Account
   bids(first: Int = 100, orderBy: PrimeAuctionBid_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: PrimeAuctionBid_filter): [PrimeAuctionBid!]!
   endTime: BigInt!
+  extended: Boolean!
   id: ID!
   prime: Prime!
   settled: Boolean!
   startTime: BigInt!
-  winner: Bytes
+  winner: Account
 }
 
 type PrimeAuctionBid {
-  extended: Boolean!
   id: ID!
   primeAuction: PrimeAuction!
-  sender: Bytes!
+  sender: Account!
+  timestamp: BigInt!
   value: BigInt!
 }
 
 input PrimeAuctionBid_filter {
-  extended: Boolean
-  extended_in: [Boolean!]
-  extended_not: Boolean
-  extended_not_in: [Boolean!]
   id: ID
   id_gt: ID
   id_gte: ID
@@ -151,12 +150,28 @@ input PrimeAuctionBid_filter {
   primeAuction_not_in: [String!]
   primeAuction_not_starts_with: String
   primeAuction_starts_with: String
-  sender: Bytes
-  sender_contains: Bytes
-  sender_in: [Bytes!]
-  sender_not: Bytes
-  sender_not_contains: Bytes
-  sender_not_in: [Bytes!]
+  sender: String
+  sender_contains: String
+  sender_ends_with: String
+  sender_gt: String
+  sender_gte: String
+  sender_in: [String!]
+  sender_lt: String
+  sender_lte: String
+  sender_not: String
+  sender_not_contains: String
+  sender_not_ends_with: String
+  sender_not_in: [String!]
+  sender_not_starts_with: String
+  sender_starts_with: String
+  timestamp: BigInt
+  timestamp_gt: BigInt
+  timestamp_gte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_lt: BigInt
+  timestamp_lte: BigInt
+  timestamp_not: BigInt
+  timestamp_not_in: [BigInt!]
   value: BigInt
   value_gt: BigInt
   value_gte: BigInt
@@ -168,10 +183,10 @@ input PrimeAuctionBid_filter {
 }
 
 enum PrimeAuctionBid_orderBy {
-  extended
   id
   primeAuction
   sender
+  timestamp
   value
 }
 
@@ -184,12 +199,20 @@ input PrimeAuction_filter {
   amount_lte: BigInt
   amount_not: BigInt
   amount_not_in: [BigInt!]
-  bidder: Bytes
-  bidder_contains: Bytes
-  bidder_in: [Bytes!]
-  bidder_not: Bytes
-  bidder_not_contains: Bytes
-  bidder_not_in: [Bytes!]
+  bidder: String
+  bidder_contains: String
+  bidder_ends_with: String
+  bidder_gt: String
+  bidder_gte: String
+  bidder_in: [String!]
+  bidder_lt: String
+  bidder_lte: String
+  bidder_not: String
+  bidder_not_contains: String
+  bidder_not_ends_with: String
+  bidder_not_in: [String!]
+  bidder_not_starts_with: String
+  bidder_starts_with: String
   endTime: BigInt
   endTime_gt: BigInt
   endTime_gte: BigInt
@@ -198,6 +221,10 @@ input PrimeAuction_filter {
   endTime_lte: BigInt
   endTime_not: BigInt
   endTime_not_in: [BigInt!]
+  extended: Boolean
+  extended_in: [Boolean!]
+  extended_not: Boolean
+  extended_not_in: [Boolean!]
   id: ID
   id_gt: ID
   id_gte: ID
@@ -232,12 +259,20 @@ input PrimeAuction_filter {
   startTime_lte: BigInt
   startTime_not: BigInt
   startTime_not_in: [BigInt!]
-  winner: Bytes
-  winner_contains: Bytes
-  winner_in: [Bytes!]
-  winner_not: Bytes
-  winner_not_contains: Bytes
-  winner_not_in: [Bytes!]
+  winner: String
+  winner_contains: String
+  winner_ends_with: String
+  winner_gt: String
+  winner_gte: String
+  winner_in: [String!]
+  winner_lt: String
+  winner_lte: String
+  winner_not: String
+  winner_not_contains: String
+  winner_not_ends_with: String
+  winner_not_in: [String!]
+  winner_not_starts_with: String
+  winner_starts_with: String
 }
 
 enum PrimeAuction_orderBy {
@@ -245,6 +280,7 @@ enum PrimeAuction_orderBy {
   bidder
   bids
   endTime
+  extended
   id
   prime
   settled

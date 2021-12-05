@@ -191,6 +191,7 @@ const BreedingForm: FC = () => {
         return (
           <StyledForm>
             <BreedingSelect
+              data-tip="You must own this Prime"
               options={myBreedablePrimes}
               field={getFieldProps('tokenId')}
               form={form}
@@ -199,6 +200,7 @@ const BreedingForm: FC = () => {
             />
             <div className="symbol">x</div>
             <BreedingSelect
+              data-tip="This can be a Prime you own, or a Prime you can rent"
               options={allBreedablePrimes}
               field={getFieldProps('otherTokenId')}
               form={form}

@@ -30,9 +30,13 @@ const NavbarContainer = styled.nav`
   }
 `
 
+// TODO only show auction when it's active
 const Navbar: FC = () => (
   <NavbarContainer>
     <ul>
+      <li>
+        <NavLink to="/auction">Auction</NavLink>
+      </li>
       <li>
         <NavLink to="/primes">Primes</NavLink>
       </li>
@@ -52,7 +56,13 @@ const Navbar: FC = () => (
         />
       </li>
       <li>
-        <a className="icon discord" href="https://discord.gg/PevSMUMT" rel="noreferrer" target="_blank" title="MathBlocks Discord" />
+        <a
+          className="icon discord"
+          href="https://discord.gg/PevSMUMT"
+          rel="noreferrer"
+          target="_blank"
+          title="MathBlocks Discord"
+        />
       </li>
       <li>
         <WalletButton />
@@ -62,7 +72,7 @@ const Navbar: FC = () => (
 )
 
 const LayoutContainer = styled.div`
-  height: 100vh;
+  grid-template-rows: auto 1fr auto;
 
   header {
     display: flex;
@@ -73,7 +83,7 @@ const LayoutContainer = styled.div`
   }
 
   footer {
-    height: 6rem;
+    height: 4rem;
   }
 
   header,
@@ -84,7 +94,7 @@ const LayoutContainer = styled.div`
   }
 
   main {
-    height: calc(100% - 14rem);
+    margin-bottom: 4rem;
   }
 `
 

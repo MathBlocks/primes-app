@@ -31,7 +31,17 @@ export type Scalars = {
 export type Account = {
   address: Scalars['Bytes'];
   id: Scalars['ID'];
+  primeAuctionBids: Array<PrimeAuctionBid>;
   primes: Array<Prime>;
+};
+
+
+export type AccountPrimeAuctionBidsArgs = {
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<PrimeAuctionBid_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  skip?: Maybe<Scalars['Int']>;
+  where?: Maybe<PrimeAuctionBid_Filter>;
 };
 
 
@@ -63,6 +73,7 @@ export type Account_Filter = {
 export enum Account_OrderBy {
   Address = 'address',
   Id = 'id',
+  PrimeAuctionBids = 'primeAuctionBids',
   Primes = 'primes'
 }
 
@@ -182,14 +193,15 @@ export type PrimeTwinsArgs = {
 
 export type PrimeAuction = {
   amount?: Maybe<Scalars['BigInt']>;
-  bidder?: Maybe<Scalars['Bytes']>;
+  bidder?: Maybe<Account>;
   bids: Array<PrimeAuctionBid>;
   endTime: Scalars['BigInt'];
+  extended: Scalars['Boolean'];
   id: Scalars['ID'];
   prime: Prime;
   settled: Scalars['Boolean'];
   startTime: Scalars['BigInt'];
-  winner?: Maybe<Scalars['Bytes']>;
+  winner?: Maybe<Account>;
 };
 
 
@@ -202,18 +214,14 @@ export type PrimeAuctionBidsArgs = {
 };
 
 export type PrimeAuctionBid = {
-  extended: Scalars['Boolean'];
   id: Scalars['ID'];
   primeAuction: PrimeAuction;
-  sender: Scalars['Bytes'];
+  sender: Account;
+  timestamp: Scalars['BigInt'];
   value: Scalars['BigInt'];
 };
 
 export type PrimeAuctionBid_Filter = {
-  extended?: Maybe<Scalars['Boolean']>;
-  extended_in?: Maybe<Array<Scalars['Boolean']>>;
-  extended_not?: Maybe<Scalars['Boolean']>;
-  extended_not_in?: Maybe<Array<Scalars['Boolean']>>;
   id?: Maybe<Scalars['ID']>;
   id_gt?: Maybe<Scalars['ID']>;
   id_gte?: Maybe<Scalars['ID']>;
@@ -236,12 +244,28 @@ export type PrimeAuctionBid_Filter = {
   primeAuction_not_in?: Maybe<Array<Scalars['String']>>;
   primeAuction_not_starts_with?: Maybe<Scalars['String']>;
   primeAuction_starts_with?: Maybe<Scalars['String']>;
-  sender?: Maybe<Scalars['Bytes']>;
-  sender_contains?: Maybe<Scalars['Bytes']>;
-  sender_in?: Maybe<Array<Scalars['Bytes']>>;
-  sender_not?: Maybe<Scalars['Bytes']>;
-  sender_not_contains?: Maybe<Scalars['Bytes']>;
-  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender?: Maybe<Scalars['String']>;
+  sender_contains?: Maybe<Scalars['String']>;
+  sender_ends_with?: Maybe<Scalars['String']>;
+  sender_gt?: Maybe<Scalars['String']>;
+  sender_gte?: Maybe<Scalars['String']>;
+  sender_in?: Maybe<Array<Scalars['String']>>;
+  sender_lt?: Maybe<Scalars['String']>;
+  sender_lte?: Maybe<Scalars['String']>;
+  sender_not?: Maybe<Scalars['String']>;
+  sender_not_contains?: Maybe<Scalars['String']>;
+  sender_not_ends_with?: Maybe<Scalars['String']>;
+  sender_not_in?: Maybe<Array<Scalars['String']>>;
+  sender_not_starts_with?: Maybe<Scalars['String']>;
+  sender_starts_with?: Maybe<Scalars['String']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
   value?: Maybe<Scalars['BigInt']>;
   value_gt?: Maybe<Scalars['BigInt']>;
   value_gte?: Maybe<Scalars['BigInt']>;
@@ -253,10 +277,10 @@ export type PrimeAuctionBid_Filter = {
 };
 
 export enum PrimeAuctionBid_OrderBy {
-  Extended = 'extended',
   Id = 'id',
   PrimeAuction = 'primeAuction',
   Sender = 'sender',
+  Timestamp = 'timestamp',
   Value = 'value'
 }
 
@@ -269,12 +293,20 @@ export type PrimeAuction_Filter = {
   amount_lte?: Maybe<Scalars['BigInt']>;
   amount_not?: Maybe<Scalars['BigInt']>;
   amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  bidder?: Maybe<Scalars['Bytes']>;
-  bidder_contains?: Maybe<Scalars['Bytes']>;
-  bidder_in?: Maybe<Array<Scalars['Bytes']>>;
-  bidder_not?: Maybe<Scalars['Bytes']>;
-  bidder_not_contains?: Maybe<Scalars['Bytes']>;
-  bidder_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  bidder?: Maybe<Scalars['String']>;
+  bidder_contains?: Maybe<Scalars['String']>;
+  bidder_ends_with?: Maybe<Scalars['String']>;
+  bidder_gt?: Maybe<Scalars['String']>;
+  bidder_gte?: Maybe<Scalars['String']>;
+  bidder_in?: Maybe<Array<Scalars['String']>>;
+  bidder_lt?: Maybe<Scalars['String']>;
+  bidder_lte?: Maybe<Scalars['String']>;
+  bidder_not?: Maybe<Scalars['String']>;
+  bidder_not_contains?: Maybe<Scalars['String']>;
+  bidder_not_ends_with?: Maybe<Scalars['String']>;
+  bidder_not_in?: Maybe<Array<Scalars['String']>>;
+  bidder_not_starts_with?: Maybe<Scalars['String']>;
+  bidder_starts_with?: Maybe<Scalars['String']>;
   endTime?: Maybe<Scalars['BigInt']>;
   endTime_gt?: Maybe<Scalars['BigInt']>;
   endTime_gte?: Maybe<Scalars['BigInt']>;
@@ -283,6 +315,10 @@ export type PrimeAuction_Filter = {
   endTime_lte?: Maybe<Scalars['BigInt']>;
   endTime_not?: Maybe<Scalars['BigInt']>;
   endTime_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  extended?: Maybe<Scalars['Boolean']>;
+  extended_in?: Maybe<Array<Scalars['Boolean']>>;
+  extended_not?: Maybe<Scalars['Boolean']>;
+  extended_not_in?: Maybe<Array<Scalars['Boolean']>>;
   id?: Maybe<Scalars['ID']>;
   id_gt?: Maybe<Scalars['ID']>;
   id_gte?: Maybe<Scalars['ID']>;
@@ -317,12 +353,20 @@ export type PrimeAuction_Filter = {
   startTime_lte?: Maybe<Scalars['BigInt']>;
   startTime_not?: Maybe<Scalars['BigInt']>;
   startTime_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  winner?: Maybe<Scalars['Bytes']>;
-  winner_contains?: Maybe<Scalars['Bytes']>;
-  winner_in?: Maybe<Array<Scalars['Bytes']>>;
-  winner_not?: Maybe<Scalars['Bytes']>;
-  winner_not_contains?: Maybe<Scalars['Bytes']>;
-  winner_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  winner?: Maybe<Scalars['String']>;
+  winner_contains?: Maybe<Scalars['String']>;
+  winner_ends_with?: Maybe<Scalars['String']>;
+  winner_gt?: Maybe<Scalars['String']>;
+  winner_gte?: Maybe<Scalars['String']>;
+  winner_in?: Maybe<Array<Scalars['String']>>;
+  winner_lt?: Maybe<Scalars['String']>;
+  winner_lte?: Maybe<Scalars['String']>;
+  winner_not?: Maybe<Scalars['String']>;
+  winner_not_contains?: Maybe<Scalars['String']>;
+  winner_not_ends_with?: Maybe<Scalars['String']>;
+  winner_not_in?: Maybe<Array<Scalars['String']>>;
+  winner_not_starts_with?: Maybe<Scalars['String']>;
+  winner_starts_with?: Maybe<Scalars['String']>;
 };
 
 export enum PrimeAuction_OrderBy {
@@ -330,6 +374,7 @@ export enum PrimeAuction_OrderBy {
   Bidder = 'bidder',
   Bids = 'bids',
   EndTime = 'endTime',
+  Extended = 'extended',
   Id = 'id',
   Prime = 'prime',
   Settled = 'settled',
@@ -1086,10 +1131,26 @@ export type AllPrimesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AllPrimesQuery = { primes: Array<{ id: string }> };
 
+export type PrimeAuctionAllFragment = { id: string, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, bidder?: { id: string } | null | undefined, winner?: { id: string } | null | undefined };
+
+export type PrimeAuctionQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type PrimeAuctionQuery = { primeAuction?: { id: string, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, bids: Array<{ id: string, value: string, timestamp: string, sender: { id: string } }>, bidder?: { id: string } | null | undefined, winner?: { id: string } | null | undefined } | null | undefined };
+
 export type AuctionStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AuctionStatusQuery = { primesAuctionHouses: Array<{ id: string, address: string, minBidIncrementPercentage: string, breedingCooldown: string, reservePrice: string, timeBuffer: string, currentPrimeAuction?: { id: string, bidder?: string | null | undefined, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, winner?: string | null | undefined, bids: Array<{ id: string, sender: string, value: string }> } | null | undefined }>, primeBatches: Array<{ id: string, whitelist?: string | null | undefined, remaining: number }> };
+export type AuctionStatusQuery = { primesAuctionHouses: Array<{ id: string, address: string, minBidIncrementPercentage: string, breedingCooldown: string, reservePrice: string, timeBuffer: string, currentPrimeAuction?: { id: string, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, bidder?: { id: string } | null | undefined, winner?: { id: string } | null | undefined } | null | undefined }>, primeBatches: Array<{ id: string, active: boolean }> };
+
+export type PrimeBatchQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type PrimeBatchQuery = { primeBatch?: { id: string, active: boolean, remaining: number, whitelist?: string | null | undefined } | null | undefined };
 
 export type PrimesForAccountQueryVariables = Exact<{
   account: Scalars['String'];
@@ -1097,6 +1158,13 @@ export type PrimesForAccountQueryVariables = Exact<{
 
 
 export type PrimesForAccountQuery = { primes: Array<{ id: string, claimed: boolean, deadline?: string | null | undefined, image: string, isListed: boolean, isPrime: boolean, isRentable: boolean, lastBred: string, primeFactorCount: number, primeIndex?: number | null | undefined, primeFactors: Array<number>, studFee?: string | null | undefined, whitelistOnly: boolean, childrenAsParent1: Array<{ id: string }>, childrenAsParent2: Array<{ id: string }>, cousins: Array<{ id: string }>, owner: { id: string, address: string }, parent1?: { id: string } | null | undefined, parent2?: { id: string } | null | undefined, sexyPrimes: Array<{ id: string }>, suitors: Array<{ id: string }>, twins: Array<{ id: string }> }> };
+
+export type AccountQueryVariables = Exact<{
+  account: Scalars['ID'];
+}>;
+
+
+export type AccountQuery = { account?: { primes: Array<{ id: string }> } | null | undefined };
 
 export const PrimeAttributesFragmentDoc = gql`
     fragment PrimeAttributes on Prime {
@@ -1168,6 +1236,21 @@ export const PrimeAllFragmentDoc = gql`
     id
   }
   whitelistOnly
+}
+    `;
+export const PrimeAuctionAllFragmentDoc = gql`
+    fragment PrimeAuctionAll on PrimeAuction {
+  id
+  bidder {
+    id
+  }
+  amount
+  settled
+  startTime
+  endTime
+  winner {
+    id
+  }
 }
     `;
 export const PrimeDocument = gql`
@@ -1274,6 +1357,49 @@ export function useAllPrimesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type AllPrimesQueryHookResult = ReturnType<typeof useAllPrimesQuery>;
 export type AllPrimesLazyQueryHookResult = ReturnType<typeof useAllPrimesLazyQuery>;
 export type AllPrimesQueryResult = Apollo.QueryResult<AllPrimesQuery, AllPrimesQueryVariables>;
+export const PrimeAuctionDocument = gql`
+    query PrimeAuction($id: ID!) {
+  primeAuction(id: $id) {
+    ...PrimeAuctionAll
+    bids(orderDirection: desc, orderBy: value) {
+      id
+      sender {
+        id
+      }
+      value
+      timestamp
+    }
+  }
+}
+    ${PrimeAuctionAllFragmentDoc}`;
+
+/**
+ * __usePrimeAuctionQuery__
+ *
+ * To run a query within a React component, call `usePrimeAuctionQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePrimeAuctionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePrimeAuctionQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePrimeAuctionQuery(baseOptions: Apollo.QueryHookOptions<PrimeAuctionQuery, PrimeAuctionQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PrimeAuctionQuery, PrimeAuctionQueryVariables>(PrimeAuctionDocument, options);
+      }
+export function usePrimeAuctionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PrimeAuctionQuery, PrimeAuctionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PrimeAuctionQuery, PrimeAuctionQueryVariables>(PrimeAuctionDocument, options);
+        }
+export type PrimeAuctionQueryHookResult = ReturnType<typeof usePrimeAuctionQuery>;
+export type PrimeAuctionLazyQueryHookResult = ReturnType<typeof usePrimeAuctionLazyQuery>;
+export type PrimeAuctionQueryResult = Apollo.QueryResult<PrimeAuctionQuery, PrimeAuctionQueryVariables>;
 export const AuctionStatusDocument = gql`
     query AuctionStatus {
   primesAuctionHouses {
@@ -1282,29 +1408,17 @@ export const AuctionStatusDocument = gql`
     minBidIncrementPercentage
     breedingCooldown
     currentPrimeAuction {
-      id
-      bidder
-      bids(orderDirection: desc, orderBy: value) {
-        id
-        sender
-        value
-      }
-      amount
-      settled
-      startTime
-      endTime
-      winner
+      ...PrimeAuctionAll
     }
     reservePrice
     timeBuffer
   }
-  primeBatches(where: {active: true}) {
+  primeBatches {
     id
-    whitelist
-    remaining
+    active
   }
 }
-    `;
+    ${PrimeAuctionAllFragmentDoc}`;
 
 /**
  * __useAuctionStatusQuery__
@@ -1332,9 +1446,52 @@ export function useAuctionStatusLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type AuctionStatusQueryHookResult = ReturnType<typeof useAuctionStatusQuery>;
 export type AuctionStatusLazyQueryHookResult = ReturnType<typeof useAuctionStatusLazyQuery>;
 export type AuctionStatusQueryResult = Apollo.QueryResult<AuctionStatusQuery, AuctionStatusQueryVariables>;
+export const PrimeBatchDocument = gql`
+    query PrimeBatch($id: ID!) {
+  primeBatch(id: $id) {
+    id
+    active
+    remaining
+    whitelist
+  }
+}
+    `;
+
+/**
+ * __usePrimeBatchQuery__
+ *
+ * To run a query within a React component, call `usePrimeBatchQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePrimeBatchQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePrimeBatchQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePrimeBatchQuery(baseOptions: Apollo.QueryHookOptions<PrimeBatchQuery, PrimeBatchQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PrimeBatchQuery, PrimeBatchQueryVariables>(PrimeBatchDocument, options);
+      }
+export function usePrimeBatchLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PrimeBatchQuery, PrimeBatchQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PrimeBatchQuery, PrimeBatchQueryVariables>(PrimeBatchDocument, options);
+        }
+export type PrimeBatchQueryHookResult = ReturnType<typeof usePrimeBatchQuery>;
+export type PrimeBatchLazyQueryHookResult = ReturnType<typeof usePrimeBatchLazyQuery>;
+export type PrimeBatchQueryResult = Apollo.QueryResult<PrimeBatchQuery, PrimeBatchQueryVariables>;
 export const PrimesForAccountDocument = gql`
     query PrimesForAccount($account: String!) {
-  primes(where: {owner: $account}, first: 1000) {
+  primes(
+    where: {owner: $account}
+    orderBy: number
+    orderDirection: asc
+    first: 1000
+  ) {
     ...PrimeAll
   }
 }
@@ -1367,3 +1524,40 @@ export function usePrimesForAccountLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type PrimesForAccountQueryHookResult = ReturnType<typeof usePrimesForAccountQuery>;
 export type PrimesForAccountLazyQueryHookResult = ReturnType<typeof usePrimesForAccountLazyQuery>;
 export type PrimesForAccountQueryResult = Apollo.QueryResult<PrimesForAccountQuery, PrimesForAccountQueryVariables>;
+export const AccountDocument = gql`
+    query Account($account: ID!) {
+  account(id: $account) {
+    primes(orderBy: number, orderDirection: asc) {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useAccountQuery__
+ *
+ * To run a query within a React component, call `useAccountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAccountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAccountQuery({
+ *   variables: {
+ *      account: // value for 'account'
+ *   },
+ * });
+ */
+export function useAccountQuery(baseOptions: Apollo.QueryHookOptions<AccountQuery, AccountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AccountQuery, AccountQueryVariables>(AccountDocument, options);
+      }
+export function useAccountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AccountQuery, AccountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AccountQuery, AccountQueryVariables>(AccountDocument, options);
+        }
+export type AccountQueryHookResult = ReturnType<typeof useAccountQuery>;
+export type AccountLazyQueryHookResult = ReturnType<typeof useAccountLazyQuery>;
+export type AccountQueryResult = Apollo.QueryResult<AccountQuery, AccountQueryVariables>;

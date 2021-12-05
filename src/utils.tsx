@@ -18,7 +18,9 @@ export const composedComponent =
   ({ children }) =>
     composeComponents(components, children)
 
-export const createExclusiveSet = (sets: Set<number>[]): Set<number> => {
+export const createExclusiveSet = (
+  sets: Set<number>[],
+): Set<number> => {
   const result = new Set<number>()
   for (let i = 1; i <= N_MAX; i++) {
     if (sets.every((set) => set.has(i))) {
@@ -30,3 +32,5 @@ export const createExclusiveSet = (sets: Set<number>[]): Set<number> => {
 
 export const truncateAddress = (address: string): string =>
   `${address.slice(0, 6)}…${address.slice(-4)}`
+
+export const getNowUnix = () => Math.floor(Date.now() / 1e3)
