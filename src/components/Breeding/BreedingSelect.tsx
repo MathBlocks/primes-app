@@ -1,10 +1,9 @@
-import React, { ChangeEvent, useMemo } from 'react'
+import React, { ChangeEvent } from 'react'
 import Select, { Options, OnChangeValue } from 'react-select'
 import {
   FieldInputProps,
   FieldProps,
   Field,
-  FormikHandlers,
   useFormikContext,
 } from 'formik'
 import styled from 'styled-components'

@@ -9,13 +9,14 @@ import {
 } from 'formik'
 import { useEthers } from '@usedapp/core'
 
-import { useContracts } from '../App/ContractsProvider'
+import { useContracts } from '../App/DAppContext'
 import { useContractFunction } from '../../hooks'
 import { useMintedPrimes, useMyPrimes } from '../App/PrimesContext'
 import {
   createTreeWithAccounts,
   getAccountProof,
 } from '../../merkleTree'
+import { SendTransactionWidget } from '../SendTransactionWidget'
 import { BreedingOutput, BreedingSelect } from './BreedingSelect'
 import { Values } from './types'
 
@@ -37,25 +38,17 @@ const StyledForm = styled(Form)`
 
 const BreedingForm: FC = () => {
   const { account } = useEthers()
-  const contracts = useContracts<true>()
+  const { Primes } = useContracts<true>()
   const [mintedPrimes] = useMintedPrimes()
   const [myPrimes] = useMyPrimes()
 
-  const crossBreed = useContractFunction(
-    contracts.Primes,
-    'crossBreed',
-    {
-      transactionName: 'Cross-breed',
-    },
-  )
+  const crossBreed = useContractFunction(Primes, 'crossBreed', {
+    transactionName: 'Cross-breed',
+  })
 
-  const breedPrimes = useContractFunction(
-    contracts.Primes,
-    'breedPrimes',
-    {
-      transactionName: 'Breed',
-    },
-  )
+  const breedPrimes = useContractFunction(Primes, 'breedPrimes', {
+    transactionName: 'Breed',
+  })
 
   const myBreedablePrimes = useMemo(
     () =>
@@ -82,7 +75,7 @@ const BreedingForm: FC = () => {
           tokenId?: string
         } = {}
 
-        if (!account || !contracts) {
+        if (!account) {
           errors.tokenId = 'Not connected'
           return errors
         }
@@ -125,16 +118,11 @@ const BreedingForm: FC = () => {
           return errors
         }
 
-        if (
-          account &&
-          contracts &&
-          values.tokenId &&
-          values.otherTokenId
-        ) {
+        if (account && values.tokenId && values.otherTokenId) {
           let otherOwner
           try {
             otherOwner = (
-              await contracts.Primes.ownerOf(values.otherTokenId)
+              await Primes.ownerOf(values.otherTokenId)
             ).toLowerCase()
           } catch (error) {
             errors.otherTokenId = 'Could not find owner'
@@ -156,7 +144,7 @@ const BreedingForm: FC = () => {
             const proof = getAccountProof(tree, account)
 
             // TODO get attributes and merkle proof
-            await contracts.Primes.estimateGas.crossBreed(
+            await Primes.estimateGas.crossBreed(
               values.tokenId,
               values.otherTokenId,
               0,
@@ -168,9 +156,10 @@ const BreedingForm: FC = () => {
           } catch (error) {
             if (error.error?.message) {
               errors.tokenId =
-                error.error.message.split(
+                error.error.message.replace(
                   'execution reverted: ',
-                )[1] ?? error.error.message
+                  '',
+                ) ?? error.error.message
             }
           }
         }
@@ -215,7 +204,6 @@ const BreedingForm: FC = () => {
               value={values.desiredOutput}
               placeholder="Progeny"
             />
-            <BreedingFormUpdater />
             <ErrorMessage name="tokenId" component="div" />
             <ErrorMessage name="otherTokenId" component="div" />
             <button
@@ -224,6 +212,7 @@ const BreedingForm: FC = () => {
             >
               Breed
             </button>
+            <BreedingFormUpdater />
           </StyledForm>
         )
       }}

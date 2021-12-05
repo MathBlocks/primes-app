@@ -12,6 +12,7 @@ const Container = styled.div`
     color: white;
     background: none;
     height: 2rem;
+    font-size: 1rem;
   }
 `
 
@@ -29,7 +30,9 @@ export const WalletButton: FC = () => {
         }}
       >
         {account ? (
-          <span className="monospace">{truncateAddress(account)}</span>
+          <span className="monospace">
+            {truncateAddress(account)}
+          </span>
         ) : (
           'Connect'
         )}

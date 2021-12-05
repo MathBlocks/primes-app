@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 import { useEthers } from '@usedapp/core'
 
-import { useContracts } from '../App/ContractsProvider'
+import { useContracts } from '../App/DAppContext'
 import {
   createTreeWithAccounts,
   getAccountProof,

@@ -1,4 +1,12 @@
-import { createContext, FC, useContext, useMemo } from 'react'
+import {
+  createContext,
+  FC,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react'
+import { createStateContext } from 'react-use'
+import { BigNumber } from 'ethers'
 import { useEthers } from '@usedapp/core'
 
 import { useContractAddresses } from '../../config'
@@ -24,7 +32,7 @@ export const useContracts = <
   U = T extends true ? Contracts : Contracts | undefined,
 >(): U => useContext(contractsCtx) as unknown as U
 
-export const ContractsProvider: FC = ({ children }) => {
+const ContractsProvider: FC = ({ children }) => {
   const { library } = useEthers()
 
   const contractAddresses = useContractAddresses()
@@ -53,3 +61,33 @@ export const ContractsProvider: FC = ({ children }) => {
     </contractsCtx.Provider>
   )
 }
+
+export const [useBalance, BalanceProvider] =
+  createStateContext<BigNumber>(BigNumber.from(0))
+
+const BalanceUpdater: FC = () => {
+  const { library, account } = useEthers()
+  const [, setBalance] = useBalance()
+  useEffect(() => {
+    if (!library || !account) return
+    library
+      .getBalance(account)
+      .then((_balance) => {
+        setBalance(_balance)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }, [library, account, setBalance])
+
+  return null
+}
+
+export const DAppContext: FC = ({ children }) => (
+  <ContractsProvider>
+    <BalanceProvider>
+      {children}
+      <BalanceUpdater />
+    </BalanceProvider>
+  </ContractsProvider>
+)

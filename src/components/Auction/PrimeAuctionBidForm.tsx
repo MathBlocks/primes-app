@@ -6,8 +6,10 @@ import {
   PrimesAuctionHouse,
   useAuctionStatusQuery,
 } from '../../graphql/subgraph/subgraph'
-import { useContracts } from '../App/ContractsProvider'
+import { useContracts } from '../App/DAppContext'
 import { useContractFunction } from '../../hooks'
+import { SendTransactionWidget } from '../SendTransactionWidget'
+import { ETHInput } from '../ETHInput'
 
 const formatError = (
   error: any,
@@ -77,38 +79,38 @@ export const PrimeAuctionBidForm: FC<{ tokenId: number }> = ({
 
         // TODO validate ETH balance
 
-        try {
-          await PrimesAuctionHouse.estimateGas.createBid(tokenId, {
-            value: parseEther(bid.toFixed(18)),
-          })
-        } catch (error) {
-          errors.bid = formatError(
-            error,
-            primesAuctionHouse as PrimesAuctionHouse,
-          )
-        }
-
         return errors
       }}
     >
-      {({ isSubmitting, isValid, errors, touched }) => (
-        <Form>
-          <div>
-            <Field
-              type="number"
-              name="bid"
-              min={0}
-              step="0.000000000000000001"
+      {({ isSubmitting, isValid, errors, touched, values }) => {
+        return (
+          <Form>
+            <div>
+              <ETHInput name="bid" />
+              {errors.bid && touched.bid ? (
+                <p>{errors.bid}</p>
+              ) : null}
+            </div>
+            <SendTransactionWidget
+              contract={PrimesAuctionHouse}
+              functionName="createBid"
+              args={[
+                tokenId,
+                {
+                  value: values.bid
+                    ? parseEther(values.bid.toFixed(18))
+                    : 0,
+                },
+              ]}
+              transactionOptions={{ transactionName: 'Place bid' }}
+              buttonProps={{
+                type: 'submit',
+                disabled: isSubmitting || !isValid,
+              }}
             />
-            {errors.bid && touched.bid ? (
-              <div>{errors.bid}</div>
-            ) : null}
-          </div>
-          <button type="submit" disabled={isSubmitting || !isValid}>
-            Place bid
-          </button>
-        </Form>
-      )}
+          </Form>
+        )
+      }}
     </Formik>
   )
 }

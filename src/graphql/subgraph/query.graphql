@@ -87,6 +87,19 @@ query AllPrimes {
     }
 }
 
+query ListedPrimes {
+    primes(where: { isListed: true }, orderBy: number, orderDirection: asc) {
+        id
+        isRentable
+        whitelistOnly
+        studFee
+        deadline
+        suitors {
+            id
+        }
+    }
+}
+
 fragment PrimeAuctionAll on PrimeAuction {
     id
     bidder {

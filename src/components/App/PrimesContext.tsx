@@ -10,33 +10,29 @@ import {
 import { createExclusiveSet } from '../../utils'
 import { generateAttributes, Attributes } from '../../attributes'
 
-export const [useAttributes, AttributesProvider] = createStateContext<
-  Attributes | undefined
->(undefined)
+export const [useAttributes, AttributesProvider] =
+  createStateContext<Attributes | undefined>(undefined)
 
 export const [useSelectedAttributes, SelectedAttributesProvider] =
   createStateContext<Partial<Record<keyof Attributes, boolean>>>({})
 
-export const [useSelectedTokenId, SelectedTokenIdProvider] = createStateContext<
-  number | undefined
->(undefined)
+export const [useSelectedTokenId, SelectedTokenIdProvider] =
+  createStateContext<number | undefined>(undefined)
 
-export const [useHoveredTokenId, HoveredTokenIdProvider] = createStateContext<
-  number | undefined
->(undefined)
+export const [useHoveredTokenId, HoveredTokenIdProvider] =
+  createStateContext<number | undefined>(undefined)
 
-export const [useVisible, VisibleProvider] = createStateContext<Set<number>>(
-  new Set(),
-)
+export const [useVisible, VisibleProvider] = createStateContext<
+  Set<number>
+>(new Set())
 
 export const [useMyPrimes, MyPrimesProvider] = createStateContext<{
   enabled: boolean
   set: Set<number>
 }>({ enabled: false, set: new Set() })
 
-export const [useMintedPrimes, MintedPrimesProvider] = createStateContext<
-  Set<number>
->(new Set())
+export const [useMintedPrimes, MintedPrimesProvider] =
+  createStateContext<Set<number>>(new Set())
 
 const MintedPrimesUpdater: FC = () => {
   const [lastID, setLastID] = useState<string>('0')
@@ -70,12 +66,15 @@ const MyPrimesUpdater: FC = () => {
   const { data } = usePrimesForAccountQuery({
     variables: { account: account?.toLowerCase() as string },
     skip: !account,
+    nextFetchPolicy: 'network-only',
   })
   const [myPrimes, setMyPrimes] = useMyPrimes()
   const myPrimes_ = useRef(myPrimes)
 
   useEffect(() => {
-    const items: number[] = (data?.primes ?? []).map((p) => parseInt(p.id))
+    const items: number[] = (data?.primes ?? []).map((p) =>
+      parseInt(p.id),
+    )
 
     setMyPrimes({
       enabled: myPrimes_.current.enabled,
@@ -98,11 +97,16 @@ const Updater: FC = () => {
 
     const item = localStorage.getItem('attributes')
     if (item) {
-      const jsonEntries = JSON.parse(item) as [keyof Attributes, number[]][]
-      const setEntries = jsonEntries.map<[keyof Attributes, Set<number>]>(
-        ([key, numbers]) => [key, new Set<number>(numbers)],
-      )
-      attributes_ = Object.fromEntries(setEntries) as unknown as Attributes
+      const jsonEntries = JSON.parse(item) as [
+        keyof Attributes,
+        number[],
+      ][]
+      const setEntries = jsonEntries.map<
+        [keyof Attributes, Set<number>]
+      >(([key, numbers]) => [key, new Set<number>(numbers)])
+      attributes_ = Object.fromEntries(
+        setEntries,
+      ) as unknown as Attributes
     } else {
       attributes_ = generateAttributes()
       localStorage.setItem(

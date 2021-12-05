@@ -7,7 +7,7 @@ import { config } from '../../config'
 import { AppLayout } from './AppLayout'
 import { AppRoutes } from './AppRoutes'
 import { ApolloProvider } from './ApolloProvider'
-import { ContractsProvider } from './ContractsProvider'
+import { DAppContext } from './DAppContext'
 import { PrimesContext } from './PrimesContext'
 
 const GlobalStyle = createGlobalStyle`
@@ -19,6 +19,7 @@ const GlobalStyle = createGlobalStyle`
 
   * {
     font-family: 'Space Grotesk', sans-serif;
+    box-sizing: border-box;
   }
   
   .monospace {
@@ -45,13 +46,28 @@ const GlobalStyle = createGlobalStyle`
   h4 {
     font-size: 1.3rem;
   }
+  
+  button {
+    appearance: none;
+    border: none;
+    background: white;
+    color: black;
+    border-radius: 1rem;
+    padding: 0.25rem 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    &:hover {
+      background: #ddd;
+    }
+  }
 `
 
 export const App: FC = () => {
   return (
     <DAppProvider config={config}>
-      <ApolloProvider>
-        <ContractsProvider>
+      <DAppContext>
+        <ApolloProvider>
           <PrimesContext>
             <Router>
               <AppLayout>
@@ -60,8 +76,8 @@ export const App: FC = () => {
               </AppLayout>
             </Router>
           </PrimesContext>
-        </ContractsProvider>
-      </ApolloProvider>
+        </ApolloProvider>
+      </DAppContext>
     </DAppProvider>
   )
 }

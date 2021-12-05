@@ -16,11 +16,17 @@
 import { FC, useState } from 'react'
 import styled from 'styled-components'
 import { useEthers } from '@usedapp/core'
-import { Formik, Form, Field, ErrorMessage, FieldArray } from 'formik'
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage,
+  FieldArray,
+} from 'formik'
 import { constants } from 'ethers'
 
 import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
-import { useContracts } from '../App/ContractsProvider'
+import { useContracts } from '../App/DAppContext'
 import { useContractFunction } from '../../hooks'
 import { useRouteTokenId } from './Context'
 
@@ -103,14 +109,47 @@ const OwnerListForm: FC = () => {
           <Form>
             <Field type="number" name="studFee" min={0} />
             <div>
-              <Field type="number" name="suitors[0]" min={0} increment={1} />
-              <Field type="number" name="suitors[1]" min={0} increment={1} />
-              <Field type="number" name="suitors[2]" min={0} increment={1} />
-              <Field type="number" name="suitors[3]" min={0} increment={1} />
-              <Field type="number" name="suitors[4]" min={0} increment={1} />
-              <Field type="number" name="suitors[5]" min={0} increment={1} />
+              <Field
+                type="number"
+                name="suitors[0]"
+                min={0}
+                increment={1}
+              />
+              <Field
+                type="number"
+                name="suitors[1]"
+                min={0}
+                increment={1}
+              />
+              <Field
+                type="number"
+                name="suitors[2]"
+                min={0}
+                increment={1}
+              />
+              <Field
+                type="number"
+                name="suitors[3]"
+                min={0}
+                increment={1}
+              />
+              <Field
+                type="number"
+                name="suitors[4]"
+                min={0}
+                increment={1}
+              />
+              <Field
+                type="number"
+                name="suitors[5]"
+                min={0}
+                increment={1}
+              />
             </div>
-            <button type="submit" disabled={isSubmitting || !isValid}>
+            <button
+              type="submit"
+              disabled={isSubmitting || !isValid}
+            >
               List for rental
             </button>
           </Form>
@@ -153,7 +192,9 @@ const OwnerForms: FC = () => {
   if (!data?.prime) return null
 
   return (
-    <div>{data.prime.isListed ? <OwnerUnlistForm /> : <OwnerListForm />}</div>
+    <div>
+      {data.prime.isListed ? <OwnerUnlistForm /> : <OwnerListForm />}
+    </div>
   )
 }
 
@@ -185,7 +226,8 @@ export const Rental: FC = () => {
           {data.prime.isListed && (
             <div>
               <div>
-                Suitors: {data.prime.suitors.map((s) => s.id.toString())}
+                Suitors:{' '}
+                {data.prime.suitors.map((s) => s.id.toString())}
               </div>
               <div>Stud fee: {data.prime.studFee?.toString()}</div>
               <div>Deadline: {data.prime.deadline?.toString()}</div>
