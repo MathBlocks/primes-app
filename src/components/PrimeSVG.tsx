@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react'
+import React, { FC, ReactNode, useMemo } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 
 // @ts-ignore
@@ -51,7 +51,8 @@ const numberSVG = (n: number) => {
 
       break
     case 4:
-      d = 'M4.7.3h3.1v9.4H10v1.5H8v2.5H6.1v-2.5H0V9L4.7.3ZM1.4 9.5v.2h4.8V1H6L1.4 9.5Z'
+      d =
+        'M4.7.3h3.1v9.4H10v1.5H8v2.5H6.1v-2.5H0V9L4.7.3ZM1.4 9.5v.2h4.8V1H6L1.4 9.5Z'
       break
     case 5:
       d =
@@ -62,7 +63,8 @@ const numberSVG = (n: number) => {
         'M7.5 4.2c0-.8-.3-1.5-.8-2s-1.2-.8-2.1-.8l-1.2.3c-.4.1-.7.3-1 .6a3.2 3.2 0 0 0-.8 2.4v2h.2c.4-.6.8-1 1.4-1.4.5-.3 1.2-.5 1.9-.5.6 0 1.2.1 1.7.4.5.1 1 .4 1.3.8l1 1.4.2 1.9v.2A4.5 4.5 0 0 1 8 12.8c-.4.3-.9.7-1.5.9a5.2 5.2 0 0 1-3.7 0c-.6-.2-1-.5-1.5-1-.4-.3-.7-.8-1-1.3L0 9.6v-5c0-.7.1-1.3.4-1.9.2-.5.5-1 1-1.4.4-.4.9-.8 1.4-1a5.4 5.4 0 0 1 3.6 0 4 4 0 0 1 2.7 3.9H7.5Zm-2.8 8.4c.4 0 .9 0 1.2-.2l1-.7c.3-.2.5-.6.6-1 .2-.3.2-.7.2-1.2v-.2c0-.4 0-.9-.2-1.2a2.7 2.7 0 0 0-1.6-1.6c-.4-.2-.8-.2-1.2-.2a3.1 3.1 0 0 0-2.2.8 3 3 0 0 0-.9 2.1v.4c0 .4 0 .8.2 1.2a2.7 2.7 0 0 0 1.6 1.6l1.3.2Z'
       break
     case 7:
-      d = 'M0 .3h9v2.3l-5.7 8.6-.6 1a2 2 0 0 0-.2 1v.5H.9V12.4a3.9 3.9 0 0 1 .7-1.3l.5-.8L7.6 2v-.2H0V.3Z'
+      d =
+        'M0 .3h9v2.3l-5.7 8.6-.6 1a2 2 0 0 0-.2 1v.5H.9V12.4a3.9 3.9 0 0 1 .7-1.3l.5-.8L7.6 2v-.2H0V.3Z'
       break
     case 8:
       d =
@@ -81,18 +83,32 @@ const numberSVG = (n: number) => {
 interface PrimeAttribute {
   key: string
   name: string
-  symbol: string
-  fill: string
+  symbol: ReactNode
 }
 
-const generateDefs = (tokenId: number, fg: string, shellsLength: number) => {
+const generateDefs = (
+  tokenId: number,
+  fg: string,
+  shellsLength: number,
+) => {
   const interval = Math.floor(100 / (shellsLength - 1))
   return (
     <defs>
       <linearGradient id="g1" x1="0" y1="0" x2="100%" y2="0">
         {Array.from({ length: shellsLength }).map((_, idx) => (
-          <stop offset={`${interval * idx}%`} stopColor={fg} stopOpacity={1}>
-            <animate attributeName="stop-opacity" values={`1;.1;1`} dur="10s" begin={`${idx * 5}s`} repeatCount="indefinite" />
+          <stop
+            key={idx}
+            offset={`${interval * idx}%`}
+            stopColor={fg}
+            stopOpacity={1}
+          >
+            <animate
+              attributeName="stop-opacity"
+              values={`1;.1;1`}
+              dur="10s"
+              begin={`${idx * 5}s`}
+              repeatCount="indefinite"
+            />
           </stop>
         ))}
       </linearGradient>
@@ -100,7 +116,11 @@ const generateDefs = (tokenId: number, fg: string, shellsLength: number) => {
   )
 }
 
-const getSymbols = (tokenId: number, fg: string, primeAttributes: PrimeAttribute[]) => {
+const getSymbols = (
+  tokenId: number,
+  fg: string,
+  primeAttributes: PrimeAttribute[],
+) => {
   return (
     <g className="symbols">
       {primeAttributes.map((_, idx) => {
@@ -143,12 +163,27 @@ const getSymbols = (tokenId: number, fg: string, primeAttributes: PrimeAttribute
         }
 
         return (
-          <>
-            <circle r={15} cx={cx} cy={cy} stroke={fg} key={idx} opacity={0.2} />
-            <text x={cx} y={cy + 3} fill={fg} fontSize={10} textAnchor="middle" opacity={0.5} fontFamily="Space Grotesk">
+          <g key={idx}>
+            <circle
+              r={15}
+              cx={cx}
+              cy={cy}
+              stroke={fg}
+              key={idx}
+              opacity={0.2}
+            />
+            <text
+              x={cx}
+              y={cy + 3}
+              fill={fg}
+              fontSize={10}
+              textAnchor="middle"
+              opacity={0.5}
+              fontFamily="Space Grotesk"
+            >
               {_.name.slice(0, 3).toUpperCase()}
             </text>
-          </>
+          </g>
         )
       })}
     </g>
@@ -160,10 +195,11 @@ export const PrimeSVG: FC<{
   primeAttributes: PrimeAttribute[]
 }> = ({ tokenId, primeAttributes }) => {
   const shells = useMemo<Shell[]>(() => {
-    const _shells: boolean[][] = getPrimeFactors(tokenId).map((factor: number) =>
-      toBinaryString(factor)
-        .split('')
-        .map((char) => char === '1'),
+    const _shells: boolean[][] = getPrimeFactors(tokenId).map(
+      (factor: number) =>
+        toBinaryString(factor)
+          .split('')
+          .map((char) => char === '1'),
     )
 
     const gap = (OUTER_R - INNER_R) / _shells.length + 1
@@ -172,11 +208,15 @@ export const PrimeSVG: FC<{
       const radius = idx === 0 ? INNER_R : INNER_R + gap * idx
 
       const MIN_SCALE = INNER_R / OUTER_R
-      const scale = idx === 0 ? MIN_SCALE : (INNER_R + gap * idx) / OUTER_R
+      const scale =
+        idx === 0 ? MIN_SCALE : (INNER_R + gap * idx) / OUTER_R
 
       // const rotationDelta = 360 / binaryArr.length
       const rotationDelta = 270 / (binaryArr.length - 1)
-      const electrons = binaryArr.map((on, idx) => [on, idx * rotationDelta]) as [boolean, number][]
+      const electrons = binaryArr.map((on, idx) => [
+        on,
+        idx * rotationDelta,
+      ]) as [boolean, number][]
 
       return {
         radius,
@@ -188,12 +228,19 @@ export const PrimeSVG: FC<{
 
   const prime = isPrime(tokenId)
 
-  const chars = [...tokenId.toString()].map((c) => parseInt(c)) as number[]
+  const chars = [...tokenId.toString()].map((c) =>
+    parseInt(c),
+  ) as number[]
 
   const fg = prime ? '#000' : '#fff'
   const bg = prime ? '#fff' : '#000'
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={BOUNDS} height={BOUNDS} style={{ background: bg }}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={BOUNDS}
+      height={BOUNDS}
+      style={{ background: bg }}
+    >
       <style>{STYLE}</style>
       {generateDefs(tokenId, fg, shells.length)}
       {getSymbols(tokenId, fg, primeAttributes)}
@@ -206,12 +253,18 @@ export const PrimeSVG: FC<{
               type="rotate"
               from={`${shellIdx % 2 === 0 ? 0 : 360} 128 128`}
               to={`${shellIdx % 2 === 0 ? 360 : 0} 128 128`}
-              dur={`${shells.length === 1 ? 60 : shells.length * 2 * (shellIdx + 1)}s`}
+              dur={`${
+                shells.length === 1
+                  ? 60
+                  : shells.length * 2 * (shellIdx + 1)
+              }s`}
               repeatCount="indefinite"
             />
             {/*try rotating, or use factors as starting pos?*/}
             <path
-              d={`m 128 ${CENTRE - shell.radius} a ${shell.radius} ${shell.radius} 0 1 1 -${shell.radius} ${shell.radius}`}
+              d={`m 128 ${CENTRE - shell.radius} a ${shell.radius} ${
+                shell.radius
+              } 0 1 1 -${shell.radius} ${shell.radius}`}
               style={{
                 stroke: 'url(#g1)',
                 strokeWidth: 2,
@@ -232,9 +285,15 @@ export const PrimeSVG: FC<{
           </g>
         ))}
       </g>
-      <g id="text" fill={prime ? '#000' : '#fff'} transform={`translate(${(259 - 25 * chars.length) / 2}, 111)`}>
+      <g
+        id="text"
+        fill={prime ? '#000' : '#fff'}
+        transform={`translate(${
+          (259 - 25 * chars.length) / 2
+        }, 111)`}
+      >
         {chars.map((n, idx) => (
-          <g key={n} transform={`translate(${25 * idx}) scale(2)`}>
+          <g key={idx} transform={`translate(${25 * idx}) scale(2)`}>
             {numberSVG(n)}
           </g>
         ))}
@@ -243,7 +302,17 @@ export const PrimeSVG: FC<{
   )
 }
 
-export const getSVGDataURI = (tokenId: number, primeAttributes: PrimeAttribute[]): string => {
-  const svgString = btoa(renderToStaticMarkup(<PrimeSVG tokenId={tokenId} primeAttributes={primeAttributes} />))
+export const getSVGDataURI = (
+  tokenId: number,
+  primeAttributes: PrimeAttribute[],
+): string => {
+  const svgString = btoa(
+    renderToStaticMarkup(
+      <PrimeSVG
+        tokenId={tokenId}
+        primeAttributes={primeAttributes}
+      />,
+    ),
+  )
   return `data:image/svg+xml;base64,${svgString}`
 }

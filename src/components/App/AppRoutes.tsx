@@ -5,6 +5,7 @@ import { Home } from '../Home'
 import { AuctionRoutes } from '../Auction'
 import { Prime } from '../Prime'
 import { Primes } from '../Primes'
+import { PrimesGallery } from '../Primes/PrimesGallery'
 import { Account } from '../Account'
 import { Breeding } from '../Breeding'
 
@@ -14,6 +15,12 @@ export const AppRoutes: FC = () => (
       <Home />
     </Route>
     <Route path="/primes" exact>
+      <Primes />
+    </Route>
+    <Route path="/primes/spiral" exact>
+      <Primes />
+    </Route>
+    <Route path="/primes/gallery" exact>
       <Primes />
     </Route>
     <Route path="/primes/:tokenId" exact>

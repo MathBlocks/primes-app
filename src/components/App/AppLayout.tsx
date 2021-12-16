@@ -30,6 +30,12 @@ const NavbarContainer = styled.nav`
   }
 `
 
+const Footer: FC = () => (
+  <footer>
+    <a href="https://mathblocks.org">mathblocks.org</a>
+  </footer>
+)
+
 // TODO only show auction when it's active
 const Navbar: FC = () => (
   <NavbarContainer>
@@ -72,6 +78,8 @@ const Navbar: FC = () => (
 )
 
 const LayoutContainer = styled.div`
+  display: grid;
+  height: 100%;
   grid-template-rows: auto 1fr auto;
 
   header {
@@ -83,18 +91,16 @@ const LayoutContainer = styled.div`
   }
 
   footer {
-    height: 4rem;
+    padding: 1rem 0;
+    border-top: 1px #444 solid;
   }
 
   header,
   footer,
   main {
+    width: 100%;
     max-width: 100ch;
     margin: 0 auto;
-  }
-
-  main {
-    margin-bottom: 4rem;
   }
 `
 
@@ -107,7 +113,7 @@ export const AppLayout: FC = ({ children }) => (
       <Navbar />
     </header>
     <main>{children}</main>
-    <footer>Footer</footer>
+    <Footer />
     <ReactTooltip />
   </LayoutContainer>
 )

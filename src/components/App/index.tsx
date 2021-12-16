@@ -16,6 +16,10 @@ const GlobalStyle = createGlobalStyle`
     background: #191919;
     color: white;
   }
+  
+  html, body, #root {
+    height: 100%;
+  }
 
   * {
     font-family: 'Space Grotesk', sans-serif;

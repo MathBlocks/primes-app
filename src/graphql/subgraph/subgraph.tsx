@@ -1131,6 +1131,11 @@ export type AllPrimesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AllPrimesQuery = { primes: Array<{ id: string }> };
 
+export type ListedPrimesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListedPrimesQuery = { primes: Array<{ id: string, isRentable: boolean, whitelistOnly: boolean, studFee?: string | null | undefined, deadline?: string | null | undefined, suitors: Array<{ id: string }> }> };
+
 export type PrimeAuctionAllFragment = { id: string, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, bidder?: { id: string } | null | undefined, winner?: { id: string } | null | undefined };
 
 export type PrimeAuctionQueryVariables = Exact<{
@@ -1139,6 +1144,11 @@ export type PrimeAuctionQueryVariables = Exact<{
 
 
 export type PrimeAuctionQuery = { primeAuction?: { id: string, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, bids: Array<{ id: string, value: string, timestamp: string, sender: { id: string } }>, bidder?: { id: string } | null | undefined, winner?: { id: string } | null | undefined } | null | undefined };
+
+export type AllPrimeAuctionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllPrimeAuctionsQuery = { primeAuctions: Array<{ id: string, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, prime: { id: string, number: number, image: string }, bidder?: { id: string } | null | undefined, winner?: { id: string } | null | undefined }> };
 
 export type AuctionStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1357,6 +1367,47 @@ export function useAllPrimesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type AllPrimesQueryHookResult = ReturnType<typeof useAllPrimesQuery>;
 export type AllPrimesLazyQueryHookResult = ReturnType<typeof useAllPrimesLazyQuery>;
 export type AllPrimesQueryResult = Apollo.QueryResult<AllPrimesQuery, AllPrimesQueryVariables>;
+export const ListedPrimesDocument = gql`
+    query ListedPrimes {
+  primes(where: {isListed: true}, orderBy: number, orderDirection: asc) {
+    id
+    isRentable
+    whitelistOnly
+    studFee
+    deadline
+    suitors {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useListedPrimesQuery__
+ *
+ * To run a query within a React component, call `useListedPrimesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useListedPrimesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListedPrimesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useListedPrimesQuery(baseOptions?: Apollo.QueryHookOptions<ListedPrimesQuery, ListedPrimesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ListedPrimesQuery, ListedPrimesQueryVariables>(ListedPrimesDocument, options);
+      }
+export function useListedPrimesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ListedPrimesQuery, ListedPrimesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ListedPrimesQuery, ListedPrimesQueryVariables>(ListedPrimesDocument, options);
+        }
+export type ListedPrimesQueryHookResult = ReturnType<typeof useListedPrimesQuery>;
+export type ListedPrimesLazyQueryHookResult = ReturnType<typeof useListedPrimesLazyQuery>;
+export type ListedPrimesQueryResult = Apollo.QueryResult<ListedPrimesQuery, ListedPrimesQueryVariables>;
 export const PrimeAuctionDocument = gql`
     query PrimeAuction($id: ID!) {
   primeAuction(id: $id) {
@@ -1400,6 +1451,45 @@ export function usePrimeAuctionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type PrimeAuctionQueryHookResult = ReturnType<typeof usePrimeAuctionQuery>;
 export type PrimeAuctionLazyQueryHookResult = ReturnType<typeof usePrimeAuctionLazyQuery>;
 export type PrimeAuctionQueryResult = Apollo.QueryResult<PrimeAuctionQuery, PrimeAuctionQueryVariables>;
+export const AllPrimeAuctionsDocument = gql`
+    query AllPrimeAuctions {
+  primeAuctions(orderBy: startTime, orderDirection: asc) {
+    ...PrimeAuctionAll
+    prime {
+      id
+      number
+      image
+    }
+  }
+}
+    ${PrimeAuctionAllFragmentDoc}`;
+
+/**
+ * __useAllPrimeAuctionsQuery__
+ *
+ * To run a query within a React component, call `useAllPrimeAuctionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllPrimeAuctionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllPrimeAuctionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllPrimeAuctionsQuery(baseOptions?: Apollo.QueryHookOptions<AllPrimeAuctionsQuery, AllPrimeAuctionsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AllPrimeAuctionsQuery, AllPrimeAuctionsQueryVariables>(AllPrimeAuctionsDocument, options);
+      }
+export function useAllPrimeAuctionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllPrimeAuctionsQuery, AllPrimeAuctionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AllPrimeAuctionsQuery, AllPrimeAuctionsQueryVariables>(AllPrimeAuctionsDocument, options);
+        }
+export type AllPrimeAuctionsQueryHookResult = ReturnType<typeof useAllPrimeAuctionsQuery>;
+export type AllPrimeAuctionsLazyQueryHookResult = ReturnType<typeof useAllPrimeAuctionsLazyQuery>;
+export type AllPrimeAuctionsQueryResult = Apollo.QueryResult<AllPrimeAuctionsQuery, AllPrimeAuctionsQueryVariables>;
 export const AuctionStatusDocument = gql`
     query AuctionStatus {
   primesAuctionHouses {

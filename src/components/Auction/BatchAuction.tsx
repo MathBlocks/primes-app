@@ -1,11 +1,17 @@
 import { FC, useMemo } from 'react'
-import { useParams } from 'react-router'
+import { useHistory, useParams } from 'react-router'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useEthers } from '@usedapp/core'
-import { parseEther } from 'ethers/lib/utils'
+import { formatEther, parseEther } from 'ethers/lib/utils'
 import { BigNumber } from 'ethers'
+import { formatISO9075, fromUnixTime } from 'date-fns'
 
-import { usePrimeBatchQuery } from '../../graphql/subgraph/subgraph'
+import {
+  AllPrimeAuctionsQueryResult,
+  useAllPrimeAuctionsQuery,
+  usePrimeBatchQuery,
+} from '../../graphql/subgraph/subgraph'
 import { AccountLink } from '../AccountLink'
 import { useContracts } from '../App/DAppContext'
 import {
@@ -108,9 +114,134 @@ const Batch: FC<{ batchId: number }> = ({ batchId }) => {
   )
 }
 
-const AnEternalGoldenRaid: FC = () => {
-  // TODO show a list of all 127 auctions
-  return <div>TODO 2</div>
+type PrimeAuctionData = NonNullable<
+  AllPrimeAuctionsQueryResult['data']
+>['primeAuctions'][number]
+
+const GEBPrimeAuctionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  border-top: 1px #777 solid;
+  padding: 1rem 0;
+  align-items: stretch;
+
+  > div {
+    &:first-child {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: space-between;
+      font-size: 1.2rem;
+    }
+    &:last-child {
+      > div {
+        > :first-child {
+          opacity: 0.6;
+        }
+        display: flex;
+        gap: 0.5rem;
+      }
+    }
+  }
+  .prime {
+    a {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      line-height: 1rem;
+      font-size: 3rem;
+      font-weight: bold;
+
+      &:hover {
+        color: orange;
+      }
+
+      span {
+        display: block;
+        &:first-child {
+          border-radius: 0.5rem;
+          overflow: hidden;
+        }
+      }
+    }
+    img {
+      width: 6rem;
+      height: auto;
+      display: block;
+    }
+  }
+`
+
+const GEBPrimeAuction: FC<PrimeAuctionData> = ({
+  id,
+  settled,
+  amount,
+  startTime,
+  endTime,
+  bidder,
+  winner,
+  prime,
+}) => {
+  return (
+    <GEBPrimeAuctionContainer key={id}>
+      <div>
+        <div className="prime">
+          <Link
+            className="monospace"
+            to={`/auction/batch/2/${prime.id}`}
+          >
+            <span>
+              <img src={prime.image} />
+            </span>
+            <span>{prime.id}</span>
+          </Link>
+        </div>
+        <div className="amount monospace">
+          {formatEther(parseInt(amount ?? '0'))} ETH
+        </div>
+      </div>
+      <div>
+        {settled ? <div>Settled</div> : null}
+        <div className="time">
+          <div>Duration</div>
+          <div>
+            {formatISO9075(fromUnixTime(parseInt(startTime)))} to{' '}
+            {formatISO9075(fromUnixTime(parseInt(endTime)))}
+          </div>
+        </div>
+        {bidder ? (
+          <div className="bidder">
+            <div>Bidder</div>
+            <div>
+              <AccountLink account={bidder.id} />
+            </div>
+          </div>
+        ) : null}
+        {winner ? (
+          <div className="winner">
+            <div>Winner</div>
+            <div>
+              <AccountLink account={winner.id} />
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </GEBPrimeAuctionContainer>
+  )
+}
+
+const GEBBatch: FC = () => {
+  // TODO show a list of all 32(?) auctions
+  const allPrimeAuctionsQuery = useAllPrimeAuctionsQuery()
+  const items = allPrimeAuctionsQuery.data?.primeAuctions ?? []
+
+  return (
+    <div>
+      {items.map(GEBPrimeAuction)}
+      {items.length < 32 && <div>More auctions to come...</div>}
+    </div>
+  )
 }
 
 const Container = styled.div`
@@ -136,7 +267,7 @@ export const BatchAuction: FC = () => {
     <Container>
       <h2>{batchTitleMapping[parsedBatchId]}</h2>
       {parsedBatchId === 2 ? (
-        <AnEternalGoldenRaid />
+        <GEBBatch />
       ) : (
         <Batch batchId={parsedBatchId} />
       )}

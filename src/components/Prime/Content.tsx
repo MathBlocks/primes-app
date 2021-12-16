@@ -1,4 +1,4 @@
-import { FC, ReactChild, useMemo } from 'react'
+import { FC, ReactChild, ReactNode, useMemo } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 // @ts-ignore
@@ -111,7 +111,7 @@ export const Content: FC = () => {
   })
 
   const primeAttributes = useMemo<
-    { key: string; name: string; symbol: string; fill: string }[]
+    { key: string; name: string; symbol: ReactNode }[]
   >(() => {
     if (!attributes) return []
 
@@ -120,9 +120,9 @@ export const Content: FC = () => {
         attributes[key as keyof Attributes].has(tokenId as number),
       )
       .map((key) => {
-        const [name, symbol, fill] =
+        const [name, symbol] =
           ATTRIBUTE_NAMES[key as keyof Attributes]
-        return { key, name, symbol, fill }
+        return { key, name, symbol }
       })
   }, [attributes, tokenId])
 

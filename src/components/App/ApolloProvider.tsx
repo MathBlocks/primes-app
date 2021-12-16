@@ -88,6 +88,6 @@ export const ApolloProvider: FC = ({ children }) => {
       {children}
     </BaseApolloProvider>
   ) : (
-    <div>Loading...</div>
+    <div>Loading... (are you on the right network?)</div>
   )
 }

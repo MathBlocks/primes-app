@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
 import { useWindowSize } from 'react-use'
 import styled from 'styled-components'
@@ -23,7 +23,7 @@ import { ATTRIBUTE_NAMES, Attributes } from '../../attributes'
 const PixiContainer = styled.div`
   width: 100%;
   height: 100%;
-
+  max-height: 640px;
   canvas {
     width: 100%;
     height: 100%;
@@ -31,8 +31,8 @@ const PixiContainer = styled.div`
 `
 
 export const Spiral: FC = () => {
-  // Context
   const history = useHistory()
+  const windowSize = useWindowSize()
   const [attributes] = useAttributes()
   const [visible] = useVisible()
   const [selectedTokenId, setSelectedTokenId] = useSelectedTokenId()
@@ -44,7 +44,10 @@ export const Spiral: FC = () => {
   const viewport = useRef<Viewport>()
   const cull = useRef<Simple>()
   const container = useRef<HTMLDivElement>(null)
-  const selectedTokenIdRef = useRef<number | undefined>(selectedTokenId)
+  const selectedTokenIdRef = useRef<number | undefined>(
+    selectedTokenId,
+  )
+  const [ready, setReady] = useState<boolean>(false)
 
   useEffect(() => {
     if (!attributes) return
@@ -74,8 +77,8 @@ export const Spiral: FC = () => {
       .wheel()
       .decelerate()
       .clamp({ left: true, right: true, bottom: true, top: true })
-      .clampZoom({ minScale: 0.025, maxScale: 1 })
-      .setZoom(0.025)
+      .clampZoom({ minScale: 0.015, maxScale: 1 })
+      .setZoom(0.015)
 
     cull.current = new Simple()
     const cull_ = cull.current
@@ -91,8 +94,9 @@ export const Spiral: FC = () => {
         const visible = cull_.stats().visible < 48
 
         cull_.query(bounds).forEach((container) => {
-          const detail = ((container as PIXI.Sprite).children[0] as PIXI.Sprite)
-            .children[0] as PIXI.Sprite
+          const detail = (
+            (container as PIXI.Sprite).children[0] as PIXI.Sprite
+          ).children[0] as PIXI.Sprite
           detail.visible = visible
 
           const hasResource = detail.texture?.baseTexture?.resource
@@ -101,7 +105,9 @@ export const Spiral: FC = () => {
               detail.texture.destroy()
             }
           } else if (visible) {
-            const resource = new PIXI.SVGResource((container as any).data.svg)
+            const resource = new PIXI.SVGResource(
+              (container as any).data.svg,
+            )
             detail.texture = PIXI.Texture.from(resource as any, {
               resolution: 16,
             })
@@ -139,9 +145,9 @@ export const Spiral: FC = () => {
           Object.entries(attributes)
             .filter(([_, set]) => set.has(tokenId))
             .map(([key]) => {
-              const [name, symbol, fill] =
+              const [name, symbol] =
                 ATTRIBUTE_NAMES[key as keyof Attributes]
-              return { key, name, symbol, fill }
+              return { key, name, symbol }
             }),
         ),
       }
@@ -180,7 +186,7 @@ export const Spiral: FC = () => {
 
         if (!(viewport.current as Viewport).moving) {
           ;(viewport.current as Viewport).animate({
-            time: 10000,
+            time: 1000,
             position: new PIXI.Point(
               container.x + container.width / 2,
               container.y + container.height / 2,
@@ -200,6 +206,10 @@ export const Spiral: FC = () => {
         setSelectedTokenId(tokenId)
         selectedTokenIdRef.current = tokenId
       })
+
+      if (tokenId === N_MAX) {
+        setReady(true)
+      }
     }
   }, [attributes, history, setHoveredTokenId, setSelectedTokenId])
 
@@ -218,21 +228,23 @@ export const Spiral: FC = () => {
   useEffect(() => {
     if (!viewport.current || mintedPrimes.size === 0) return
 
-    // viewport.current.children.forEach((child) => {
-    //   ;(child as PIXI.Sprite).children[0].alpha = mintedPrimes.has(
-    //     (child as any).data.tokenId,
-    //   )
-    //     ? 1
-    //     : 0.25
-    // })
+    viewport.current.children.forEach((child) => {
+      ;(child as PIXI.Sprite).children[0].alpha = mintedPrimes.has(
+        (child as any).data.tokenId,
+      )
+        ? 1
+        : 0.25
+    })
   }, [mintedPrimes])
 
-  const windowSize = useWindowSize()
   useEffect(() => {
-    if (!viewport.current || !app.current) return
+    if (!viewport.current || !app.current || !ready) return
 
-    viewport.current.resize(app.current.view.width, app.current.view.height)
-  }, [windowSize])
+    viewport.current.resize(
+      app.current.view.width,
+      app.current.view.height,
+    )
+  }, [windowSize, ready])
 
   return <PixiContainer ref={container} />
 }

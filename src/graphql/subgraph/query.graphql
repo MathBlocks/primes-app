@@ -128,6 +128,17 @@ query PrimeAuction($id: ID!) {
     }
 }
 
+query AllPrimeAuctions {
+    primeAuctions(orderBy: startTime, orderDirection: asc) {
+        ...PrimeAuctionAll
+        prime {
+            id
+            number
+            image
+        }
+    }
+}
+
 query AuctionStatus {
     primesAuctionHouses {
         id
