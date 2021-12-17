@@ -33,6 +33,11 @@ const GlobalStyle = createGlobalStyle`
   a {
     color: white;
     text-decoration: none;
+    border-bottom: 1px white solid;
+    &:hover, &.active {
+      color: orange;
+      border-color: orange;
+    }
   }
 
   h1, h2, h3, h4, h5 {

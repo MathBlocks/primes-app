@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 // @ts-ignore
 import getPrimeFactors from 'get-prime-factors'
 import { ATTRIBUTE_NAMES, packedAttributeNames } from '../attributes'
+import { Icon } from './Icon'
 
 interface Shell {
   radius: number
@@ -120,10 +121,11 @@ const getSymbols = (
   tokenId: number,
   fg: string,
   primeAttributes: PrimeAttribute[],
+  prime: boolean,
 ) => {
   return (
     <g className="symbols">
-      {primeAttributes.map((_, idx) => {
+      {primeAttributes.map((attr, idx) => {
         // Max 11 attributes (tokenId: 3)
         let cx = 0,
           cy = 0
@@ -164,25 +166,14 @@ const getSymbols = (
 
         return (
           <g key={idx}>
-            <circle
-              r={15}
-              cx={cx}
-              cy={cy}
-              stroke={fg}
-              key={idx}
-              opacity={0.2}
+            <Icon
+              attribute={attr.key as never}
+              prime={prime}
+              width={20}
+              height={20}
+              x={cx - 10}
+              y={cy - 10}
             />
-            <text
-              x={cx}
-              y={cy + 3}
-              fill={fg}
-              fontSize={10}
-              textAnchor="middle"
-              opacity={0.5}
-              fontFamily="Space Grotesk"
-            >
-              {_.name.slice(0, 3).toUpperCase()}
-            </text>
           </g>
         )
       })}
@@ -231,6 +222,7 @@ export const PrimeSVG: FC<{
   const chars = [...tokenId.toString()].map((c) =>
     parseInt(c),
   ) as number[]
+  const short = chars.length < 4
 
   const fg = prime ? '#000' : '#fff'
   const bg = prime ? '#fff' : '#000'
@@ -239,11 +231,11 @@ export const PrimeSVG: FC<{
       xmlns="http://www.w3.org/2000/svg"
       width={BOUNDS}
       height={BOUNDS}
-      style={{ background: bg }}
     >
+      <rect height="100%" width="100%" fill={bg} />
       <style>{STYLE}</style>
       {generateDefs(tokenId, fg, shells.length)}
-      {getSymbols(tokenId, fg, primeAttributes)}
+      {getSymbols(tokenId, fg, primeAttributes, prime)}
       <g className="shells">
         {shells.map((shell, shellIdx) => (
           <g key={shellIdx} className="shell">
@@ -289,11 +281,16 @@ export const PrimeSVG: FC<{
         id="text"
         fill={prime ? '#000' : '#fff'}
         transform={`translate(${
-          (259 - 25 * chars.length) / 2
-        }, 111)`}
+          (259 - (short ? 25 : 18) * chars.length) / 2
+        }, ${short ? 111 : 116})`}
       >
         {chars.map((n, idx) => (
-          <g key={idx} transform={`translate(${25 * idx}) scale(2)`}>
+          <g
+            key={idx}
+            transform={`translate(${(short ? 25 : 18) * idx}) 
+              scale(${short ? 2 : 1.5})
+            `}
+          >
             {numberSVG(n)}
           </g>
         ))}

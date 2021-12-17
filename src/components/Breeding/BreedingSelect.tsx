@@ -27,6 +27,18 @@ const StyledSelect = styled(Select)`
     color: black;
     border-radius: 1rem;
   }
+  #react-select-3-listbox {
+    top: 0;
+    left: 100%;
+    margin: 0;
+    overflow: hidden;
+    > * {
+      padding: 0;
+      > * {
+        padding: 0.35rem 1rem;
+      }
+    }
+  }
 `
 
 const StyledOutput = styled(Field)`
@@ -80,6 +92,11 @@ export const BreedingSelect = ({
       boolean
     >,
   ) => {
+    if (!option) {
+      form.setFieldValue(field.name, '')
+      form.setFieldTouched('desiredOutput', false)
+      return
+    }
     const value = (option as Option<number>).value
     form.setFieldValue(field.name, value)
     form.setFieldTouched('desiredOutput', false)
@@ -92,14 +109,23 @@ export const BreedingSelect = ({
     }
   }
 
-  const value = options.length
-    ? options.find((option) => option.value === field.value)
-    : field.value
+  const value =
+    options.find((option) => option.value === field.value) ??
+    field.value
 
   return (
     <StyledSelect
       name={field.name}
       value={value}
+      onInputChange={(value_, { action }) => {
+        if (action !== 'input-change') return
+        const parsed = parseInt(value_)
+        if (!isFinite(parsed)) {
+          onChange(null)
+        } else if (parsed > 0 && parsed < 16384) {
+          onChange({ label: value_, value: parsed })
+        }
+      }}
       options={options}
       onChange={onChange as never}
       placeholder={placeholder}

@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
-import { useWindowSize } from 'react-use'
+import { useWindowSize, useFirstMountState } from 'react-use'
 import styled from 'styled-components'
 import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
@@ -30,7 +30,7 @@ const PixiContainer = styled.div`
   }
 `
 
-export const Spiral: FC = () => {
+const SpiralContent: FC = () => {
   const history = useHistory()
   const windowSize = useWindowSize()
   const [attributes] = useAttributes()
@@ -86,37 +86,49 @@ export const Spiral: FC = () => {
 
     app_.start()
 
-    PIXI.Ticker.shared.add(() => {
+    const tickerCallback = () => {
       if (viewport_.dirty) {
-        const bounds = viewport_.getVisibleBounds()
-        cull_.cull(bounds)
+        let bounds
+        try {
+          bounds = viewport_.getVisibleBounds()
+        } catch (error) {
+          // The component is probably unmounting; stop the ticker
+          PIXI.Ticker.shared.stop()
+          PIXI.Ticker.shared.remove(tickerCallback)
+          return
+        }
+
+        cull_.cull(bounds as NonNullable<typeof bounds>)
 
         const visible = cull_.stats().visible < 48
 
-        cull_.query(bounds).forEach((container) => {
-          const detail = (
-            (container as PIXI.Sprite).children[0] as PIXI.Sprite
-          ).children[0] as PIXI.Sprite
-          detail.visible = visible
+        cull_
+          .query(bounds as NonNullable<typeof bounds>)
+          .forEach((container) => {
+            const detail = (
+              (container as PIXI.Sprite).children[0] as PIXI.Sprite
+            ).children[0] as PIXI.Sprite
+            detail.visible = visible
 
-          const hasResource = detail.texture?.baseTexture?.resource
-          if (hasResource) {
-            if (!visible) {
-              detail.texture.destroy()
+            const hasResource = detail.texture?.baseTexture?.resource
+            if (hasResource) {
+              if (!visible) {
+                detail.texture.destroy()
+              }
+            } else if (visible) {
+              const resource = new PIXI.SVGResource(
+                (container as any).data.svg,
+              )
+              detail.texture = PIXI.Texture.from(resource as any, {
+                resolution: 16,
+              })
             }
-          } else if (visible) {
-            const resource = new PIXI.SVGResource(
-              (container as any).data.svg,
-            )
-            detail.texture = PIXI.Texture.from(resource as any, {
-              resolution: 16,
-            })
-          }
-        })
+          })
 
         viewport_.dirty = false
       }
-    })
+    }
+    PIXI.Ticker.shared.add(tickerCallback)
 
     return () => {
       app_?.destroy(true, true)
@@ -247,4 +259,27 @@ export const Spiral: FC = () => {
   }, [windowSize, ready])
 
   return <PixiContainer ref={container} />
+}
+
+const Loading = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+export const Spiral: FC = () => {
+  const [update, setUpdate] = useState(false)
+  useEffect(() => {
+    setTimeout(() => {
+      setUpdate(true)
+    }, 1)
+  }, [])
+  return update ? (
+    <SpiralContent />
+  ) : (
+    <Loading>
+      <div>Loading...</div>
+    </Loading>
+  )
 }

@@ -5,7 +5,6 @@ import { Home } from '../Home'
 import { AuctionRoutes } from '../Auction'
 import { Prime } from '../Prime'
 import { Primes } from '../Primes'
-import { PrimesGallery } from '../Primes/PrimesGallery'
 import { Account } from '../Account'
 import { Breeding } from '../Breeding'
 

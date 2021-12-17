@@ -4,6 +4,7 @@ import isPrime from 'is-prime'
 import getPrimeFactors from 'get-prime-factors'
 import { ReactNode } from 'react'
 
+import { ReactComponent as IconUnit } from './icons/unit.svg'
 import { ReactComponent as IconPrime } from './icons/prime.svg'
 import { ReactComponent as IconComposite } from './icons/composite.svg'
 import { ReactComponent as IconCollosallyAbundant } from './icons/abundant.svg'
@@ -57,6 +58,7 @@ interface PackedAttributes {
 }
 
 interface CoreAttributes {
+  unit: Set<number>
   prime: Set<number>
   composite: Set<number>
 }
@@ -105,6 +107,7 @@ const coreAttributeNames: Record<
   keyof CoreAttributes,
   [string, ReactNode]
 > = {
+  unit: ['Unit', IconUnit],
   prime: ['Prime', IconPrime],
   composite: ['Composite', IconComposite],
 }
@@ -2047,6 +2050,7 @@ const generatePackedAttributes = (): PackedAttributes => {
 
 const generateCoreAttributes = () => {
   return {
+    unit: new Set([1]),
     prime: new Set(NUMBERS.filter((n) => n > 0 && isPrime(n))),
     composite: new Set(NUMBERS.filter((n) => n > 2 && !isPrime(n))),
   }

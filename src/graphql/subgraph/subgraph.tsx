@@ -1134,7 +1134,7 @@ export type AllPrimesQuery = { primes: Array<{ id: string }> };
 export type ListedPrimesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListedPrimesQuery = { primes: Array<{ id: string, isRentable: boolean, whitelistOnly: boolean, studFee?: string | null | undefined, deadline?: string | null | undefined, suitors: Array<{ id: string }> }> };
+export type ListedPrimesQuery = { primes: Array<{ id: string, number: number, isRentable: boolean, whitelistOnly: boolean, studFee?: string | null | undefined, deadline?: string | null | undefined, suitors: Array<{ id: string }> }> };
 
 export type PrimeAuctionAllFragment = { id: string, amount?: string | null | undefined, settled: boolean, startTime: string, endTime: string, bidder?: { id: string } | null | undefined, winner?: { id: string } | null | undefined };
 
@@ -1175,6 +1175,14 @@ export type AccountQueryVariables = Exact<{
 
 
 export type AccountQuery = { account?: { primes: Array<{ id: string }> } | null | undefined };
+
+export type PrimePreviewsQueryVariables = Exact<{
+  offset: Scalars['Int'];
+  limit: Scalars['Int'];
+}>;
+
+
+export type PrimePreviewsQuery = { primes: Array<{ id: string, number: number, isPrime: boolean, image: string }> };
 
 export const PrimeAttributesFragmentDoc = gql`
     fragment PrimeAttributes on Prime {
@@ -1371,6 +1379,7 @@ export const ListedPrimesDocument = gql`
     query ListedPrimes {
   primes(where: {isListed: true}, orderBy: number, orderDirection: asc) {
     id
+    number
     isRentable
     whitelistOnly
     studFee
@@ -1651,3 +1660,42 @@ export function useAccountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ac
 export type AccountQueryHookResult = ReturnType<typeof useAccountQuery>;
 export type AccountLazyQueryHookResult = ReturnType<typeof useAccountLazyQuery>;
 export type AccountQueryResult = Apollo.QueryResult<AccountQuery, AccountQueryVariables>;
+export const PrimePreviewsDocument = gql`
+    query PrimePreviews($offset: Int!, $limit: Int!) {
+  primes(first: $limit, skip: $offset, orderDirection: asc, orderBy: number) {
+    id
+    number
+    isPrime
+    image
+  }
+}
+    `;
+
+/**
+ * __usePrimePreviewsQuery__
+ *
+ * To run a query within a React component, call `usePrimePreviewsQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePrimePreviewsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePrimePreviewsQuery({
+ *   variables: {
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function usePrimePreviewsQuery(baseOptions: Apollo.QueryHookOptions<PrimePreviewsQuery, PrimePreviewsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PrimePreviewsQuery, PrimePreviewsQueryVariables>(PrimePreviewsDocument, options);
+      }
+export function usePrimePreviewsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PrimePreviewsQuery, PrimePreviewsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PrimePreviewsQuery, PrimePreviewsQueryVariables>(PrimePreviewsDocument, options);
+        }
+export type PrimePreviewsQueryHookResult = ReturnType<typeof usePrimePreviewsQuery>;
+export type PrimePreviewsLazyQueryHookResult = ReturnType<typeof usePrimePreviewsLazyQuery>;
+export type PrimePreviewsQueryResult = Apollo.QueryResult<PrimePreviewsQuery, PrimePreviewsQueryVariables>;

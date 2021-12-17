@@ -81,6 +81,7 @@ const LayoutContainer = styled.div`
   display: grid;
   height: 100%;
   grid-template-rows: auto 1fr auto;
+  padding: 0 1rem;
 
   header {
     display: flex;
@@ -88,6 +89,9 @@ const LayoutContainer = styled.div`
     justify-content: space-between;
     align-items: center;
     height: 8rem;
+    a {
+      border-bottom: 0;
+    }
   }
 
   footer {

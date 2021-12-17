@@ -13,6 +13,7 @@ generates:
   ./src/graphql/subgraph/schema.graphql:
     overwrite: true
     schema: https://api.thegraph.com/subgraphs/name/jameslefrere/stealth-launch-nft-shhh
+    documents: 'src/graphql/subgraph/query.graphql'
     plugins:
       - 'schema-ast'
     config:
@@ -27,3 +28,8 @@ generates:
       - 'typescript'
       - 'typescript-operations'
       - 'typescript-react-apollo'
+
+  ./src/apollo-helpers.ts:
+    schema: ./src/graphql/subgraph/schema.graphql
+    plugins:
+      - typescript-apollo-client-helpers

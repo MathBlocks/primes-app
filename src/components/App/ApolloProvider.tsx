@@ -17,14 +17,34 @@ import { RetryLink } from '@apollo/client/link/retry'
 import { onError } from '@apollo/client/link/error'
 import ApolloLinkTimeout from 'apollo-link-timeout'
 
+import { StrictTypedTypePolicies } from '../../apollo-helpers'
 import { useGraphQlEndpoints } from '../../config'
+import { TypePolicies } from '@apollo/client/cache'
 
 const retryIf = (error: { statusCode: number }) => {
   const doNotRetryCodes = [500, 400]
   return !!error && !doNotRetryCodes.includes(error.statusCode)
 }
 
-const cache = new InMemoryCache()
+const typePolicies: StrictTypedTypePolicies = {
+  // Query: {
+  //   fields: {
+  //     primes: {
+  //       keyArgs: false,
+  //       merge(existing = [], incoming) {
+  //         console.log('merge primes')
+  //         console.log(existing, incoming)
+  //         return [...existing, ...incoming]
+  //       },
+  //     },
+  //   },
+  // },
+}
+
+const cache = new InMemoryCache({
+  typePolicies: typePolicies as TypePolicies,
+})
+;(window as any).cache = cache
 
 export const ApolloProvider: FC = ({ children }) => {
   const graphQLEndpoints = useGraphQlEndpoints()

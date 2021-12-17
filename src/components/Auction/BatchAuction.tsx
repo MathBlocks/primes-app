@@ -146,6 +146,7 @@ const GEBPrimeAuctionContainer = styled.div`
   }
   .prime {
     a {
+      border-bottom: 0;
       display: flex;
       gap: 1rem;
       align-items: center;
@@ -162,6 +163,10 @@ const GEBPrimeAuctionContainer = styled.div`
         &:first-child {
           border-radius: 0.5rem;
           overflow: hidden;
+        }
+        &:last-child {
+          line-height: 100%;
+          border-bottom: 1px white solid;
         }
       }
     }

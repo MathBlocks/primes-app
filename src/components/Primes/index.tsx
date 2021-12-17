@@ -21,11 +21,6 @@ const Container = styled.div`
     align-items: center;
     border-bottom: 1px #444 solid;
     padding-bottom: 1rem;
-    a {
-      &.active {
-        font-weight: bold;
-      }
-    }
   }
 
   > :last-child {
@@ -39,8 +34,8 @@ export const Primes: FC = () => {
   return (
     <Container>
       <div>
-        <NavLink to="/primes/spiral">Ulam Spiral</NavLink>
         <NavLink to="/primes/gallery">Gallery</NavLink>
+        <NavLink to="/primes/spiral">Ulam Spiral</NavLink>
       </div>
       <div>
         {!!matchSpiral ? (

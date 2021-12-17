@@ -90,6 +90,7 @@ query AllPrimes {
 query ListedPrimes {
     primes(where: { isListed: true }, orderBy: number, orderDirection: asc) {
         id
+        number
         isRentable
         whitelistOnly
         studFee
@@ -178,5 +179,14 @@ query Account($account: ID!) {
         primes(orderBy: number, orderDirection: asc) {
             id
         }
+    }
+}
+
+query PrimePreviews($offset: Int!, $limit: Int!) {
+    primes(first: $limit, skip: $offset, orderDirection: asc, orderBy: number) {
+        id
+        number
+        isPrime
+        image
     }
 }
