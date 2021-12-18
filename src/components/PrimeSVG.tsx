@@ -3,7 +3,6 @@ import { renderToStaticMarkup } from 'react-dom/server'
 
 // @ts-ignore
 import getPrimeFactors from 'get-prime-factors'
-import { ATTRIBUTE_NAMES, packedAttributeNames } from '../attributes'
 import { Icon } from './Icon'
 
 interface Shell {

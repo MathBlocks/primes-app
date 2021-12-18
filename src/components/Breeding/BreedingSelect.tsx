@@ -15,7 +15,7 @@ interface FormikSelectProps<T> extends FieldProps {
 
 const StyledSelect = styled(Select)`
   font-size: 1.5rem;
-  max-width: 12rem;
+  width: 10rem;
   > div {
     background: white;
     border: 1px white solid;
@@ -40,12 +40,11 @@ const StyledSelect = styled(Select)`
 const StyledOutput = styled(Field)`
   font-size: 1.5rem;
   max-width: 12rem;
-  > div {
-    background: black;
-    border: 1px white solid;
-    color: white;
-    border-radius: 1rem;
-  }
+  background: black;
+  border: 1px white solid;
+  color: white;
+  border-radius: 1rem;
+  padding: 0.5rem;
 `
 
 export const BreedingOutput = <T extends unknown>({

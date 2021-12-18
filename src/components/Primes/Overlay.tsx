@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useMemo } from 'react'
+import { FC, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import ReactTooltip from 'react-tooltip'
 
@@ -11,11 +11,8 @@ import {
   useVisible,
   useHoveredTokenId,
   useMintedPrimes,
-  useMyPrimes,
 } from '../App/PrimesContext'
 import { useToggle } from 'react-use'
-// import { useEthers } from '@usedapp/core'
-// import { usePrimesForAccountQuery } from '../../graphql/subgraph/subgraph'
 
 const AttrButtons = styled.div`
   display: flex;
@@ -197,25 +194,26 @@ const AttributesSelector: FC = () => {
   )
 }
 
-const MyPrimesSelector: FC = () => {
-  const [hoveredTokenId] = useHoveredTokenId()
-  const [myPrimes, setMyPrimes] = useMyPrimes()
+// const MyPrimesSelector: FC = () => {
+//   const [hoveredTokenId] = useHoveredTokenId()
+//   const [myPrimes, setMyPrimes] = useMyPrimes()
+//
+//   return (
+//     <AttrButton
+//       onClick={() => {
+//         setMyPrimes({ ...myPrimes, enabled: !myPrimes.enabled })
+//       }}
+//       active={myPrimes.enabled}
+//       hovered={
+//         hoveredTokenId ? myPrimes.set.has(hoveredTokenId) : false
+//       }
+//       data-tip={`Owned by me (${myPrimes.set.size})`}
+//     >
+//       My Primes
+//     </AttrButton>
+//   )
+// }
 
-  return (
-    <AttrButton
-      onClick={() => {
-        setMyPrimes({ ...myPrimes, enabled: !myPrimes.enabled })
-      }}
-      active={myPrimes.enabled}
-      hovered={
-        hoveredTokenId ? myPrimes.set.has(hoveredTokenId) : false
-      }
-      data-tip={`Owned by me (${myPrimes.set.size})`}
-    >
-      My Primes
-    </AttrButton>
-  )
-}
 const Container = styled.div`
   position: absolute;
   padding: 1rem;
@@ -231,6 +229,5 @@ const Container = styled.div`
 export const Overlay: FC = () => (
   <Container>
     <AttributesSelector />
-    {/*<MyPrimesSelector />*/}
   </Container>
 )

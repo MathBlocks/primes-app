@@ -1,7 +1,13 @@
 // Shamelessly adapted from OpenZeppelin-contracts test utils
 
-import { bufferToHex, keccak256, keccakFromString } from 'ethereumjs-util'
+import {
+  bufferToHex,
+  keccak256,
+  keccakFromString,
+} from 'ethereumjs-util'
 import { hexToBytes, soliditySha3 } from 'web3-utils'
+import { useAsync } from 'react-use'
+import { useState } from 'react'
 
 // Merkle tree called with 32 byte hex values
 export class MerkleTree {
@@ -21,7 +27,10 @@ export class MerkleTree {
     return Buffer.concat([...args].sort(Buffer.compare))
   }
 
-  private static getPairElement(idx: number, layer: Buffer[]): null | Buffer {
+  private static getPairElement(
+    idx: number,
+    layer: Buffer[],
+  ): null | Buffer {
     const pairIdx = idx % 2 === 0 ? idx + 1 : idx - 1
 
     if (pairIdx < layer.length) {
@@ -30,7 +39,10 @@ export class MerkleTree {
     return null
   }
 
-  private static bufIndexOf(el: string | Buffer, arr: Buffer[]): number {
+  private static bufIndexOf(
+    el: string | Buffer,
+    arr: Buffer[],
+  ): number {
     let hash
 
     // Convert element to 32 byte hash if it is not one already
@@ -60,7 +72,10 @@ export class MerkleTree {
     }, [])
   }
 
-  private static combinedHash(first: Buffer, second: Buffer): Buffer {
+  private static combinedHash(
+    first: Buffer,
+    second: Buffer,
+  ): Buffer {
     if (!first) {
       return second
     }
@@ -146,12 +161,66 @@ export class MerkleTree {
   }
 }
 
-export const createTreeWithAccounts = (accounts: string[]): MerkleTree => {
-  const elements = accounts.map((account) => soliditySha3(account)) as string[]
+export const createTreeWithAccounts = (
+  accounts: string[],
+): MerkleTree => {
+  const elements = accounts.map((account) =>
+    soliditySha3(account),
+  ) as string[]
   return new MerkleTree(elements)
 }
 
-export const getAccountProof = (tree: MerkleTree, account: string) => {
+export const getAccountProof = (
+  tree: MerkleTree,
+  account: string,
+) => {
   const element = soliditySha3(account) as string
   return tree.getHexProof(element)
+}
+
+export const useWhitelistProof = (
+  filename: string,
+  account?: string,
+) => {
+  const [proof, setProof] = useState<string[] | undefined>()
+
+  useAsync(async () => {
+    if (!account) return
+    try {
+      const response = await fetch(
+        `${window.location.origin}/${filename}`,
+      )
+      const json = await response.json()
+      const tree = createTreeWithAccounts(Object.keys(json))
+      setProof(getAccountProof(tree, account))
+    } catch (error) {
+      console.error(error)
+    }
+  }, [filename, account])
+
+  return proof
+}
+
+export const useAttributesProof = (tokenId?: number) => {
+  const [proof, setProof] = useState<
+    { value: number; proof: string[] } | undefined
+  >()
+
+  useAsync(async () => {
+    if (!tokenId) return
+    try {
+      const response = await fetch(
+        `${window.location.origin}/attribute-proofs/${tokenId}.json`,
+      )
+      const json = (await response.json()) as {
+        value: string
+        proof: string[]
+      }
+      setProof({ value: parseInt(json.value), proof: json.proof })
+    } catch (error) {
+      console.error(error)
+    }
+  }, [setProof, tokenId])
+
+  return proof
 }

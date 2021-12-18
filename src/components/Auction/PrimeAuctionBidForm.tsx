@@ -1,32 +1,11 @@
 import { FC } from 'react'
-import { Field, Form, Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import { parseEther } from 'ethers/lib/utils'
 
-import {
-  PrimesAuctionHouse,
-  useAuctionStatusQuery,
-} from '../../graphql/subgraph/subgraph'
+import { useAuctionStatusQuery } from '../../graphql/subgraph/subgraph'
 import { useContracts } from '../App/DAppContext'
-import { useContractFunction } from '../../hooks'
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { ETHInput } from '../ETHInput'
-
-const formatError = (
-  error: any,
-  primesAuctionHouse: PrimesAuctionHouse,
-): string =>
-  error.error?.message
-    ? error.error.message
-        .split('execution reverted: ')[1]
-        .replace(
-          'reservePrice',
-          `${primesAuctionHouse.reservePrice}`,
-        )
-        .replace(
-          'minBidIncrementPercentage',
-          `${primesAuctionHouse.minBidIncrementPercentage}%`,
-        ) ?? error.error.message
-    : error.message
 
 export const PrimeAuctionBidForm: FC<{ tokenId: number }> = ({
   tokenId,
@@ -36,34 +15,10 @@ export const PrimeAuctionBidForm: FC<{ tokenId: number }> = ({
   const primesAuctionHouse =
     auctionStatusQuery.data?.primesAuctionHouses?.[0]
 
-  const createBid = useContractFunction(
-    PrimesAuctionHouse,
-    'createBid',
-    {
-      transactionName: 'Create bid',
-    },
-  )
-
   return (
     <Formik
+      onSubmit={() => {}}
       initialValues={{ bid: 0 }}
-      onSubmit={async ({ bid }: { bid: number }, formikHelpers) => {
-        if (!primesAuctionHouse || !bid) return
-
-        try {
-          await createBid.send(tokenId, {
-            value: parseEther(bid.toFixed(18)),
-          })
-        } catch (error) {
-          const errors = {
-            bid: formatError(
-              error,
-              primesAuctionHouse as PrimesAuctionHouse,
-            ),
-          }
-          formikHelpers.setErrors(errors)
-        }
-      }}
       validate={async ({ bid }: Partial<{ bid: number }>) => {
         const errors: { bid?: string } = {}
 
@@ -76,8 +31,6 @@ export const PrimeAuctionBidForm: FC<{ tokenId: number }> = ({
           errors.bid = 'Must enter an amount'
           return errors
         }
-
-        // TODO validate ETH balance
 
         return errors
       }}

@@ -82,7 +82,7 @@ const AuctionStatus: FC = () => {
   })
   const auctionHouse = query.data?.primesAuctionHouses[0]
   const currentPrimeAuction = auctionHouse?.currentPrimeAuction
-  const primeBatches = query.data?.primeBatches
+  // const primeBatches = query.data?.primeBatches
 
   return (
     <div>

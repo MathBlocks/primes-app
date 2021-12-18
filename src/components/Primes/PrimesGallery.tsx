@@ -15,8 +15,6 @@ import {
   useMintedPrimes,
 } from '../App/PrimesContext'
 import {
-  PrimePreviewsForIdsQueryVariables,
-  PrimePreviewsQueryVariables,
   usePrimePreviewsForIdsQuery,
   usePrimePreviewsQuery,
 } from '../../graphql/subgraph/subgraph'

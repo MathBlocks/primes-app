@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
-import { useWindowSize, useFirstMountState } from 'react-use'
+import { useWindowSize } from 'react-use'
 import styled from 'styled-components'
 import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
@@ -279,7 +279,7 @@ export const Spiral: FC = () => {
     <SpiralContent />
   ) : (
     <Loading>
-      <div>Loading...</div>
+      <div>Bikeshedding...</div>
     </Loading>
   )
 }

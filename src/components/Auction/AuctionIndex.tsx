@@ -1,8 +1,5 @@
 import { FC } from 'react'
-import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
-import { useAuctionStatusQuery } from '../../graphql/subgraph/subgraph'
-import { getNowUnix } from '../../utils'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -89,14 +86,3 @@ export const AuctionIndex: FC = () => {
     </Container>
   )
 }
-
-// if (currentPrimeAuction) {
-//   return (
-//     <Redirect to={`/auction/prime/${currentPrimeAuction.id}`} />
-//   )
-// }
-//
-// const nextBatch = primeBatches?.find((pb) => pb.remaining > 0)
-// if (nextBatch) {
-//   return <Redirect to={`/auction/batch/${nextBatch.id}`} />
-// }

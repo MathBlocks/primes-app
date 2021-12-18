@@ -1,5 +1,5 @@
-import { FC, useMemo } from 'react'
-import { useHistory, useParams } from 'react-router'
+import { FC } from 'react'
+import { useParams } from 'react-router'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useEthers } from '@usedapp/core'
@@ -14,10 +14,7 @@ import {
 } from '../../graphql/subgraph/subgraph'
 import { AccountLink } from '../AccountLink'
 import { useContracts } from '../App/DAppContext'
-import {
-  createTreeWithAccounts,
-  getAccountProof,
-} from '../../merkleTree'
+import { useWhitelistProof } from '../../merkleTree'
 import { SendTransactionWidget } from '../SendTransactionWidget'
 
 const batchTitleMapping: Record<number, string> = {
@@ -37,13 +34,10 @@ const MintRandomPrimeForm: FC<{ batchId: number }> = ({
   const { Primes } = useContracts<true>()
   const { account } = useEthers()
 
-  const merkleProof = useMemo<undefined | string[]>(() => {
-    if (!account) return
-
-    // TODO get whitelist and make like a tree
-    const whitelistTree = createTreeWithAccounts([account])
-    return getAccountProof(whitelistTree, account)
-  }, [account])
+  const proof = useWhitelistProof(
+    `batch${batchId}.json`,
+    account as string | undefined,
+  )
 
   return (
     <div>
@@ -51,7 +45,7 @@ const MintRandomPrimeForm: FC<{ batchId: number }> = ({
         contract={Primes}
         functionName="mintRandomPrime"
         args={[
-          merkleProof,
+          proof,
           {
             value: batchPriceMapping[batchId],
           },
@@ -197,7 +191,7 @@ const GEBPrimeAuction: FC<PrimeAuctionData> = ({
             to={`/auction/batch/2/${prime.id}`}
           >
             <span>
-              <img src={prime.image} />
+              <img src={prime.image} alt={prime.id} />
             </span>
             <span>{prime.id}</span>
           </Link>
@@ -215,22 +209,22 @@ const GEBPrimeAuction: FC<PrimeAuctionData> = ({
             {formatISO9075(fromUnixTime(parseInt(endTime)))}
           </div>
         </div>
-        {bidder ? (
+        {bidder && (
           <div className="bidder">
             <div>Bidder</div>
             <div>
               <AccountLink account={bidder.id} />
             </div>
           </div>
-        ) : null}
-        {winner ? (
+        )}
+        {winner && (
           <div className="winner">
             <div>Winner</div>
             <div>
               <AccountLink account={winner.id} />
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     </GEBPrimeAuctionContainer>
   )

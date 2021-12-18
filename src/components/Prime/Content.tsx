@@ -9,7 +9,6 @@ import { ATTRIBUTE_NAMES, Attributes } from '../../attributes'
 import { useAttributes } from '../App/PrimesContext'
 import { getSVGDataURI } from '../PrimeSVG'
 import { useRouteTokenId } from './Context'
-import { Rental } from './Rental'
 import { truncateAddress } from '../../utils'
 
 const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
@@ -163,7 +162,6 @@ export const Content: FC = () => {
             <span>Not owned</span>
           )}
         </div>
-        {/*<Rental />*/}
         <List
           title="Attributes"
           items={primeAttributes.map((attr) => ({

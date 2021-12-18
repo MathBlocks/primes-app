@@ -1,28 +1,69 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import styled from 'styled-components'
-import { ErrorMessage, Form, Formik, useFormikContext } from 'formik'
+import { Form, Formik, useFormikContext } from 'formik'
 import { useEthers } from '@usedapp/core'
 // @ts-ignore
 import isPrime from 'is-prime'
 
 import { useContracts } from '../App/DAppContext'
 import { useMintedPrimes, useMyPrimes } from '../App/PrimesContext'
-import {
-  createTreeWithAccounts,
-  getAccountProof,
-} from '../../merkleTree'
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { BreedingOutput, BreedingSelect } from './BreedingSelect'
 import { Values } from './types'
 import { useListedPrimesQuery } from '../../graphql/subgraph/subgraph'
-import ReactTooltip from 'react-tooltip'
+import { useAttributesProof } from '../../merkleTree'
+
+const SubmitBreed: FC = () => {
+  const { values, isSubmitting, isValidating, isValid } =
+    useFormikContext<Values>()
+
+  const outputAttributesProof = useAttributesProof(
+    values.desiredOutput,
+  )
+
+  const { Primes } = useContracts<true>()
+
+  const isBreedPrimes =
+    values.tokenId &&
+    values.otherTokenId &&
+    isPrime(values.tokenId) &&
+    isPrime(values.otherTokenId)
+
+  return (
+    <SendTransactionWidget
+      buttonProps={{
+        disabled:
+          isSubmitting ||
+          isValidating ||
+          !isValid ||
+          !outputAttributesProof,
+      }}
+      contract={Primes}
+      functionName={isBreedPrimes ? 'breedPrimes' : 'crossBreed'}
+      transactionOptions={{
+        transactionName: isBreedPrimes
+          ? 'Breed Primes'
+          : 'Cross breed',
+      }}
+      args={[
+        values.tokenId,
+        values.otherTokenId,
+        outputAttributesProof?.value ?? 0,
+        outputAttributesProof?.proof ?? [],
+      ]}
+    />
+  )
+}
 
 const StyledForm = styled(Form)`
-  max-width: 30rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: stretch;
+  padding: 4rem 0;
+
+  .row {
+  }
+
+  .tip {
+    padding: 0.5rem 0;
+  }
 
   .symbol {
     font-size: 3rem;
@@ -37,6 +78,7 @@ const StyledForm = styled(Form)`
   }
 `
 
+// TODO: lives left, burning warning
 const BreedingForm: FC = () => {
   const { account } = useEthers()
   const { Primes } = useContracts<true>()
@@ -75,10 +117,6 @@ const BreedingForm: FC = () => {
       allBreedablePrimesSet,
     }
   }, [listedPrimes.data, myPrimes.set])
-
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  }, [])
 
   return (
     <Formik
@@ -154,17 +192,11 @@ const BreedingForm: FC = () => {
             return {}
           }
 
-          // TODO could show who otherOwner is
-
           try {
-            // TODO get whitelist and make like a tree
-            const tree = createTreeWithAccounts([account])
-            const proof = getAccountProof(tree, account)
-
-            // TODO get attributes and merkle proof
             await Primes.estimateGas.crossBreed(
               values.tokenId,
               values.otherTokenId,
+              // Shouldn't need the real attributes proof to estimate this
               0,
               [],
               {
@@ -187,8 +219,6 @@ const BreedingForm: FC = () => {
     >
       {(form) => {
         const {
-          isSubmitting,
-          isValid,
           getFieldMeta,
           getFieldProps,
           handleChange,
@@ -196,14 +226,10 @@ const BreedingForm: FC = () => {
           values,
           errors,
         } = form
-        const isBreedPrimes =
-          values.tokenId &&
-          values.otherTokenId &&
-          isPrime(values.tokenId) &&
-          isPrime(values.otherTokenId)
+
         return (
           <StyledForm>
-            <div data-tip="You must own this Prime">
+            <div>
               <BreedingSelect
                 options={groups.myBreedablePrimes}
                 field={getFieldProps('tokenId')}
@@ -216,9 +242,10 @@ const BreedingForm: FC = () => {
                 }
                 placeholder="Parent 1"
               />
+              <div className="tip">You must own this Prime</div>
             </div>
             <div className="symbol">x</div>
-            <div data-tip="This can be a Prime you own, or a Prime you can rent">
+            <div>
               <BreedingSelect
                 options={groups.allBreedablePrimes}
                 field={getFieldProps('otherTokenId')}
@@ -243,35 +270,26 @@ const BreedingForm: FC = () => {
                 }}
                 placeholder="Parent 2"
               />
+              <div className="tip">
+                This can be a Prime you own, or a Prime you can rent
+              </div>
             </div>
             <div className="symbol">=</div>
-            <BreedingOutput
-              name="desiredOutput"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.desiredOutput}
-              placeholder="Progeny"
-            />
+            <div>
+              <BreedingOutput
+                name="desiredOutput"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.desiredOutput}
+                placeholder="Progeny"
+              />
+            </div>
             {Object.entries(errors).map(([name, error]) => (
               <div className="error" key={name}>
                 {error}
               </div>
             ))}
-            <SendTransactionWidget
-              buttonProps={{
-                disabled: isSubmitting || !isValid,
-              }}
-              contract={Primes}
-              functionName={
-                isBreedPrimes ? 'breedPrimes' : 'crossBreed'
-              }
-              transactionOptions={{
-                transactionName: isBreedPrimes
-                  ? 'Breed Primes'
-                  : 'Cross breed',
-              }}
-              args={[values.tokenId, values.otherTokenId, 0, []]}
-            />
+            <SubmitBreed />
           </StyledForm>
         )
       }}
@@ -289,12 +307,3 @@ export const Breeding: FC = () => {
     </Container>
   )
 }
-
-// <Field type="number" as="select" name="tokenId">
-//   <option value="">Select</option>
-//   {myBreedablePrimes.map((id) => (
-//     <option value={id} key={id}>
-//       {id}
-//     </option>
-//   ))}
-// </Field>
