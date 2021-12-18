@@ -20,6 +20,7 @@ import {
   usePrimePreviewsForIdsQuery,
   usePrimePreviewsQuery,
 } from '../../graphql/subgraph/subgraph'
+import { usePrevious } from 'react-use'
 
 const AttrButtons = styled.div`
   display: flex;
@@ -177,6 +178,7 @@ const LIMIT = 30
 
 export const PrimesGallery: FC = () => {
   const [visible] = useVisible()
+  const visiblePrev = usePrevious(visible)
   const [mintedPrimes] = useMintedPrimes()
 
   const variables = useMemo(() => {
@@ -207,6 +209,12 @@ export const PrimesGallery: FC = () => {
         .sort((a, b) => a.number - b.number),
     [query.data, visible],
   )
+
+  useEffect(() => {
+    if (visiblePrev && visiblePrev.size !== visible.size) {
+      query.refetch({ offset: 0 })
+    }
+  }, [query, visible.size, visiblePrev])
 
   return (
     <Container>
