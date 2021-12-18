@@ -14,7 +14,12 @@ import {
   useHoveredTokenId,
   useMintedPrimes,
 } from '../App/PrimesContext'
-import { usePrimePreviewsQuery } from '../../graphql/subgraph/subgraph'
+import {
+  PrimePreviewsForIdsQueryVariables,
+  PrimePreviewsQueryVariables,
+  usePrimePreviewsForIdsQuery,
+  usePrimePreviewsQuery,
+} from '../../graphql/subgraph/subgraph'
 
 const AttrButtons = styled.div`
   display: flex;
@@ -172,19 +177,35 @@ const LIMIT = 30
 
 export const PrimesGallery: FC = () => {
   const [visible] = useVisible()
-  const primePreviewsQuery = usePrimePreviewsQuery({
-    variables: {
+  const [mintedPrimes] = useMintedPrimes()
+
+  const variables = useMemo(() => {
+    let ids = [...mintedPrimes.values()]
+      .filter((tokenId) => visible.has(tokenId))
+      .map((tokenId) => tokenId.toString())
+    ids = ids.length === mintedPrimes.size ? [] : ids
+    return {
       offset: 0,
       limit: LIMIT,
-    },
+      ids,
+    }
+  }, [mintedPrimes, visible])
+  const forIds = variables.ids.length > 0
+
+  const primePreviewsQuery = usePrimePreviewsQuery({ variables })
+  const primePreviewsForIdsQuery = usePrimePreviewsForIdsQuery({
+    variables,
   })
+  const query = forIds
+    ? primePreviewsForIdsQuery
+    : primePreviewsQuery
 
   const sortedData = useMemo(
     () =>
-      (primePreviewsQuery.data?.primes ?? [])
+      (query.data?.primes ?? [])
         .filter((p) => visible.has(p.number))
         .sort((a, b) => a.number - b.number),
-    [primePreviewsQuery, visible],
+    [query.data, visible],
   )
 
   return (
@@ -196,11 +217,10 @@ export const PrimesGallery: FC = () => {
         <InfiniteScroll
           className="items"
           next={() => {
-            primePreviewsQuery.fetchMore({
+            query.fetchMore({
               variables: { offset: sortedData.length },
               updateQuery(prevResult, { fetchMoreResult }) {
                 if (!fetchMoreResult) return prevResult
-
                 return {
                   ...prevResult,
                   primes: [

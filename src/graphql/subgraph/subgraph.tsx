@@ -1176,6 +1176,8 @@ export type AccountQueryVariables = Exact<{
 
 export type AccountQuery = { account?: { primes: Array<{ id: string }> } | null | undefined };
 
+export type PrimePreviewFragment = { id: string, number: number, isPrime: boolean, image: string };
+
 export type PrimePreviewsQueryVariables = Exact<{
   offset: Scalars['Int'];
   limit: Scalars['Int'];
@@ -1183,6 +1185,15 @@ export type PrimePreviewsQueryVariables = Exact<{
 
 
 export type PrimePreviewsQuery = { primes: Array<{ id: string, number: number, isPrime: boolean, image: string }> };
+
+export type PrimePreviewsForIdsQueryVariables = Exact<{
+  offset: Scalars['Int'];
+  limit: Scalars['Int'];
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type PrimePreviewsForIdsQuery = { primes: Array<{ id: string, number: number, isPrime: boolean, image: string }> };
 
 export const PrimeAttributesFragmentDoc = gql`
     fragment PrimeAttributes on Prime {
@@ -1269,6 +1280,14 @@ export const PrimeAuctionAllFragmentDoc = gql`
   winner {
     id
   }
+}
+    `;
+export const PrimePreviewFragmentDoc = gql`
+    fragment PrimePreview on Prime {
+  id
+  number
+  isPrime
+  image
 }
     `;
 export const PrimeDocument = gql`
@@ -1663,13 +1682,10 @@ export type AccountQueryResult = Apollo.QueryResult<AccountQuery, AccountQueryVa
 export const PrimePreviewsDocument = gql`
     query PrimePreviews($offset: Int!, $limit: Int!) {
   primes(first: $limit, skip: $offset, orderDirection: asc, orderBy: number) {
-    id
-    number
-    isPrime
-    image
+    ...PrimePreview
   }
 }
-    `;
+    ${PrimePreviewFragmentDoc}`;
 
 /**
  * __usePrimePreviewsQuery__
@@ -1699,3 +1715,46 @@ export function usePrimePreviewsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type PrimePreviewsQueryHookResult = ReturnType<typeof usePrimePreviewsQuery>;
 export type PrimePreviewsLazyQueryHookResult = ReturnType<typeof usePrimePreviewsLazyQuery>;
 export type PrimePreviewsQueryResult = Apollo.QueryResult<PrimePreviewsQuery, PrimePreviewsQueryVariables>;
+export const PrimePreviewsForIdsDocument = gql`
+    query PrimePreviewsForIds($offset: Int!, $limit: Int!, $ids: [ID!]!) {
+  primes(
+    first: $limit
+    skip: $offset
+    orderDirection: asc
+    orderBy: number
+    where: {id_in: $ids}
+  ) {
+    ...PrimePreview
+  }
+}
+    ${PrimePreviewFragmentDoc}`;
+
+/**
+ * __usePrimePreviewsForIdsQuery__
+ *
+ * To run a query within a React component, call `usePrimePreviewsForIdsQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePrimePreviewsForIdsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePrimePreviewsForIdsQuery({
+ *   variables: {
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function usePrimePreviewsForIdsQuery(baseOptions: Apollo.QueryHookOptions<PrimePreviewsForIdsQuery, PrimePreviewsForIdsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PrimePreviewsForIdsQuery, PrimePreviewsForIdsQueryVariables>(PrimePreviewsForIdsDocument, options);
+      }
+export function usePrimePreviewsForIdsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PrimePreviewsForIdsQuery, PrimePreviewsForIdsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PrimePreviewsForIdsQuery, PrimePreviewsForIdsQueryVariables>(PrimePreviewsForIdsDocument, options);
+        }
+export type PrimePreviewsForIdsQueryHookResult = ReturnType<typeof usePrimePreviewsForIdsQuery>;
+export type PrimePreviewsForIdsLazyQueryHookResult = ReturnType<typeof usePrimePreviewsForIdsLazyQuery>;
+export type PrimePreviewsForIdsQueryResult = Apollo.QueryResult<PrimePreviewsForIdsQuery, PrimePreviewsForIdsQueryVariables>;

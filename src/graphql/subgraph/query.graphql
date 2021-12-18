@@ -182,11 +182,21 @@ query Account($account: ID!) {
     }
 }
 
+fragment PrimePreview on Prime {
+    id
+    number
+    isPrime
+    image
+}
+
 query PrimePreviews($offset: Int!, $limit: Int!) {
     primes(first: $limit, skip: $offset, orderDirection: asc, orderBy: number) {
-        id
-        number
-        isPrime
-        image
+        ...PrimePreview
+    }
+}
+
+query PrimePreviewsForIds($offset: Int!, $limit: Int!, $ids: [ID!]!) {
+    primes(first: $limit, skip: $offset, orderDirection: asc, orderBy: number, where: {id_in: $ids}) {
+        ...PrimePreview
     }
 }
