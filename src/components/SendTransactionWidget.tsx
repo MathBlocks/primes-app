@@ -9,13 +9,12 @@ import {
 
 import { useContractFunction } from '../hooks'
 
+const Row = styled.div<{ visible: boolean }>`
+  display: ${({ visible }) => (visible ? 'block' : 'none')};
+`
+
 const Container = styled.div<{ status: TransactionState }>`
   border-radius: 1rem;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
   padding: 0;
 
   background-color: ${({ status }) =>
@@ -49,10 +48,12 @@ const Container = styled.div<{ status: TransactionState }>`
   }
 
   > div {
-    padding: 0 1rem;
-    &:last-child {
-      padding-bottom: 1rem;
-    }
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
   }
 `
 
@@ -95,26 +96,26 @@ export const SendTransactionWidget: <
         {transactionOptions?.transactionName ?? 'Send'}
       </button>
       <div>
-        {status === 'None' ? '–' : status}{' '}
-        {errorMessage && (
-          <span className="error">
-            ({errorMessage.replace('execution reverted: ', '')})
-          </span>
-        )}
-      </div>
-      <div>
-        {transaction?.hash ? (
+        <Row visible={status !== 'None'}>
+          {status}{' '}
+          {errorMessage && (
+            <span className="error">
+              ({errorMessage.replace('execution reverted: ', '')})
+            </span>
+          )}
+        </Row>
+        <Row visible={!!transaction?.hash}>
           <a
+            target="_blank"
+            rel="noreferrer"
             href={getExplorerTransactionLink(
-              transaction.hash,
+              transaction?.hash ?? '',
               chainId,
             )}
           >
             View transaction
           </a>
-        ) : (
-          '–'
-        )}
+        </Row>
       </div>
     </Container>
   )

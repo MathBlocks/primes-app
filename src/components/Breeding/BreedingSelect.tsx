@@ -1,11 +1,6 @@
-import React, { ChangeEvent } from 'react'
+import React, { ReactNode } from 'react'
 import Select, { Options, OnChangeValue } from 'react-select'
-import {
-  FieldInputProps,
-  FieldProps,
-  Field,
-  useFormikContext,
-} from 'formik'
+import { FieldInputProps, FieldProps, Field } from 'formik'
 import styled from 'styled-components'
 
 interface Option<T> {
@@ -27,7 +22,8 @@ const StyledSelect = styled(Select)`
     color: black;
     border-radius: 1rem;
   }
-  #react-select-3-listbox {
+  #react-select-3-listbox,
+  #react-select-5-listbox {
     top: 0;
     left: 100%;
     margin: 0;
@@ -60,18 +56,20 @@ export const BreedingOutput = <T extends unknown>({
 }: FieldInputProps<T> & {
   placeholder?: string
 }) => {
-  const { setFieldValue, setFieldTouched } = useFormikContext()
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const parsedValue = parseInt(event.target.value)
-    setFieldTouched(name)
-    setFieldValue(name, parsedValue)
-  }
+  // TODO enable this field; update the options for the other fields
+  // const { setFieldValue, setFieldTouched } = useFormikContext()
+  // const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  //   const parsedValue = parseInt(event.target.value)
+  //   setFieldTouched(name)
+  //   setFieldValue(name, parsedValue)
+  // }
   return (
     <StyledOutput
       type="number"
       name={name}
       value={value}
-      onChange={handleChange}
+      disabled
+      // onChange={handleChange}
       onBlur={onBlur}
       placeholder={placeholder}
     />
@@ -83,8 +81,10 @@ export const BreedingSelect = ({
   form,
   options,
   placeholder,
+  noOptionsMessage,
 }: FormikSelectProps<number> & {
   placeholder?: string
+  noOptionsMessage?(obj: { inputValue: string }): ReactNode
 }) => {
   const onChange = (
     option: OnChangeValue<
@@ -94,12 +94,10 @@ export const BreedingSelect = ({
   ) => {
     if (!option) {
       form.setFieldValue(field.name, '')
-      form.setFieldTouched('desiredOutput', false)
       return
     }
     const value = (option as Option<number>).value
     form.setFieldValue(field.name, value)
-    form.setFieldTouched('desiredOutput', false)
     const otherField =
       field.name === 'tokenId' ? 'otherTokenId' : 'tokenId'
     const otherValue = form.values[otherField] as number | undefined
@@ -119,6 +117,7 @@ export const BreedingSelect = ({
       value={value}
       onInputChange={(value_, { action }) => {
         if (action !== 'input-change') return
+
         const parsed = parseInt(value_)
         if (!isFinite(parsed)) {
           onChange(null)
@@ -126,9 +125,11 @@ export const BreedingSelect = ({
           onChange({ label: value_, value: parsed })
         }
       }}
+      controlShouldRenderValue
       options={options}
       onChange={onChange as never}
       placeholder={placeholder}
+      noOptionsMessage={noOptionsMessage}
       isMulti={false}
     />
   )

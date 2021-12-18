@@ -2,9 +2,10 @@ import { FC, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { ErrorMessage, Form, Formik, useFormikContext } from 'formik'
 import { useEthers } from '@usedapp/core'
+// @ts-ignore
+import isPrime from 'is-prime'
 
 import { useContracts } from '../App/DAppContext'
-import { useContractFunction } from '../../hooks'
 import { useMintedPrimes, useMyPrimes } from '../App/PrimesContext'
 import {
   createTreeWithAccounts,
@@ -15,18 +16,6 @@ import { BreedingOutput, BreedingSelect } from './BreedingSelect'
 import { Values } from './types'
 import { useListedPrimesQuery } from '../../graphql/subgraph/subgraph'
 import ReactTooltip from 'react-tooltip'
-//
-// const BreedingFormUpdater: FC = () => {
-//   const {
-//     values: { tokenId, otherTokenId, desiredOutput },
-//     setFieldValue,
-//   } = useFormikContext<Values>()
-//
-//   // for the output, set its value if the other fields change...
-//   // maybe that should go in an updater
-//
-//   return null
-// }
 
 const StyledForm = styled(Form)`
   max-width: 30rem;
@@ -40,7 +29,7 @@ const StyledForm = styled(Form)`
     line-height: 2rem;
   }
 
-  .error {
+  > .error {
     color: orangered;
     padding: 1rem;
     border: 1px orangered solid;
@@ -56,14 +45,6 @@ const BreedingForm: FC = () => {
 
   const listedPrimes = useListedPrimesQuery()
 
-  const crossBreed = useContractFunction(Primes, 'crossBreed', {
-    transactionName: 'Cross-breed',
-  })
-
-  const breedPrimes = useContractFunction(Primes, 'breedPrimes', {
-    transactionName: 'Breed',
-  })
-
   const groups = useMemo(() => {
     const sortSet = (set: Set<number>) =>
       [...set.values()]
@@ -76,20 +57,22 @@ const BreedingForm: FC = () => {
     const allListedPrimesSet = new Set<number>(
       (listedPrimes.data?.primes ?? []).map((p) => p.number),
     )
+    const allBreedablePrimesSet = new Set<number>([
+      ...allListedPrimesSet.values(),
+      ...myBreedablePrimesSet.values(),
+    ])
 
     const myBreedablePrimes = sortSet(myBreedablePrimesSet)
     const allListedPrimes = sortSet(allListedPrimesSet)
-    const allBreedablePrimes = sortSet(
-      new Set<number>([
-        ...allListedPrimesSet.values(),
-        ...myBreedablePrimesSet.values(),
-      ]),
-    )
+    const allBreedablePrimes = sortSet(allBreedablePrimesSet)
 
     return {
       myBreedablePrimes,
+      myBreedablePrimesSet,
       allListedPrimes,
+      allListedPrimesSet,
       allBreedablePrimes,
+      allBreedablePrimesSet,
     }
   }, [listedPrimes.data, myPrimes.set])
 
@@ -100,6 +83,7 @@ const BreedingForm: FC = () => {
   return (
     <Formik
       initialValues={{
+        tokenId: 1,
         desiredOutput: 0,
       }}
       onSubmit={() => {}}
@@ -115,7 +99,7 @@ const BreedingForm: FC = () => {
         }
 
         if (!values.tokenId) {
-          errors.tokenId = 'Required'
+          errors.tokenId = 'Parent 1 required'
           return errors
         } else {
           values.tokenId = parseInt(
@@ -124,7 +108,7 @@ const BreedingForm: FC = () => {
         }
 
         if (!values.otherTokenId) {
-          errors.otherTokenId = 'Required'
+          errors.otherTokenId = 'Parent 2 required'
           return errors
         }
 
@@ -133,17 +117,17 @@ const BreedingForm: FC = () => {
           values.otherTokenId &&
           values.tokenId * values.otherTokenId > 16384
         ) {
-          errors.tokenId = 'Output too large'
+          errors.tokenId = `Output must be under 16384`
           return errors
         }
 
         if (!mintedPrimes.has(values.tokenId)) {
-          errors.tokenId = 'Not minted yet'
+          errors.tokenId = `${values.tokenId} not minted yet`
           return errors
         }
 
         if (!mintedPrimes.has(values.otherTokenId)) {
-          errors.otherTokenId = 'Not minted yet'
+          errors.otherTokenId = `${values.otherTokenId} not minted yet`
           return errors
         }
 
@@ -212,6 +196,11 @@ const BreedingForm: FC = () => {
           values,
           errors,
         } = form
+        const isBreedPrimes =
+          values.tokenId &&
+          values.otherTokenId &&
+          isPrime(values.tokenId) &&
+          isPrime(values.otherTokenId)
         return (
           <StyledForm>
             <div data-tip="You must own this Prime">
@@ -220,6 +209,11 @@ const BreedingForm: FC = () => {
                 field={getFieldProps('tokenId')}
                 form={form}
                 meta={getFieldMeta('tokenId')}
+                noOptionsMessage={({ inputValue }) =>
+                  inputValue
+                    ? `You do not own ${inputValue}`
+                    : 'You must own this Prime'
+                }
                 placeholder="Parent 1"
               />
             </div>
@@ -230,6 +224,23 @@ const BreedingForm: FC = () => {
                 field={getFieldProps('otherTokenId')}
                 form={form}
                 meta={getFieldMeta('otherTokenId')}
+                noOptionsMessage={({ inputValue }) => {
+                  const parsed = parseInt(inputValue)
+
+                  if (!mintedPrimes.has(parsed)) {
+                    return `${inputValue} is not minted`
+                  }
+
+                  if (!groups.allBreedablePrimesSet.has(parsed)) {
+                    if (!groups.allListedPrimesSet.has(parsed)) {
+                      return `${inputValue} is not listed for breeding`
+                    }
+
+                    return `${inputValue} is not breedable`
+                  }
+
+                  return 'Breeding not possible'
+                }}
                 placeholder="Parent 2"
               />
             </div>
@@ -246,12 +257,21 @@ const BreedingForm: FC = () => {
                 {error}
               </div>
             ))}
-            <button
-              type="submit"
-              disabled={isSubmitting || !isValid}
-            >
-              Breed
-            </button>
+            <SendTransactionWidget
+              buttonProps={{
+                disabled: isSubmitting || !isValid,
+              }}
+              contract={Primes}
+              functionName={
+                isBreedPrimes ? 'breedPrimes' : 'crossBreed'
+              }
+              transactionOptions={{
+                transactionName: isBreedPrimes
+                  ? 'Breed Primes'
+                  : 'Cross breed',
+              }}
+              args={[values.tokenId, values.otherTokenId, 0, []]}
+            />
           </StyledForm>
         )
       }}
