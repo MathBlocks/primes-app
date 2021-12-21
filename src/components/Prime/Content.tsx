@@ -10,6 +10,7 @@ import { useAttributes } from '../App/PrimesContext'
 import { getSVGDataURI } from '../PrimeSVG'
 import { useRouteTokenId } from './Context'
 import { truncateAddress } from '../../utils'
+import { Rental } from './Rental'
 
 const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
   <div>
@@ -208,6 +209,8 @@ export const Content: FC = () => {
           </>
         )}
       </div>
+      {/* TODO think about moving this */}
+      <Rental />
     </Container>
   )
 }

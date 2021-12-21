@@ -78,7 +78,10 @@ const StyledForm = styled(Form)`
   }
 `
 
-// TODO: lives left, burning warning
+// TODO: lives left
+// TODO: burning warning
+// TODO: show rental fees
+// TODO: show rental whitelist
 const BreedingForm: FC = () => {
   const { account } = useEthers()
   const { Primes } = useContracts<true>()
@@ -122,6 +125,7 @@ const BreedingForm: FC = () => {
     <Formik
       initialValues={{
         tokenId: 1,
+        otherTokenId: 1,
         desiredOutput: 0,
       }}
       onSubmit={() => {}}
@@ -174,45 +178,43 @@ const BreedingForm: FC = () => {
           return errors
         }
 
-        if (account && values.tokenId && values.otherTokenId) {
-          let otherOwner
-          try {
-            otherOwner = (
-              await Primes.ownerOf(values.otherTokenId)
-            ).toLowerCase()
-          } catch (error) {
-            errors.otherTokenId = 'Could not find owner'
-            return errors
-          }
-
-          const isOwner = myPrimes.set.has(values.tokenId)
-          const isOtherOwner = otherOwner === account.toLowerCase()
-
-          if (isOwner && isOtherOwner) {
-            return {}
-          }
-
-          try {
-            await Primes.estimateGas.crossBreed(
-              values.tokenId,
-              values.otherTokenId,
-              // Shouldn't need the real attributes proof to estimate this
-              0,
-              [],
-              {
-                from: account,
-              },
-            )
-          } catch (error) {
-            if (error.error?.message) {
-              errors.tokenId =
-                error.error.message.replace(
-                  'execution reverted: ',
-                  '',
-                ) ?? error.error.message
-            }
-          }
-        }
+        // if (account && values.tokenId && values.otherTokenId) {
+        //   let otherOwner
+        //   try {
+        //     otherOwner = (
+        //       await Primes.ownerOf(values.otherTokenId)
+        //     ).toLowerCase()
+        //   } catch (error) {
+        //     errors.otherTokenId = 'Could not find owner'
+        //     return errors
+        //   }
+        //   const isOwner = myPrimes.set.has(values.tokenId)
+        //   const isOtherOwner = otherOwner === account.toLowerCase()
+        //
+        //   if (isOwner && isOtherOwner) {
+        //     return {}
+        //   }
+        //   try {
+        //     await Primes.estimateGas.crossBreed(
+        //       values.tokenId,
+        //       values.otherTokenId,
+        //       // Shouldn't need the real attributes proof to estimate this
+        //       0,
+        //       [],
+        //       {
+        //         from: account,
+        //       },
+        //     )
+        //   } catch (error) {
+        //     if (error.error?.message) {
+        //       errors.tokenId =
+        //         error.error.message.replace(
+        //           'execution reverted: ',
+        //           '',
+        //         ) ?? error.error.message
+        //     }
+        //   }
+        // }
 
         return errors
       }}

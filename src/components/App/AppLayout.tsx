@@ -32,7 +32,7 @@ const NavbarContainer = styled.nav`
 
 const Footer: FC = () => (
   <footer>
-    <a href="https://mathblocks.org">mathblocks.org</a>
+    <a href="https://mathblocks.io">mathblocks.io</a>
   </footer>
 )
 

@@ -210,7 +210,9 @@ export const PrimesGallery: FC = () => {
 
   useEffect(() => {
     if (visiblePrev && visiblePrev.size !== visible.size) {
-      query.refetch({ offset: 0 })
+      query.refetch({ offset: 0 }).catch((error) => {
+        console.error(error)
+      })
     }
   }, [query, visible.size, visiblePrev])
 
@@ -223,19 +225,23 @@ export const PrimesGallery: FC = () => {
         <InfiniteScroll
           className="items"
           next={() => {
-            query.fetchMore({
-              variables: { offset: sortedData.length },
-              updateQuery(prevResult, { fetchMoreResult }) {
-                if (!fetchMoreResult) return prevResult
-                return {
-                  ...prevResult,
-                  primes: [
-                    ...prevResult.primes,
-                    ...fetchMoreResult.primes,
-                  ],
-                }
-              },
-            })
+            query
+              .fetchMore({
+                variables: { offset: sortedData.length },
+                updateQuery(prevResult, { fetchMoreResult }) {
+                  if (!fetchMoreResult) return prevResult
+                  return {
+                    ...prevResult,
+                    primes: [
+                      ...prevResult.primes,
+                      ...fetchMoreResult.primes,
+                    ],
+                  }
+                },
+              })
+              .catch((error) => {
+                console.error(error)
+              })
           }}
           hasMore={sortedData.length < visible.size}
           loader={<div />}

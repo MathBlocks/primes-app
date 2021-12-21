@@ -17,23 +17,7 @@ const StyledSelect = styled(Select)`
   font-size: 1.5rem;
   width: 10rem;
   > div {
-    background: white;
-    border: 1px white solid;
     color: black;
-    border-radius: 1rem;
-  }
-  #react-select-3-listbox,
-  #react-select-5-listbox {
-    top: 0;
-    left: 100%;
-    margin: 0;
-    overflow: hidden;
-    > * {
-      padding: 0;
-      > * {
-        padding: 0.35rem 1rem;
-      }
-    }
   }
 `
 

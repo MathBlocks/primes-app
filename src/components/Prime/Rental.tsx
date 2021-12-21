@@ -1,44 +1,14 @@
-// [ ] Rental
-//   [x] isListed
-//   [x] isRentable
-//   [x] stud fee
-//   [ ] suitors
-//   [ ] deadline
-//   [ ] Whitelist only
-//   [ ] Owner form
-//   [ ] Rental form
-
-// See the status^
-// If i'm the owner:
-// list or delist
-// when listing, set suitors, price, deadline
-
-import { FC, useState } from 'react'
+import { FC, useEffect } from 'react'
 import styled from 'styled-components'
 import { useEthers } from '@usedapp/core'
-import {
-  Formik,
-  Form,
-  Field,
-  ErrorMessage,
-  FieldArray,
-} from 'formik'
-import { constants } from 'ethers'
+import { Formik, Form, Field } from 'formik'
+import { formatEther } from 'ethers/lib/utils'
+import ReactTooltip from 'react-tooltip'
 
 import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
+import { SendTransactionWidget } from '../SendTransactionWidget'
 import { useContracts } from '../App/DAppContext'
-import { useContractFunction } from '../../hooks'
 import { useRouteTokenId } from './Context'
-
-const UserRentalForm: FC = () => {
-  // const [tokenId] = useRouteTokenId()
-
-  // const { data } = usePrimeQuery({
-  //   variables: { tokenId: tokenId.toString() },
-  //   fetchPolicy: 'cache-only',
-  // })
-  return <div>User rental form</div>
-}
 
 interface OwnerValues {
   tokenId: number
@@ -50,32 +20,18 @@ interface OwnerValues {
 const OwnerListForm: FC = () => {
   const [tokenId] = useRouteTokenId()
   const { account } = useEthers()
-  const contracts = useContracts<true>()
-
-  const list = useContractFunction(contracts.Primes, 'list', {
-    transactionName: 'List Prime',
-  })
+  const { Primes } = useContracts<true>()
 
   return (
     <div>
       <Formik
         initialValues={{ tokenId }}
-        onSubmit={async (
-          { fee, deadline, suitors }: OwnerValues,
-          formikHelpers,
-        ) => {
-          if (!fee || !deadline || !suitors) return
+        onSubmit={() => {}}
+        validate={async (values: OwnerValues) => {
+          const errors: Partial<Record<keyof OwnerValues, string>> =
+            {}
 
-          try {
-            await list.send(tokenId, fee, deadline, suitors)
-          } catch (error) {
-            formikHelpers.setErrors({ tokenId: error.message })
-          }
-        }}
-        validate={async (values: Partial<OwnerValues>) => {
-          const errors: { tokenId?: string } = {}
-
-          if (!account || !contracts) {
+          if (!account || !Primes) {
             errors.tokenId = 'Not connected'
             return errors
           }
@@ -85,73 +41,138 @@ const OwnerListForm: FC = () => {
             return errors
           }
 
-          // try {
-          //   // TODO get attributes and merkle proof
-          //   await contracts.Primes.estimateGas.crossBreed(
-          //     values.tokenId,
-          //     values.otherTokenId,
-          //     0,
-          //     [],
-          //     { from: account },
-          //   )
-          // } catch (error) {
-          //   if (error.error?.message) {
-          //     errors.tokenId =
-          //       error.error.message.split('execution reverted: ')[1] ??
-          //       error.error.message
-          //   }
-          // }
-
           return errors
         }}
       >
-        {({ isSubmitting, isValid }) => (
+        {({
+          isSubmitting,
+          isValidating,
+          isValid,
+          values,
+          errors,
+        }) => (
           <Form>
-            <Field type="number" name="studFee" min={0} />
             <div>
-              <Field
-                type="number"
-                name="suitors[0]"
-                min={0}
-                increment={1}
-              />
-              <Field
-                type="number"
-                name="suitors[1]"
-                min={0}
-                increment={1}
-              />
-              <Field
-                type="number"
-                name="suitors[2]"
-                min={0}
-                increment={1}
-              />
-              <Field
-                type="number"
-                name="suitors[3]"
-                min={0}
-                increment={1}
-              />
-              <Field
-                type="number"
-                name="suitors[4]"
-                min={0}
-                increment={1}
-              />
-              <Field
-                type="number"
-                name="suitors[5]"
-                min={0}
-                increment={1}
-              />
+              {errors.tokenId && (
+                <div className="error">{errors.tokenId}</div>
+              )}
             </div>
-            <button
-              type="submit"
-              disabled={isSubmitting || !isValid}
-            >
-              List for rental
-            </button>
+            <div>
+              <h5>Stud fee</h5>
+              <Field
+                type="number"
+                name="studFee"
+                min={0}
+                placeholder="0 ETH"
+              />
+              <p>
+                You can optionally charge a stud fee, which must be
+                paid by other users breeding with this Prime. 90% of
+                this fee will be paid to you, and 10% will be paid to
+                the Primes DAO.
+              </p>
+              {errors.fee && (
+                <div className="error">{errors.fee}</div>
+              )}
+            </div>
+            <div>
+              <h5>Deadline</h5>
+              <Field
+                type="date"
+                name="deadline"
+                placeholder="Deadline"
+              />
+              <p>
+                You optionally can set a deadline for breeding. When
+                the deadline passes, this Prime will be effectively
+                unlisted.
+              </p>
+              {errors.fee && (
+                <div className="error">{errors.fee}</div>
+              )}
+            </div>
+            <div>
+              <h5>Suitors</h5>
+              <div>
+                <Field
+                  type="number"
+                  name="suitors[0]"
+                  placeholder="1"
+                  min={2}
+                  max={8192}
+                  increment={1}
+                />
+                <Field
+                  type="number"
+                  name="suitors[1]"
+                  placeholder="2"
+                  min={2}
+                  max={8192}
+                  increment={1}
+                />
+                <Field
+                  type="number"
+                  name="suitors[2]"
+                  placeholder="3"
+                  min={2}
+                  max={8192}
+                  increment={1}
+                />
+                <Field
+                  type="number"
+                  name="suitors[3]"
+                  placeholder="4"
+                  min={2}
+                  max={8192}
+                  increment={1}
+                />
+                <Field
+                  type="number"
+                  name="suitors[4]"
+                  placeholder="5"
+                  min={2}
+                  max={8192}
+                  increment={1}
+                />
+                <Field
+                  type="number"
+                  name="suitors[5]"
+                  placeholder="6"
+                  min={2}
+                  max={8192}
+                  increment={1}
+                />
+              </div>
+              <p>
+                Optionally, up to 6 suitors can be defined. Suitors
+                are other Primes that you will allow to breed with
+                this Prime. For example, when listing{' '}
+                <span className="monospace">3</span>, you might want
+                to define suitors without including{' '}
+                <span className="monospace">2</span>, so that you can
+                prevent <span className="monospace">6</span> from
+                being minted.
+              </p>
+              {errors.suitors && (
+                <div className="error">{errors.suitors}</div>
+              )}
+            </div>
+            <SendTransactionWidget
+              buttonProps={{
+                disabled: isSubmitting || isValidating || !isValid,
+              }}
+              transactionOptions={{
+                transactionName: 'List for rental',
+              }}
+              contract={Primes}
+              functionName="list"
+              args={[
+                values.tokenId,
+                values.fee,
+                values.deadline,
+                values.suitors,
+              ]}
+            />
           </Form>
         )}
       </Formik>
@@ -161,22 +182,17 @@ const OwnerListForm: FC = () => {
 
 const OwnerUnlistForm: FC = () => {
   const [tokenId] = useRouteTokenId()
-  const contracts = useContracts<true>()
-  const unlist = useContractFunction(contracts.Primes, 'unlist', {
-    transactionName: 'Unlist Prime',
-  })
-
+  const { Primes } = useContracts<true>()
   return (
     <div>
-      <button
-        onClick={() => {
-          unlist.send(tokenId).catch((error) => {
-            console.error(error)
-          })
+      <SendTransactionWidget
+        contract={Primes}
+        functionName="unlist"
+        args={[tokenId]}
+        transactionOptions={{
+          transactionName: 'Unlist from rental',
         }}
-      >
-        Unlist
-      </button>
+      />
     </div>
   )
 }
@@ -189,10 +205,17 @@ const OwnerForms: FC = () => {
     fetchPolicy: 'cache-only',
   })
 
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [])
+
   if (!data?.prime) return null
 
   return (
     <div>
+      <h4 data-tip="As the owner of this Prime, you can list, unlist or change list settings">
+        Manage rental
+      </h4>
       {data.prime.isListed ? <OwnerUnlistForm /> : <OwnerListForm />}
     </div>
   )
@@ -215,11 +238,10 @@ export const Rental: FC = () => {
     account &&
     account.toLowerCase() === data.prime.owner.address.toLowerCase()
   )
-  // const isOwner = true
 
   return (
     <Container>
-      <h4>Rental</h4>
+      <h3>Rental</h3>
       {data?.prime && (
         <div>
           <div>{data.prime.isListed ? 'Listed' : 'Not listed'}</div>
@@ -229,15 +251,13 @@ export const Rental: FC = () => {
                 Suitors:{' '}
                 {data.prime.suitors.map((s) => s.id.toString())}
               </div>
-              <div>Stud fee: {data.prime.studFee?.toString()}</div>
+              <div>
+                Stud fee: {formatEther(data.prime.studFee ?? '0')}
+              </div>
+              {/*TODO format date, handle 0 value*/}
               <div>Deadline: {data.prime.deadline?.toString()}</div>
             </div>
           )}
-          <div>
-            {data.prime.isRentable
-              ? 'Rentable'
-              : !isOwner && <UserRentalForm />}
-          </div>
           {isOwner && <OwnerForms />}
         </div>
       )}

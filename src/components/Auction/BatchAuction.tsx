@@ -35,7 +35,7 @@ const MintRandomPrimeForm: FC<{ batchId: number }> = ({
   const { account } = useEthers()
 
   const proof = useWhitelistProof(
-    `batch${batchId}.json`,
+    `whitelist-batch-${batchId}.json`,
     account as string | undefined,
   )
 
