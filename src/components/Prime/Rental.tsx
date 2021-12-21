@@ -2,7 +2,8 @@ import { FC, useEffect } from 'react'
 import { useToggle } from 'react-use'
 import styled from 'styled-components'
 import { Formik, Form, Field, FieldArray } from 'formik'
-import { formatEther } from 'ethers/lib/utils'
+import { formatEther, parseEther } from 'ethers/lib/utils'
+import { formatRFC7231, fromUnixTime, getUnixTime } from 'date-fns'
 import ReactTooltip from 'react-tooltip'
 
 import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
@@ -117,121 +118,128 @@ const OwnerListForm: FC = () => {
           isValid,
           values,
           errors,
-        }) => (
-          <Form>
-            <div>
-              {errors.tokenId && (
-                <div className="error">{errors.tokenId}</div>
-              )}
-            </div>
-            <div className="field fee">
-              <h5>Stud fee (ETH)</h5>
-              <Field
-                type="number"
-                name="fee"
-                min={0}
-                placeholder="0 ETH"
-              />
-              <p>
-                You can optionally charge a stud fee, which must be
-                paid by other users breeding with this Prime. 90% of
-                this fee will be paid to you, and 10% will be paid to
-                the Primes DAO.
-              </p>
-              {errors.fee && (
-                <div className="error">{errors.fee}</div>
-              )}
-            </div>
-            <div className="field deadline">
-              <h5>Deadline</h5>
-              <Field
-                type="date"
-                name="deadline"
-                placeholder="Deadline"
-              />
-              <p>
-                You optionally can set a deadline for breeding. When
-                the deadline passes, this Prime will be effectively
-                unlisted.
-              </p>
-              {errors.fee && (
-                <div className="error">{errors.fee}</div>
-              )}
-            </div>
-            <div className="field suitors">
-              <h5>Suitors</h5>
-              <FieldArray
-                name="suitors"
-                render={(arrayHelpers) => (
-                  <div>
-                    {values.suitors?.length
-                      ? values.suitors.map((suitor, index) => (
-                          <div key={index}>
-                            <Field
-                              name={`suitors.${index}`}
-                              placeholder="1"
-                              min={2}
-                              max={8192}
-                              increment={1}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                arrayHelpers.remove(index)
-                              }}
-                            >
-                              x
-                            </button>
-                          </div>
-                        ))
-                      : null}
-                    <div>
-                      {values.suitors?.length < 6 && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            arrayHelpers.push('')
-                          }}
-                        >
-                          Add a suitor
-                        </button>
-                      )}
-                    </div>
-                  </div>
+        }) => {
+          return (
+            <Form>
+              <div>
+                {errors.tokenId && (
+                  <div className="error">{errors.tokenId}</div>
                 )}
+              </div>
+              <div className="field fee">
+                <h5>Stud fee (ETH)</h5>
+                <Field
+                  type="number"
+                  name="fee"
+                  min={0}
+                  step="0.000000000000000001"
+                  placeholder="0 ETH"
+                />
+                <p>
+                  You can optionally charge a stud fee, which must be
+                  paid by other users breeding with this Prime. 90%
+                  of this fee will be paid to you, and 10% will be
+                  paid to the Primes DAO.
+                </p>
+                {errors.fee && (
+                  <div className="error">{errors.fee}</div>
+                )}
+              </div>
+              <div className="field deadline">
+                <h5>Deadline</h5>
+                <Field
+                  type="date"
+                  name="deadline"
+                  placeholder="Deadline"
+                />
+                <p>
+                  You optionally can set a deadline for breeding.
+                  When the deadline passes, this Prime will be
+                  effectively unlisted.
+                </p>
+                {errors.fee && (
+                  <div className="error">{errors.fee}</div>
+                )}
+              </div>
+              <div className="field suitors">
+                <h5>Suitors</h5>
+                <FieldArray
+                  name="suitors"
+                  render={(arrayHelpers) => (
+                    <div>
+                      {values.suitors?.length
+                        ? values.suitors.map((suitor, index) => (
+                            <div key={index}>
+                              <Field
+                                name={`suitors.${index}`}
+                                placeholder="1"
+                                min={2}
+                                max={8192}
+                                increment={1}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  arrayHelpers.remove(index)
+                                }}
+                              >
+                                x
+                              </button>
+                            </div>
+                          ))
+                        : null}
+                      <div>
+                        {values.suitors?.length < 6 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              arrayHelpers.push('')
+                            }}
+                          >
+                            Add a suitor
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                />
+                <p>
+                  Optionally, up to 6 suitors can be defined. Suitors
+                  are other Primes that you will allow to breed with
+                  this Prime. For example, when listing{' '}
+                  <span className="monospace">3</span>, you might
+                  want to define suitors without including{' '}
+                  <span className="monospace">2</span>, so that you
+                  can prevent <span className="monospace">6</span>{' '}
+                  from being minted.
+                </p>
+                {errors.suitors && (
+                  <div className="error">{errors.suitors}</div>
+                )}
+              </div>
+              <SendTransactionWidget
+                buttonProps={{
+                  disabled: isSubmitting || isValidating || !isValid,
+                }}
+                transactionOptions={{
+                  transactionName: 'List for rental',
+                }}
+                contract={Primes}
+                functionName="list"
+                args={[
+                  values.tokenId,
+                  parseEther((values.fee ?? 0).toFixed(18)),
+                  values.deadline
+                    ? getUnixTime(
+                        Date.parse(values.deadline.toString()),
+                      )
+                    : 0,
+                  values.suitors,
+                ]}
               />
-              <p>
-                Optionally, up to 6 suitors can be defined. Suitors
-                are other Primes that you will allow to breed with
-                this Prime. For example, when listing{' '}
-                <span className="monospace">3</span>, you might want
-                to define suitors without including{' '}
-                <span className="monospace">2</span>, so that you can
-                prevent <span className="monospace">6</span> from
-                being minted.
-              </p>
-              {errors.suitors && (
-                <div className="error">{errors.suitors}</div>
-              )}
-            </div>
-            <SendTransactionWidget
-              buttonProps={{
-                disabled: isSubmitting || isValidating || !isValid,
-              }}
-              transactionOptions={{
-                transactionName: 'List for rental',
-              }}
-              contract={Primes}
-              functionName="list"
-              args={[
-                values.tokenId,
-                values.fee,
-                values.deadline,
-                values.suitors,
-              ]}
-            />
-          </Form>
-        )}
+            </Form>
+          )
+        }}
       </Formik>
     </OwnerListFormContainer>
   )
@@ -254,6 +262,10 @@ const OwnerUnlistForm: FC = () => {
   )
 }
 
+const OwnerFormsContainer = styled.div`
+  padding: 1rem 0;
+`
+
 const OwnerForms: FC = () => {
   const [tokenId] = useRouteTokenId()
 
@@ -271,7 +283,7 @@ const OwnerForms: FC = () => {
   if (!data?.prime) return null
 
   return (
-    <div>
+    <OwnerFormsContainer>
       <button
         data-tip="As the owner of this Prime, you can list, unlist or change list settings"
         onClick={toggleShowModal}
@@ -290,11 +302,16 @@ const OwnerForms: FC = () => {
           <OwnerListForm />
         )}
       </Modal>
-    </div>
+    </OwnerFormsContainer>
   )
 }
 
-const Container = styled.div``
+const Container = styled.div`
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+`
 
 export const Rental: FC = () => {
   const [tokenId] = useRouteTokenId()
@@ -312,28 +329,36 @@ export const Rental: FC = () => {
     address === data.prime.owner.address.toLowerCase()
   )
 
-  return (
+  return data?.prime ? (
     <Container>
       <h3>Rental</h3>
-      {data?.prime && (
-        <div>
-          <div>{data.prime.isListed ? 'Listed' : 'Not listed'}</div>
-          {data.prime.isListed && (
-            <div>
+      <div>
+        <div>{data.prime.isListed ? 'Listed' : 'Not listed'}</div>
+        {data.prime.isListed && (
+          <div>
+            {data.prime.suitors.length ? (
               <div>
                 Suitors:{' '}
                 {data.prime.suitors.map((s) => s.id.toString())}
               </div>
+            ) : null}
+            {data.prime.studFee && data.prime.studFee !== '0' ? (
               <div>
-                Stud fee: {formatEther(data.prime.studFee ?? '0')}
+                Stud fee: {formatEther(data.prime.studFee)} ETH
               </div>
-              {/*TODO format date, handle 0 value*/}
-              <div>Deadline: {data.prime.deadline?.toString()}</div>
-            </div>
-          )}
-          {isOwner && <OwnerForms />}
-        </div>
-      )}
+            ) : null}
+            {data.prime.deadline ? (
+              <div>
+                Deadline:{' '}
+                {formatRFC7231(
+                  fromUnixTime(parseInt(data.prime.deadline)),
+                )}
+              </div>
+            ) : null}
+          </div>
+        )}
+        {isOwner && <OwnerForms />}
+      </div>
     </Container>
-  )
+  ) : null
 }

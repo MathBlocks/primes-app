@@ -1,4 +1,4 @@
-import { FC, ReactChild, ReactNode, useMemo } from 'react'
+import { FC, ReactChild, useMemo } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 // @ts-ignore
@@ -12,24 +12,17 @@ import { useRouteTokenId } from './Context'
 import { truncateAddress } from '../../utils'
 import { Rental } from './Rental'
 
-const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
-  <div>
-    {tokenId > 1 && (
-      <Link to={`/primes/${tokenId - 1}`}>Previous</Link>
-    )}{' '}
-    {tokenId < 16383 && (
-      <Link to={`/primes/${tokenId + 1}`}>Next</Link>
-    )}
-  </div>
-)
-
 const PrimeImage = styled.div`
-  min-width: 24rem;
+  min-width: 28rem;
 
-  > div {
+  > div:first-child {
     border-radius: 0.75rem;
     border: 1px #444 solid;
     overflow: hidden;
+  }
+
+  .navigation {
+    margin-top: 1rem;
   }
 
   img {
@@ -40,6 +33,8 @@ const PrimeImage = styled.div`
 `
 
 const ListContainer = styled.div`
+  padding: 1rem 0;
+
   ul {
     margin: 0;
     padding: 0;
@@ -48,9 +43,10 @@ const ListContainer = styled.div`
     flex-wrap: wrap;
     gap: 1rem;
   }
+
   h3 {
-  }
-  li {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
   }
 `
 
@@ -82,6 +78,13 @@ const Attribute = styled.div`
   border-radius: 1rem;
   padding: 0.25rem 1rem;
   color: white;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  > :first-child {
+    height: 1rem;
+    width: auto;
+  }
 `
 
 const PrimeLink: FC<{ id: string }> = ({ id }) => (
@@ -90,16 +93,34 @@ const PrimeLink: FC<{ id: string }> = ({ id }) => (
   </PrimeLinkContainer>
 )
 
+const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
+  <div className="navigation">
+    {tokenId > 1 && (
+      <Link to={`/primes/${tokenId - 1}`}>Previous</Link>
+    )}{' '}
+    {tokenId < 16383 && (
+      <Link to={`/primes/${tokenId + 1}`}>Next</Link>
+    )}
+  </div>
+)
+
+const PrimeDetail = styled.div`
+  width: 24rem;
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  > :first-child {
+    margin-bottom: 2rem;
+  }
+`
+
 const Container = styled.div`
+  padding: 8rem 0 4rem 0;
   display: flex;
   gap: 4rem;
   justify-content: space-between;
-
-  > :first-child {
-  }
-
-  > :last-child {
-  }
 `
 
 export const Content: FC = () => {
@@ -111,7 +132,7 @@ export const Content: FC = () => {
   })
 
   const primeAttributes = useMemo<
-    { key: string; name: string; symbol: ReactNode }[]
+    { key: string; name: string; symbol: FC }[]
   >(() => {
     if (!attributes) return []
 
@@ -122,7 +143,7 @@ export const Content: FC = () => {
       .map((key) => {
         const [name, symbol] =
           ATTRIBUTE_NAMES[key as keyof Attributes]
-        return { key, name, symbol }
+        return { key, name, symbol: symbol as FC }
       })
   }, [attributes, tokenId])
 
@@ -138,37 +159,44 @@ export const Content: FC = () => {
           />
           {/*<img src={data.prime.image} alt={tokenId} />*/}
         </div>
+        <Navigation tokenId={tokenId} />
       </PrimeImage>
 
-      <div>
+      <PrimeDetail>
         <div>
           <h1>
             {tokenId === 1 ? '' : prime ? 'Prime' : 'Composite'} #
             {tokenId}
           </h1>
-          <Navigation tokenId={tokenId} />
-        </div>
-        <div>
-          {data?.prime?.owner.address ? (
-            <span>
-              Owned by{' '}
-              <a
-                className="monospace"
-                href={`https://etherscan.io/address/${data.prime.owner.address}`}
-              >
-                {truncateAddress(data.prime.owner.address)}
-              </a>
-            </span>
-          ) : (
-            <span>Not owned</span>
-          )}
+          <div className="owner">
+            {data?.prime?.owner.address ? (
+              <span>
+                Owned by{' '}
+                <a
+                  className="monospace"
+                  href={`https://etherscan.io/address/${data.prime.owner.address}`}
+                >
+                  {truncateAddress(data.prime.owner.address)}
+                </a>
+              </span>
+            ) : (
+              <span>Not minted</span>
+            )}
+          </div>
         </div>
         <List
           title="Attributes"
-          items={primeAttributes.map((attr) => ({
-            id: attr.key,
-            value: <Attribute>{attr.name}</Attribute>,
-          }))}
+          items={primeAttributes.map(
+            ({ key: id, symbol: Symbol, name }) => ({
+              id,
+              value: (
+                <Attribute>
+                  <Symbol />
+                  <span>{name}</span>
+                </Attribute>
+              ),
+            }),
+          )}
         />
         {prime ? (
           <>
@@ -196,21 +224,21 @@ export const Content: FC = () => {
               )}
             />
           </>
-        ) : (
+        ) : data?.prime?.primeFactors.length ? (
           <>
             <List
               title="Prime Factors"
-              // items={(data?.prime?.primeFactors ?? []).map(({ id }) => ({
-              //   id,
-              //   value: <PrimeLink id={id} />,
-              // }))}
-              items={[]}
+              items={data.prime.primeFactors
+                .map((id) => id.toString())
+                .map((id) => ({
+                  id,
+                  value: <PrimeLink id={id} />,
+                }))}
             />
           </>
-        )}
-      </div>
-      {/* TODO think about moving this */}
-      <Rental />
+        ) : null}
+        <Rental />
+      </PrimeDetail>
     </Container>
   )
 }

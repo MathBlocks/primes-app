@@ -13,7 +13,7 @@ const Updater: FC = () => {
 
   useEffect(() => {
     const tokenId = parseInt(tokenIdStr)
-    const valid = tokenId && tokenId > 0 && tokenId <= N_MAX
+    const valid = tokenId && tokenId > 0 && tokenId < N_MAX
     setRouteTokenId(valid ? tokenId : 404)
   }, [setRouteTokenId, tokenIdStr])
 
