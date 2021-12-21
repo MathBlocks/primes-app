@@ -1,7 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react'
 import { createStateContext, useEffectOnce } from 'react-use'
 import ReactTooltip from 'react-tooltip'
-import { useEthers } from '@usedapp/core'
 
 import {
   usePrimesForAccountQuery,
@@ -9,6 +8,7 @@ import {
 } from '../../graphql/subgraph/subgraph'
 import { createExclusiveSet } from '../../utils'
 import { generateAttributes, Attributes } from '../../attributes'
+import { useOnboard } from './OnboardProvider'
 
 export const [useAttributes, AttributesProvider] =
   createStateContext<Attributes | undefined>(undefined)
@@ -62,10 +62,10 @@ const MintedPrimesUpdater: FC = () => {
 }
 
 const MyPrimesUpdater: FC = () => {
-  const { account } = useEthers()
+  const { address } = useOnboard()
   const { data } = usePrimesForAccountQuery({
-    variables: { account: account?.toLowerCase() as string },
-    skip: !account,
+    variables: { account: address as string },
+    skip: !address,
     nextFetchPolicy: 'network-only',
   })
   const [myPrimes, setMyPrimes] = useMyPrimes()

@@ -1,15 +1,6 @@
-import {
-  createContext,
-  FC,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react'
-import { createStateContext } from 'react-use'
-import { BigNumber } from 'ethers'
-import { useEthers } from '@usedapp/core'
+import { createContext, FC, useContext, useMemo } from 'react'
 
-import { useContractAddresses } from '../../config'
+import { CONFIG } from '../../config'
 import {
   Primes,
   Primes__factory,
@@ -18,6 +9,7 @@ import {
   IWETH,
   IWETH__factory,
 } from '../../typechain'
+import { useOnboard } from './OnboardProvider'
 
 interface Contracts {
   Primes: Primes
@@ -33,27 +25,30 @@ export const useContracts = <
 >(): U => useContext(contractsCtx) as unknown as U
 
 const ContractsProvider: FC = ({ children }) => {
-  const { library } = useEthers()
-
-  const contractAddresses = useContractAddresses()
+  const { provider, chainId } = useOnboard()
 
   const value = useMemo<Contracts | undefined>(() => {
-    if (!contractAddresses || !library) {
+    const contractAddresses =
+      CONFIG.contracts[chainId as keyof typeof CONFIG['contracts']]
+
+    if (!contractAddresses || !provider) {
       return
     }
+
+    const signer = provider.getSigner()
 
     return {
       Primes: Primes__factory.connect(
         contractAddresses.Primes,
-        library,
+        signer,
       ),
       PrimesAuctionHouse: PrimesAuctionHouse__factory.connect(
         contractAddresses.PrimesAuctionHouse,
-        library,
+        signer,
       ),
-      WETH: IWETH__factory.connect(contractAddresses.WETH, library),
+      WETH: IWETH__factory.connect(contractAddresses.WETH, signer),
     }
-  }, [contractAddresses, library])
+  }, [chainId, provider])
 
   return (
     <contractsCtx.Provider value={value}>
@@ -62,32 +57,6 @@ const ContractsProvider: FC = ({ children }) => {
   )
 }
 
-export const [useBalance, BalanceProvider] =
-  createStateContext<BigNumber>(BigNumber.from(0))
-
-const BalanceUpdater: FC = () => {
-  const { library, account } = useEthers()
-  const [, setBalance] = useBalance()
-  useEffect(() => {
-    if (!library || !account) return
-    library
-      .getBalance(account)
-      .then((_balance) => {
-        setBalance(_balance)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  }, [library, account, setBalance])
-
-  return null
-}
-
 export const DAppContext: FC = ({ children }) => (
-  <ContractsProvider>
-    <BalanceProvider>
-      {children}
-      <BalanceUpdater />
-    </BalanceProvider>
-  </ContractsProvider>
+  <ContractsProvider>{children}</ContractsProvider>
 )

@@ -2,7 +2,6 @@ import { FC } from 'react'
 import { useParams } from 'react-router'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { useEthers } from '@usedapp/core'
 import { formatEther, parseEther } from 'ethers/lib/utils'
 import { BigNumber } from 'ethers'
 import { formatISO9075, fromUnixTime } from 'date-fns'
@@ -14,6 +13,7 @@ import {
 } from '../../graphql/subgraph/subgraph'
 import { AccountLink } from '../AccountLink'
 import { useContracts } from '../App/DAppContext'
+import { useOnboard } from '../App/OnboardProvider'
 import { useWhitelistProof } from '../../merkleTree'
 import { SendTransactionWidget } from '../SendTransactionWidget'
 
@@ -32,11 +32,11 @@ const MintRandomPrimeForm: FC<{ batchId: number }> = ({
   batchId,
 }) => {
   const { Primes } = useContracts<true>()
-  const { account } = useEthers()
+  const { address } = useOnboard()
 
   const proof = useWhitelistProof(
     `whitelist-batch-${batchId}.json`,
-    account as string | undefined,
+    address as string | undefined,
   )
 
   return (
@@ -58,10 +58,10 @@ const MintRandomPrimeForm: FC<{ batchId: number }> = ({
 
 const BatchForm: FC<{ batchId: number }> = ({ batchId }) => {
   const contracts = useContracts()
-  const { account } = useEthers()
+  const { address } = useOnboard()
   return (
     <div className="form">
-      {contracts && account && (
+      {contracts && address && (
         <MintRandomPrimeForm batchId={batchId} />
       )}
     </div>

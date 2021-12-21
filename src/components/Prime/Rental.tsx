@@ -1,12 +1,13 @@
 import { FC, useEffect } from 'react'
 import styled from 'styled-components'
-import { useEthers } from '@usedapp/core'
+
 import { Formik, Form, Field } from 'formik'
 import { formatEther } from 'ethers/lib/utils'
 import ReactTooltip from 'react-tooltip'
 
 import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
 import { SendTransactionWidget } from '../SendTransactionWidget'
+import { useOnboard } from '../App/OnboardProvider'
 import { useContracts } from '../App/DAppContext'
 import { useRouteTokenId } from './Context'
 
@@ -19,7 +20,7 @@ interface OwnerValues {
 
 const OwnerListForm: FC = () => {
   const [tokenId] = useRouteTokenId()
-  const { account } = useEthers()
+  const { address } = useOnboard()
   const { Primes } = useContracts<true>()
 
   return (
@@ -31,7 +32,7 @@ const OwnerListForm: FC = () => {
           const errors: Partial<Record<keyof OwnerValues, string>> =
             {}
 
-          if (!account || !Primes) {
+          if (!address || !Primes) {
             errors.tokenId = 'Not connected'
             return errors
           }
@@ -231,12 +232,12 @@ export const Rental: FC = () => {
     fetchPolicy: 'cache-only',
   })
 
-  const { account } = useEthers()
+  const { address } = useOnboard()
 
   const isOwner = !!(
     data?.prime &&
-    account &&
-    account.toLowerCase() === data.prime.owner.address.toLowerCase()
+    address &&
+    address === data.prime.owner.address.toLowerCase()
   )
 
   return (

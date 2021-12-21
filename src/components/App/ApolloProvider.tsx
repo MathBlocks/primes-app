@@ -17,38 +17,25 @@ import { RetryLink } from '@apollo/client/link/retry'
 import { onError } from '@apollo/client/link/error'
 import ApolloLinkTimeout from 'apollo-link-timeout'
 
-import { StrictTypedTypePolicies } from '../../apollo-helpers'
-import { useGraphQlEndpoints } from '../../config'
-import { TypePolicies } from '@apollo/client/cache'
+import { CONFIG } from '../../config'
+import { useOnboard } from './OnboardProvider'
 
 const retryIf = (error: { statusCode: number }) => {
   const doNotRetryCodes = [500, 400]
   return !!error && !doNotRetryCodes.includes(error.statusCode)
 }
 
-const typePolicies: StrictTypedTypePolicies = {
-  // Query: {
-  //   fields: {
-  //     primes: {
-  //       keyArgs: false,
-  //       merge(existing = [], incoming) {
-  //         console.log('merge primes')
-  //         console.log(existing, incoming)
-  //         return [...existing, ...incoming]
-  //       },
-  //     },
-  //   },
-  // },
-}
-
-const cache = new InMemoryCache({
-  typePolicies: typePolicies as TypePolicies,
-})
-;(window as any).cache = cache
+const cache = new InMemoryCache()
 
 export const ApolloProvider: FC = ({ children }) => {
-  const graphQLEndpoints = useGraphQlEndpoints()
+  const { chainId } = useOnboard()
   const [persisted, setPersisted] = useToggle(false)
+
+  useEffect(() => {
+    cache.reset().catch((error) => {
+      console.error(error)
+    })
+  }, [chainId])
 
   useEffect(() => {
     persistCache({
@@ -67,6 +54,11 @@ export const ApolloProvider: FC = ({ children }) => {
   const client = useMemo<
     ApolloClient<NormalizedCacheObject> | undefined
   >(() => {
+    const graphQLEndpoints =
+      CONFIG.graphqlEndpoints[
+        chainId as keyof typeof CONFIG['graphqlEndpoints']
+      ]
+
     if (!graphQLEndpoints || !persisted) return undefined
 
     const timeoutLink = new ApolloLinkTimeout(30000)
@@ -101,7 +93,7 @@ export const ApolloProvider: FC = ({ children }) => {
       cache,
       link,
     })
-  }, [graphQLEndpoints, persisted])
+  }, [chainId, persisted])
 
   return client ? (
     <BaseApolloProvider client={client}>

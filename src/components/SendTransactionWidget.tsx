@@ -1,13 +1,12 @@
 import { FC, DetailedHTMLProps, ButtonHTMLAttributes } from 'react'
 import styled from 'styled-components'
 import { Contract } from 'ethers'
-import {
-  TransactionOptions,
-  getExplorerTransactionLink,
-  TransactionState,
-} from '@usedapp/core'
 
-import { useContractFunction } from '../hooks'
+import {
+  TransactionState,
+  useContractFunction,
+  useExplorerTransactionLink,
+} from '../hooks'
 
 const Row = styled.div<{ visible: boolean }>`
   display: ${({ visible }) => (visible ? 'block' : 'none')};
@@ -62,10 +61,10 @@ export const SendTransactionWidget: <
   FunctionName extends keyof ContractType['functions'],
   Args extends Parameters<ContractType['functions'][FunctionName]>,
   SendTransactionButtonProps extends {
-    contract: ContractType
+    contract?: ContractType
     functionName: FunctionName
     args: Args
-    transactionOptions?: TransactionOptions
+    transactionOptions?: { transactionName?: string }
     buttonProps?: DetailedHTMLProps<
       ButtonHTMLAttributes<HTMLButtonElement>,
       HTMLButtonElement
@@ -82,15 +81,21 @@ export const SendTransactionWidget: <
 }) => {
   const {
     send,
-    state: { status, transaction, chainId = 1, errorMessage },
-  } = useContractFunction(contract, functionName, transactionOptions)
+    state: { status, transaction, errorMessage },
+  } = useContractFunction(contract, functionName)
+
+  const explorerTransactionLink = useExplorerTransactionLink(
+    transaction?.hash,
+  )
 
   return (
     <Container status={status}>
       <button
         {...buttonProps}
-        onClick={async () => {
-          await send(...args)
+        onClick={() => {
+          send(...args).catch((error) => {
+            console.error(error)
+          })
         }}
       >
         {transactionOptions?.transactionName ?? 'Send'}
@@ -108,10 +113,7 @@ export const SendTransactionWidget: <
           <a
             target="_blank"
             rel="noreferrer"
-            href={getExplorerTransactionLink(
-              transaction?.hash ?? '',
-              chainId,
-            )}
+            href={explorerTransactionLink}
           >
             View transaction
           </a>

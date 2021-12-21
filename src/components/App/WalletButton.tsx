@@ -1,7 +1,9 @@
 import React, { FC } from 'react'
-import { useEthers } from '@usedapp/core'
-import { truncateAddress } from '../../utils'
+import { useToggle } from 'react-use'
 import styled from 'styled-components'
+
+import { useOnboard } from './OnboardProvider'
+import { truncateAddress } from '../../utils'
 
 const Container = styled.div`
   button {
@@ -13,25 +15,35 @@ const Container = styled.div`
     background: none;
     height: 2rem;
     font-size: 1rem;
+    min-width: 10rem;
   }
 `
 
 export const WalletButton: FC = () => {
-  const { activateBrowserWallet, deactivate, account } = useEthers()
+  const { address, disconnectWallet, selectWallet } = useOnboard()
+  const [isConnecting, toggleIsConnecting] = useToggle(false)
   return (
     <Container>
       <button
         onClick={() => {
-          if (account) {
-            deactivate()
-          } else {
-            activateBrowserWallet()
+          if (address) {
+            disconnectWallet()
+          } else if (!isConnecting) {
+            toggleIsConnecting(true)
+            selectWallet()
+              .catch((error) => {
+                console.error(error)
+                toggleIsConnecting(false)
+              })
+              .then(() => {
+                toggleIsConnecting(false)
+              })
           }
         }}
       >
-        {account ? (
+        {address ? (
           <span className="monospace">
-            {truncateAddress(account)}
+            {truncateAddress(address)}
           </span>
         ) : (
           'Connect'

@@ -2,8 +2,7 @@ import { FC } from 'react'
 import { Field } from 'formik'
 import styled from 'styled-components'
 import { formatEther } from 'ethers/lib/utils'
-
-import { useBalance } from './App/DAppContext'
+import { useOnboard } from './App/OnboardProvider'
 
 const Container = styled.div`
   margin-bottom: 1rem;
@@ -40,7 +39,7 @@ export const ETHInput: FC<{ name: string; label?: string }> = ({
   name,
   label,
 }) => {
-  const [balance] = useBalance()
+  const { balance } = useOnboard()
   return (
     <Container>
       <div>
@@ -56,7 +55,9 @@ export const ETHInput: FC<{ name: string; label?: string }> = ({
       <div>
         <div>Balance</div>
         <div>
-          <span className="monospace">{formatEther(balance)}</span>{' '}
+          <span className="monospace">
+            {formatEther(balance ?? '0')}
+          </span>{' '}
           ETH
         </div>
       </div>

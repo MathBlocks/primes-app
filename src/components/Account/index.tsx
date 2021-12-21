@@ -1,7 +1,7 @@
 import { FC } from 'react'
-import { useEthers } from '@usedapp/core'
 import styled from 'styled-components'
 
+import { useOnboard } from '../App/OnboardProvider'
 import { truncateAddress } from '../../utils'
 
 import { usePrimesForAccountQuery } from '../../graphql/subgraph/subgraph'
@@ -13,12 +13,14 @@ const Container = styled.div`
   }
 `
 
-export const Account: FC<{ account?: string }> = ({ account: account_ }) => {
-  const { account: myAccount } = useEthers()
+export const Account: FC<{ account?: string }> = ({
+  account: account_,
+}) => {
+  const { address: myAccount } = useOnboard()
   const account = account_ ?? myAccount ?? undefined
 
   const primesQuery = usePrimesForAccountQuery({
-    variables: { account: account?.toLowerCase() as string },
+    variables: { account: account as string },
     skip: !account,
   })
 
@@ -29,7 +31,12 @@ export const Account: FC<{ account?: string }> = ({ account: account_ }) => {
         {primesQuery.data &&
           primesQuery.data.primes.map((prime) => (
             <div key={prime.id}>
-              <img src={prime.image} alt={prime.id} width="128" height="128" />
+              <img
+                src={prime.image}
+                alt={prime.id}
+                width="128"
+                height="128"
+              />
             </div>
           ))}
       </div>

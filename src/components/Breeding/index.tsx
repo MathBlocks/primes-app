@@ -1,10 +1,10 @@
 import { FC, useMemo } from 'react'
 import styled from 'styled-components'
 import { Form, Formik, useFormikContext } from 'formik'
-import { useEthers } from '@usedapp/core'
 // @ts-ignore
 import isPrime from 'is-prime'
 
+import { useOnboard } from '../App/OnboardProvider'
 import { useContracts } from '../App/DAppContext'
 import { useMintedPrimes, useMyPrimes } from '../App/PrimesContext'
 import { SendTransactionWidget } from '../SendTransactionWidget'
@@ -14,14 +14,13 @@ import { useListedPrimesQuery } from '../../graphql/subgraph/subgraph'
 import { useAttributesProof } from '../../merkleTree'
 
 const SubmitBreed: FC = () => {
-  const { values, isSubmitting, isValidating, isValid } =
-    useFormikContext<Values>()
+  const { values, isValidating } = useFormikContext<Values>()
 
   const outputAttributesProof = useAttributesProof(
     values.desiredOutput,
   )
 
-  const { Primes } = useContracts<true>()
+  const contracts = useContracts()
 
   const isBreedPrimes =
     values.tokenId &&
@@ -32,13 +31,9 @@ const SubmitBreed: FC = () => {
   return (
     <SendTransactionWidget
       buttonProps={{
-        disabled:
-          isSubmitting ||
-          isValidating ||
-          !isValid ||
-          !outputAttributesProof,
+        disabled: isValidating || !outputAttributesProof,
       }}
-      contract={Primes}
+      contract={contracts?.Primes}
       functionName={isBreedPrimes ? 'breedPrimes' : 'crossBreed'}
       transactionOptions={{
         transactionName: isBreedPrimes
@@ -83,8 +78,8 @@ const StyledForm = styled(Form)`
 // TODO: show rental fees
 // TODO: show rental whitelist
 const BreedingForm: FC = () => {
-  const { account } = useEthers()
-  const { Primes } = useContracts<true>()
+  const { address } = useOnboard()
+  // const { Primes } = useContracts<true>()
   const [mintedPrimes] = useMintedPrimes()
   const [myPrimes] = useMyPrimes()
 
@@ -135,7 +130,7 @@ const BreedingForm: FC = () => {
           tokenId?: string
         } = {}
 
-        if (!account) {
+        if (!address) {
           errors.tokenId = 'Not connected'
           return errors
         }

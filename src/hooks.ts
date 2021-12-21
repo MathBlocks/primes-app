@@ -1,32 +1,132 @@
+import { Reducer, useCallback, useReducer } from 'react'
+import { Contract, ContractTransaction } from 'ethers'
 import {
-  TransactionStatus,
-  useContractFunction as useDappUseContractFunction,
-} from '@usedapp/core'
-import { Contract } from 'ethers'
-import { TransactionOptions } from '@usedapp/core/src/index'
+  TransactionResponse,
+  TransactionReceipt,
+} from '@ethersproject/abstract-provider'
+import { useOnboard } from './components/App/OnboardProvider'
 
-interface UseContractFunctionReturnType<
-  ContractType extends Contract,
-  Key extends keyof ContractType['functions'],
-  Args extends Parameters<ContractType['functions'][Key]>,
-> {
-  send: (...args: Args) => Promise<void>
-  state: TransactionStatus
+export type TransactionState =
+  | 'None'
+  | 'Mining'
+  | 'Success'
+  | 'Fail'
+  | 'Exception'
+
+export interface TransactionStatus {
+  status: TransactionState
+  transaction?: TransactionResponse
+  receipt?: TransactionReceipt
+  chainId?: number
+  errorMessage?: string
+  originalTransaction?: TransactionResponse
 }
 
-export function useContractFunction<
+type TransactionAction =
+  | {
+      type: 'START'
+    }
+  | { type: 'SENT'; payload: TransactionResponse }
+  | { type: 'FAIL' }
+  | { type: 'SUCCESS' }
+  | { type: 'RECEIPT'; payload: TransactionReceipt }
+  | { type: 'ERROR'; payload: string }
+
+const transactionStatusReducer: Reducer<
+  TransactionStatus,
+  TransactionAction
+> = (state, action) => {
+  switch (action.type) {
+    case 'START':
+      return { status: 'None' }
+    case 'SENT':
+      return {
+        ...state,
+        status: 'Mining',
+        transaction: action.payload,
+      }
+    case 'RECEIPT':
+      return { ...state, receipt: action.payload }
+    case 'SUCCESS':
+      return { ...state, status: 'Success' }
+    case 'FAIL':
+      return { ...state, status: 'Fail' }
+    case 'ERROR':
+      return {
+        ...state,
+        status: 'Exception',
+        errorMessage: action.payload,
+      }
+    default:
+      return state
+  }
+}
+
+export const useContractFunction = <
   ContractType extends Contract,
   Key extends keyof ContractType['functions'],
   Args extends Parameters<ContractType['functions'][Key]>,
 >(
-  contract: ContractType,
+  contract: ContractType | undefined,
   functionName: Key,
-  options?: TransactionOptions,
-): UseContractFunctionReturnType<ContractType, Key, Args> {
-  const { send, state } = useDappUseContractFunction(
-    contract as never,
-    functionName as string,
-    options,
+) => {
+  const [state, dispatch] = useReducer(transactionStatusReducer, {
+    status: 'None',
+  })
+
+  const send = useCallback(
+    async (...args: Args) => {
+      if (!contract) return
+
+      dispatch({ type: 'START' })
+
+      try {
+        const tx = (await contract[functionName](
+          ...args,
+        )) as ContractTransaction
+
+        dispatch({ type: 'SENT', payload: tx })
+
+        const receipt = await tx.wait(1)
+
+        dispatch({ type: 'RECEIPT', payload: receipt })
+
+        if (receipt.status === 1) {
+          dispatch({ type: 'SUCCESS' })
+        } else {
+          dispatch({ type: 'FAIL' })
+        }
+      } catch (error) {
+        dispatch({
+          type: 'ERROR',
+          payload:
+            (error as any).error?.message ??
+            (error as any).reason ??
+            error.message ??
+            error.toString(),
+        })
+      }
+    },
+    [contract, functionName],
   )
-  return { send: (...args: Args) => send(...args), state }
+
+  return {
+    send,
+    state,
+  }
+}
+
+export const useExplorerTransactionLink = (hash?: string) => {
+  const { chainId } = useOnboard()
+  if (!hash) return
+  switch (chainId) {
+    case 1:
+      return `https://etherscan.io/tx/${hash}`
+    case 4:
+      return `https://rinkeby.etherscan.io/tx/${hash}`
+    case 137:
+      return `https://polygonscan.com/tx/${hash}`
+    default:
+      throw new Error(`Unsupported chain ID ${chainId}`)
+  }
 }

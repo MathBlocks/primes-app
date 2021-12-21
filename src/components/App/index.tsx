@@ -1,14 +1,13 @@
 import { FC } from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { createGlobalStyle } from 'styled-components'
-import { DAppProvider } from '@usedapp/core'
 
-import { config } from '../../config'
 import { AppLayout } from './AppLayout'
 import { AppRoutes } from './AppRoutes'
 import { ApolloProvider } from './ApolloProvider'
 import { DAppContext } from './DAppContext'
 import { PrimesContext } from './PrimesContext'
+import { OnboardProvider } from './OnboardProvider'
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -74,7 +73,7 @@ const GlobalStyle = createGlobalStyle`
 
 export const App: FC = () => {
   return (
-    <DAppProvider config={config}>
+    <OnboardProvider>
       <DAppContext>
         <ApolloProvider>
           <PrimesContext>
@@ -87,6 +86,6 @@ export const App: FC = () => {
           </PrimesContext>
         </ApolloProvider>
       </DAppContext>
-    </DAppProvider>
+    </OnboardProvider>
   )
 }
