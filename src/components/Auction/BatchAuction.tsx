@@ -89,7 +89,7 @@ const Batch: FC<{ batchId: number }> = ({ batchId }) => {
             <div>
               <h4>Whitelist</h4>
               <div>
-                {(primeBatch.whitelist as string | undefined)
+                {primeBatch.whitelist
                   ?.split(',')
                   .map((account: string) => (
                     <div key={account}>

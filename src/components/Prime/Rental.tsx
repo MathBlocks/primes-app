@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react'
+import { useToggle } from 'react-use'
 import styled from 'styled-components'
-
-import { Formik, Form, Field } from 'formik'
+import { Formik, Form, Field, FieldArray } from 'formik'
 import { formatEther } from 'ethers/lib/utils'
 import ReactTooltip from 'react-tooltip'
 
@@ -10,6 +10,7 @@ import { SendTransactionWidget } from '../SendTransactionWidget'
 import { useOnboard } from '../App/OnboardProvider'
 import { useContracts } from '../App/DAppContext'
 import { useRouteTokenId } from './Context'
+import { Modal } from '../Modal'
 
 interface OwnerValues {
   tokenId: number
@@ -18,15 +19,80 @@ interface OwnerValues {
   suitors?: number[]
 }
 
+const OwnerListFormContainer = styled.div`
+  .field {
+    padding-bottom: 2rem;
+    input {
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px white solid;
+      background-color: transparent;
+      color: white;
+      outline: none;
+      font-size: 1.2rem;
+    }
+    h5 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    p {
+      opacity: 0.8;
+    }
+  }
+
+  .suitors {
+    > div {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      > div:not(:last-child) {
+        position: relative;
+        border-radius: 0.5rem;
+        border: 1px white solid;
+        width: 6rem;
+        height: 2rem;
+        input {
+          font-size: 1rem;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          padding: 0 1rem;
+          flex-shrink: 1;
+          border: 0;
+        }
+        button {
+          position: absolute;
+          right: 0;
+          top: 0;
+          height: 100%;
+          width: 2rem;
+          background: transparent;
+          cursor: pointer;
+          border-radius: 0;
+          padding: 0;
+          color: white;
+        }
+      }
+      > div:last-child {
+        button {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+`
+
 const OwnerListForm: FC = () => {
   const [tokenId] = useRouteTokenId()
   const { address } = useOnboard()
   const { Primes } = useContracts<true>()
 
   return (
-    <div>
+    <OwnerListFormContainer>
       <Formik
-        initialValues={{ tokenId }}
+        initialValues={{ tokenId, fee: 0, deadline: 0, suitors: [] }}
         onSubmit={() => {}}
         validate={async (values: OwnerValues) => {
           const errors: Partial<Record<keyof OwnerValues, string>> =
@@ -58,11 +124,11 @@ const OwnerListForm: FC = () => {
                 <div className="error">{errors.tokenId}</div>
               )}
             </div>
-            <div>
-              <h5>Stud fee</h5>
+            <div className="field fee">
+              <h5>Stud fee (ETH)</h5>
               <Field
                 type="number"
-                name="studFee"
+                name="fee"
                 min={0}
                 placeholder="0 ETH"
               />
@@ -76,7 +142,7 @@ const OwnerListForm: FC = () => {
                 <div className="error">{errors.fee}</div>
               )}
             </div>
-            <div>
+            <div className="field deadline">
               <h5>Deadline</h5>
               <Field
                 type="date"
@@ -92,58 +158,48 @@ const OwnerListForm: FC = () => {
                 <div className="error">{errors.fee}</div>
               )}
             </div>
-            <div>
+            <div className="field suitors">
               <h5>Suitors</h5>
-              <div>
-                <Field
-                  type="number"
-                  name="suitors[0]"
-                  placeholder="1"
-                  min={2}
-                  max={8192}
-                  increment={1}
-                />
-                <Field
-                  type="number"
-                  name="suitors[1]"
-                  placeholder="2"
-                  min={2}
-                  max={8192}
-                  increment={1}
-                />
-                <Field
-                  type="number"
-                  name="suitors[2]"
-                  placeholder="3"
-                  min={2}
-                  max={8192}
-                  increment={1}
-                />
-                <Field
-                  type="number"
-                  name="suitors[3]"
-                  placeholder="4"
-                  min={2}
-                  max={8192}
-                  increment={1}
-                />
-                <Field
-                  type="number"
-                  name="suitors[4]"
-                  placeholder="5"
-                  min={2}
-                  max={8192}
-                  increment={1}
-                />
-                <Field
-                  type="number"
-                  name="suitors[5]"
-                  placeholder="6"
-                  min={2}
-                  max={8192}
-                  increment={1}
-                />
-              </div>
+              <FieldArray
+                name="suitors"
+                render={(arrayHelpers) => (
+                  <div>
+                    {values.suitors?.length
+                      ? values.suitors.map((suitor, index) => (
+                          <div key={index}>
+                            <Field
+                              name={`suitors.${index}`}
+                              placeholder="1"
+                              min={2}
+                              max={8192}
+                              increment={1}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                arrayHelpers.remove(index)
+                              }}
+                            >
+                              x
+                            </button>
+                          </div>
+                        ))
+                      : null}
+                    <div>
+                      {values.suitors?.length < 6 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            arrayHelpers.push('')
+                          }}
+                        >
+                          Add a suitor
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              />
               <p>
                 Optionally, up to 6 suitors can be defined. Suitors
                 are other Primes that you will allow to breed with
@@ -177,7 +233,7 @@ const OwnerListForm: FC = () => {
           </Form>
         )}
       </Formik>
-    </div>
+    </OwnerListFormContainer>
   )
 }
 
@@ -206,6 +262,8 @@ const OwnerForms: FC = () => {
     fetchPolicy: 'cache-only',
   })
 
+  const [showModal, toggleShowModal] = useToggle(false)
+
   useEffect(() => {
     ReactTooltip.rebuild()
   }, [])
@@ -214,10 +272,24 @@ const OwnerForms: FC = () => {
 
   return (
     <div>
-      <h4 data-tip="As the owner of this Prime, you can list, unlist or change list settings">
+      <button
+        data-tip="As the owner of this Prime, you can list, unlist or change list settings"
+        onClick={toggleShowModal}
+      >
         Manage rental
-      </h4>
-      {data.prime.isListed ? <OwnerUnlistForm /> : <OwnerListForm />}
+      </button>
+      <Modal
+        isOpen={showModal}
+        onEscapeKeydown={toggleShowModal}
+        onBackgroundClick={toggleShowModal}
+        title={data.prime.isListed ? 'Manage listing' : 'List Prime'}
+      >
+        {data.prime.isListed ? (
+          <OwnerUnlistForm />
+        ) : (
+          <OwnerListForm />
+        )}
+      </Modal>
     </div>
   )
 }

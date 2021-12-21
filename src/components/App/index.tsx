@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
-import { createGlobalStyle } from 'styled-components'
+import { createGlobalStyle, ThemeProvider } from 'styled-components'
+import { ModalProvider } from 'styled-react-modal'
 
 import { AppLayout } from './AppLayout'
 import { AppRoutes } from './AppRoutes'
@@ -71,21 +72,25 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
-export const App: FC = () => {
-  return (
-    <OnboardProvider>
-      <DAppContext>
-        <ApolloProvider>
-          <PrimesContext>
-            <Router>
-              <AppLayout>
-                <GlobalStyle />
-                <AppRoutes />
-              </AppLayout>
-            </Router>
-          </PrimesContext>
-        </ApolloProvider>
-      </DAppContext>
-    </OnboardProvider>
-  )
-}
+const theme = {}
+
+export const App: FC = () => (
+  <ThemeProvider theme={theme}>
+    <ModalProvider>
+      <OnboardProvider>
+        <DAppContext>
+          <ApolloProvider>
+            <PrimesContext>
+              <Router>
+                <AppLayout>
+                  <GlobalStyle />
+                  <AppRoutes />
+                </AppLayout>
+              </Router>
+            </PrimesContext>
+          </ApolloProvider>
+        </DAppContext>
+      </OnboardProvider>
+    </ModalProvider>
+  </ThemeProvider>
+)

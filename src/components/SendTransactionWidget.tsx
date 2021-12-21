@@ -100,25 +100,27 @@ export const SendTransactionWidget: <
       >
         {transactionOptions?.transactionName ?? 'Send'}
       </button>
-      <div>
-        <Row visible={status !== 'None'}>
-          {status}{' '}
-          {errorMessage && (
-            <span className="error">
-              ({errorMessage.replace('execution reverted: ', '')})
-            </span>
-          )}
-        </Row>
-        <Row visible={!!transaction?.hash}>
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={explorerTransactionLink}
-          >
-            View transaction
-          </a>
-        </Row>
-      </div>
+      {(status !== 'None' || transaction?.hash) && (
+        <div>
+          <Row visible={status !== 'None'}>
+            {status}{' '}
+            {errorMessage && (
+              <span className="error">
+                ({errorMessage.replace('execution reverted: ', '')})
+              </span>
+            )}
+          </Row>
+          <Row visible={!!transaction?.hash}>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={explorerTransactionLink}
+            >
+              View transaction
+            </a>
+          </Row>
+        </div>
+      )}
     </Container>
   )
 }
