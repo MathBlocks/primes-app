@@ -46,7 +46,6 @@ const useOnboardBase = (
   )
 
   useEffect(() => {
-    console.log('setOnboard')
     setOnboard(
       Onboard({
         ...options,

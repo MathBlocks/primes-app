@@ -2,11 +2,13 @@ import { FC } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import { Home } from '../Home'
-import { AuctionRoutes } from '../Auction'
 import { Prime } from '../Prime'
 import { Primes } from '../Primes'
 import { Account } from '../Account'
 import { Breeding } from '../Breeding'
+import { Auction } from '../Auction'
+import { BatchAuction } from '../Auction/BatchAuction'
+import { PrimeAuction } from '../Auction/PrimeAuction'
 
 export const AppRoutes: FC = () => (
   <Switch>
@@ -31,6 +33,14 @@ export const AppRoutes: FC = () => (
     <Route path="/account/:account?" exact>
       <Account />
     </Route>
-    <AuctionRoutes />
+    <Route path="/auction" exact>
+      <Auction />
+    </Route>
+    <Route path="/auction/batch/:batchId" exact>
+      <BatchAuction />
+    </Route>
+    <Route path="/auction/batch/2/:primeId" exact>
+      <PrimeAuction />
+    </Route>
   </Switch>
 )
