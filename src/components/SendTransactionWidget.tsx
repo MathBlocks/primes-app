@@ -69,6 +69,7 @@ export const SendTransactionWidget: <
       ButtonHTMLAttributes<HTMLButtonElement>,
       HTMLButtonElement
     >
+    check?(): boolean
   },
 >(
   props: SendTransactionButtonProps,
@@ -78,6 +79,7 @@ export const SendTransactionWidget: <
   args,
   transactionOptions,
   buttonProps,
+  check,
 }) => {
   const {
     send,
@@ -93,6 +95,8 @@ export const SendTransactionWidget: <
       <button
         {...buttonProps}
         onClick={() => {
+          if (check && !check()) return
+
           send(...args).catch((error) => {
             console.error(error)
           })

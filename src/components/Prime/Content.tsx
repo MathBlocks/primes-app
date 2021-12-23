@@ -10,7 +10,7 @@ import { useAttributes } from '../App/PrimesContext'
 import { getSVGDataURI } from '../PrimeSVG'
 import { useRouteTokenId } from './Context'
 import { truncateAddress } from '../../utils'
-import { Rental } from './Rental'
+import { RentalData } from './RentalData'
 
 const PrimeImage = styled.div`
   min-width: 28rem;
@@ -237,7 +237,7 @@ export const Content: FC = () => {
             />
           </>
         ) : null}
-        <Rental />
+        <RentalData tokenId={tokenId} />
       </PrimeDetail>
     </Container>
   )

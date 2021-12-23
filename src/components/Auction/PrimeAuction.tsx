@@ -14,86 +14,9 @@ import {
   usePrimeAuctionQuery,
   usePrimeQuery,
 } from '../../graphql/subgraph/subgraph'
-
 import { getNowUnix } from '../../utils'
 import { AccountLink } from '../AccountLink'
 import { PrimeAuctionBidForm } from './PrimeAuctionBidForm'
-
-const Container = styled.div`
-  > :first-child {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 4rem;
-    margin-bottom: 4rem;
-
-    > :last-child {
-      min-width: 20rem;
-    }
-  }
-
-  .auction-time {
-    margin-bottom: 2rem;
-    > :first-child {
-      font-size: 1rem;
-      font-weight: bold;
-    }
-  }
-
-  .items {
-    > div {
-      margin-bottom: 2rem;
-      h4 {
-        margin-bottom: 0;
-        font-size: 1rem;
-      }
-      p {
-        margin: 0;
-      }
-    }
-  }
-
-  .prime-image {
-    border-radius: 0.75rem;
-    border: 1px #444 solid;
-    overflow: hidden;
-    width: 100%;
-    max-width: 512px;
-
-    img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-  }
-
-  .bids {
-    h4 {
-      padding-bottom: 1rem;
-      border-bottom: 1px white solid;
-      margin-bottom: 1rem;
-    }
-
-    h5 {
-      font-size: 1.15rem;
-      margin: 0;
-    }
-
-    > div {
-      > div {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        width: 100%;
-        padding: 1rem 0;
-        border-bottom: 1px #444 solid;
-        &:first-child {
-          padding-top: 0;
-        }
-      }
-    }
-  }
-`
 
 const nowUnix = getNowUnix()
 
@@ -233,6 +156,82 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
     </>
   )
 }
+
+const Container = styled.div`
+  > :first-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 4rem;
+    margin-bottom: 4rem;
+
+    > :last-child {
+      min-width: 20rem;
+    }
+  }
+
+  .auction-time {
+    margin-bottom: 2rem;
+    > :first-child {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+  }
+
+  .items {
+    > div {
+      margin-bottom: 2rem;
+      h4 {
+        margin-bottom: 0;
+        font-size: 1rem;
+      }
+      p {
+        margin: 0;
+      }
+    }
+  }
+
+  .prime-image {
+    border-radius: 0.75rem;
+    border: 1px #444 solid;
+    overflow: hidden;
+    width: 100%;
+    max-width: 512px;
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+
+  .bids {
+    h4 {
+      padding-bottom: 1rem;
+      border-bottom: 1px white solid;
+      margin-bottom: 1rem;
+    }
+
+    h5 {
+      font-size: 1.15rem;
+      margin: 0;
+    }
+
+    > div {
+      > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        width: 100%;
+        padding: 1rem 0;
+        border-bottom: 1px #444 solid;
+        &:first-child {
+          padding-top: 0;
+        }
+      }
+    }
+  }
+`
 
 export const PrimeAuction: FC = () => {
   const { primeId } = useParams<{ primeId?: string }>()

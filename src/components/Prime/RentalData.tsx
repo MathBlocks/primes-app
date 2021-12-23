@@ -3,7 +3,12 @@ import { useToggle } from 'react-use'
 import styled from 'styled-components'
 import { Formik, Form, Field, FieldArray } from 'formik'
 import { formatEther, parseEther } from 'ethers/lib/utils'
-import { formatRFC7231, fromUnixTime, getUnixTime } from 'date-fns'
+import {
+  formatRFC7231,
+  fromUnixTime,
+  getUnixTime,
+  lightFormat,
+} from 'date-fns'
 import ReactTooltip from 'react-tooltip'
 
 import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
@@ -16,7 +21,7 @@ import { Modal } from '../Modal'
 interface OwnerValues {
   tokenId: number
   fee?: number
-  deadline?: number
+  deadline?: string
   suitors?: number[]
 }
 
@@ -87,13 +92,32 @@ const OwnerListFormContainer = styled.div`
 
 const OwnerListForm: FC = () => {
   const [tokenId] = useRouteTokenId()
+  const primeQuery = usePrimeQuery({
+    variables: { tokenId: tokenId.toString() },
+  })
   const { address } = useOnboard()
   const { Primes } = useContracts<true>()
 
   return (
     <OwnerListFormContainer>
       <Formik
-        initialValues={{ tokenId, fee: 0, deadline: 0, suitors: [] }}
+        initialValues={{
+          tokenId,
+          fee: parseFloat(
+            formatEther(primeQuery.data?.prime?.studFee ?? '0'),
+          ),
+          deadline: primeQuery.data?.prime?.deadline
+            ? lightFormat(
+                fromUnixTime(
+                  parseInt(primeQuery.data.prime.deadline),
+                ),
+                'yyyy-MM-dd',
+              )
+            : undefined,
+          suitors: (primeQuery.data?.prime?.suitors ?? []).map(
+            ({ id }) => parseInt(id),
+          ),
+        }}
         onSubmit={() => {}}
         validate={async (values: OwnerValues) => {
           const errors: Partial<Record<keyof OwnerValues, string>> =
@@ -296,11 +320,8 @@ const OwnerForms: FC = () => {
         onBackgroundClick={toggleShowModal}
         title={data.prime.isListed ? 'Manage listing' : 'List Prime'}
       >
-        {data.prime.isListed ? (
-          <OwnerUnlistForm />
-        ) : (
-          <OwnerListForm />
-        )}
+        <OwnerListForm />
+        {data.prime.isListed && <OwnerUnlistForm />}
       </Modal>
     </OwnerFormsContainer>
   )
@@ -313,12 +334,10 @@ const Container = styled.div`
   }
 `
 
-export const Rental: FC = () => {
-  const [tokenId] = useRouteTokenId()
-
+export const RentalData: FC<{ tokenId: number }> = ({ tokenId }) => {
   const { data } = usePrimeQuery({
     variables: { tokenId: tokenId.toString() },
-    fetchPolicy: 'cache-only',
+    fetchPolicy: 'cache-and-network',
   })
 
   const { address } = useOnboard()
@@ -331,7 +350,7 @@ export const Rental: FC = () => {
 
   return data?.prime ? (
     <Container>
-      <h3>Rental</h3>
+      <h3>Rental data</h3>
       <div>
         <div>{data.prime.isListed ? 'Listed' : 'Not listed'}</div>
         {data.prime.isListed && (

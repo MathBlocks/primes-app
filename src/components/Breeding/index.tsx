@@ -1,52 +1,141 @@
 import { FC, useMemo } from 'react'
 import styled from 'styled-components'
 import { Form, Formik, useFormikContext } from 'formik'
-// @ts-ignore
-import isPrime from 'is-prime'
+import { BigNumber } from 'ethers'
 
+import {
+  useListedPrimesQuery,
+  usePrimeQuery,
+} from '../../graphql/subgraph/subgraph'
 import { useOnboard } from '../App/OnboardProvider'
 import { useContracts } from '../App/DAppContext'
 import { useMintedPrimes, useMyPrimes } from '../App/PrimesContext'
+import { useAttributesProof } from '../../merkleTree'
+import { RentalData } from '../Prime/RentalData'
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { BreedingOutput, BreedingSelect } from './BreedingSelect'
 import { Values } from './types'
-import { useListedPrimesQuery } from '../../graphql/subgraph/subgraph'
-import { useAttributesProof } from '../../merkleTree'
+import { useToggle } from 'react-use'
+import { Modal } from '../Modal'
 
 const SubmitBreed: FC = () => {
+  const { address: account } = useOnboard()
   const { values, isValidating } = useFormikContext<Values>()
 
   const outputAttributesProof = useAttributesProof(
     values.desiredOutput,
   )
 
+  const primeQuery = usePrimeQuery({
+    variables: {
+      tokenId: (values.tokenId as number).toString(),
+    },
+    skip: !values.tokenId,
+    fetchPolicy: 'cache-first',
+  })
+  const otherPrimeQuery = usePrimeQuery({
+    variables: {
+      tokenId: (values.otherTokenId as number).toString(),
+    },
+    skip: !values.otherTokenId,
+    fetchPolicy: 'cache-first',
+  })
+  // const otherPrimeQuery = {
+  //   data: {
+  //     prime: {
+  //       id: '5',
+  //       owner: '0x',
+  //       studFee: '10000000000000000000',
+  //       isPrime: false,
+  //     },
+  //   },
+  // }
+
+  const primeData = primeQuery.data?.prime
+  const otherPrimeData = otherPrimeQuery.data?.prime
+
+  const isOwnerOfPrime = primeData?.owner === account
+  const isOwnerOfOtherPrime = otherPrimeData?.owner === account
+
   const contracts = useContracts()
 
-  const isBreedPrimes =
+  const isBreedPrimes = !!(
     values.tokenId &&
     values.otherTokenId &&
-    isPrime(values.tokenId) &&
-    isPrime(values.otherTokenId)
+    isOwnerOfPrime &&
+    isOwnerOfOtherPrime
+  )
+
+  const studFee = BigNumber.from(otherPrimeData?.studFee ?? '0')
+
+  const [acceptedBurnWarning, toggleAcceptedBurnWarning] =
+    useToggle(false)
+
+  const [showBurnWarningModal, toggleShowBurnWarningModal] =
+    useToggle(false)
+
+  const needsBurnWarning =
+    primeData &&
+    otherPrimeData &&
+    (!primeData.isPrime || !otherPrimeData.isPrime)
 
   return (
-    <SendTransactionWidget
-      buttonProps={{
-        disabled: isValidating || !outputAttributesProof,
-      }}
-      contract={contracts?.Primes}
-      functionName={isBreedPrimes ? 'breedPrimes' : 'crossBreed'}
-      transactionOptions={{
-        transactionName: isBreedPrimes
-          ? 'Breed Primes'
-          : 'Cross breed',
-      }}
-      args={[
-        values.tokenId,
-        values.otherTokenId,
-        outputAttributesProof?.value ?? 0,
-        outputAttributesProof?.proof ?? [],
-      ]}
-    />
+    <>
+      <SendTransactionWidget
+        check={() => {
+          console.log('check')
+          if (needsBurnWarning && !acceptedBurnWarning) {
+            toggleShowBurnWarningModal(true)
+            console.log('false')
+            return false
+          }
+          console.log('true')
+          return true
+        }}
+        buttonProps={{
+          disabled: !!(isValidating || !outputAttributesProof),
+        }}
+        contract={contracts?.Primes}
+        functionName={isBreedPrimes ? 'breedPrimes' : 'crossBreed'}
+        transactionOptions={{
+          transactionName: isBreedPrimes
+            ? 'Breed Primes'
+            : 'Cross breed',
+        }}
+        args={[
+          values.tokenId,
+          values.otherTokenId,
+          outputAttributesProof?.value ?? 0,
+          outputAttributesProof?.proof ?? [],
+          isBreedPrimes ? {} : { value: studFee },
+        ]}
+      />
+      <Modal
+        title="Confirm "
+        isOpen={showBurnWarningModal}
+        onBackgroundClick={toggleShowBurnWarningModal}
+        onEscapeKeydown={toggleShowBurnWarningModal}
+      >
+        {primeData && !primeData.isPrime && (
+          <div>#{primeData.id} will be burned</div>
+        )}
+        {otherPrimeData && !otherPrimeData.isPrime && (
+          <div>#{otherPrimeData.id} will be burned</div>
+        )}
+        <button
+          onClick={() => {
+            toggleAcceptedBurnWarning(true)
+            toggleShowBurnWarningModal(false)
+          }}
+        >
+          Burn{' '}
+          {!otherPrimeData?.isPrime && !primeData?.isPrime
+            ? 'them'
+            : 'it'}
+          .
+        </button>
+      </Modal>
+    </>
   )
 }
 
@@ -73,10 +162,7 @@ const StyledForm = styled(Form)`
   }
 `
 
-// TODO: lives left
 // TODO: burning warning
-// TODO: show rental fees
-// TODO: show rental whitelist
 const BreedingForm: FC = () => {
   const { address } = useOnboard()
   const contracts = useContracts()
@@ -189,26 +275,6 @@ const BreedingForm: FC = () => {
           if (isOwner && isOtherOwner) {
             return {}
           }
-          try {
-            await contracts.Primes.estimateGas.crossBreed(
-              values.tokenId,
-              values.otherTokenId,
-              // Shouldn't need the real attributes proof to estimate this
-              0,
-              [],
-              {
-                from: address,
-              },
-            )
-          } catch (error) {
-            if (error.error?.message) {
-              errors.tokenId =
-                error.error.message.replace(
-                  'execution reverted: ',
-                  '',
-                ) ?? error.error.message
-            }
-          }
         }
 
         return errors
@@ -223,6 +289,10 @@ const BreedingForm: FC = () => {
           values,
           errors,
         } = form
+
+        const showRentalData =
+          groups.allListedPrimesSet.has(values.otherTokenId) &&
+          !groups.myBreedablePrimesSet.has(values.otherTokenId)
 
         return (
           <StyledForm>
@@ -267,6 +337,9 @@ const BreedingForm: FC = () => {
                 }}
                 placeholder="Parent 2"
               />
+              {showRentalData && (
+                <RentalData tokenId={values.otherTokenId} />
+              )}
               <div className="tip">
                 This can be a Prime you own, or a Prime you can rent
               </div>
