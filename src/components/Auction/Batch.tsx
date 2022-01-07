@@ -56,7 +56,7 @@ const MintRandomPrimeForm: FC<{
     whitelistProof.batch1Cap,
     whitelistProof.proof,
     {
-      value: batchPriceMapping[batchId],
+      value: batchPriceMapping[batchId].mul(count),
     },
   ]
 
