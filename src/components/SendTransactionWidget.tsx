@@ -42,7 +42,7 @@ const Container = styled.div<{ status: TransactionState }>`
         : status === 'Success'
         ? '#3e5b38'
         : status === 'Mining'
-        ? '#fff'
+        ? '#265967'
         : '#555'};
   }
 
