@@ -42,6 +42,7 @@ fragment PrimeAll on Prime {
     isPrime
     isRentable
     lastBred
+    revealed
 
     owner {
         id
@@ -134,6 +135,7 @@ query AllPrimeAuctions {
         ...PrimeAuctionAll
         prime {
             id
+            revealed
             number
             image
         }
@@ -163,7 +165,6 @@ query PrimeBatch($id: ID!) {
         id
         active
         remaining
-        whitelist
     }
 }
 
@@ -178,6 +179,7 @@ query Account($account: ID!) {
     account(id: $account) {
         primes(orderBy: number, orderDirection: asc) {
             id
+            revealed
         }
     }
 }
@@ -186,6 +188,7 @@ fragment PrimePreview on Prime {
     id
     number
     isPrime
+    revealed
     image
 }
 
@@ -198,5 +201,11 @@ query PrimePreviews($offset: Int!, $limit: Int!) {
 query PrimePreviewsForIds($offset: Int!, $limit: Int!, $ids: [ID!]!) {
     primes(first: $limit, skip: $offset, orderDirection: asc, orderBy: number, where: {id_in: $ids}) {
         ...PrimePreview
+    }
+}
+
+query PrimesTest($numbers: [Int!]!) {
+    primes(where: {number_in: $numbers}) {
+        ...PrimeAll
     }
 }

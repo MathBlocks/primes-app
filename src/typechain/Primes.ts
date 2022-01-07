@@ -78,8 +78,6 @@ export interface PrimesInterface extends ethers.utils.Interface {
     "attributesRootHash()": FunctionFragment;
     "auctionHouse()": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "batch0whitelist()": FunctionFragment;
-    "batch1whitelist()": FunctionFragment;
     "batchCheck()": FunctionFragment;
     "batchStartTime()": FunctionFragment;
     "breedPrimes(uint16,uint16,uint256,bytes32[])": FunctionFragment;
@@ -95,15 +93,17 @@ export interface PrimesInterface extends ethers.utils.Interface {
     "getNextPrime()": FunctionFragment;
     "getNonce(address)": FunctionFragment;
     "getNumberData(uint256)": FunctionFragment;
+    "getParents(uint256)": FunctionFragment;
     "getPrimeFactors(uint16,((bool,uint16,uint8,uint16[2],uint32),(uint16[2],uint16[2],uint16[2])))": FunctionFragment;
-    "initBatch0(uint256[],uint256,bytes32)": FunctionFragment;
-    "initBatch1(uint256[],uint256,bytes32)": FunctionFragment;
+    "getSuitors(uint256)": FunctionFragment;
+    "initBatch0(uint256[],uint256)": FunctionFragment;
+    "initBatch1(uint256[],uint256)": FunctionFragment;
     "initBatch2(uint256[],uint256)": FunctionFragment;
     "initPrimes(uint256[],uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "list(uint16,uint96,uint32,uint16[])": FunctionFragment;
-    "mintRandomPrime(bytes32[])": FunctionFragment;
-    "mintRandomPrimes(uint256,bytes32[])": FunctionFragment;
+    "mintRandomPrime(uint256,uint256,bytes32[])": FunctionFragment;
+    "mintRandomPrimes(uint256,uint256,uint256,bytes32[])": FunctionFragment;
     "name()": FunctionFragment;
     "nonce()": FunctionFragment;
     "owner()": FunctionFragment;
@@ -126,6 +126,7 @@ export interface PrimesInterface extends ethers.utils.Interface {
     "twins(uint256)": FunctionFragment;
     "unlist(uint16)": FunctionFragment;
     "users(address)": FunctionFragment;
+    "whitelistRootHash()": FunctionFragment;
     "withdraw()": FunctionFragment;
   };
 
@@ -150,14 +151,6 @@ export interface PrimesInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "batch0whitelist",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "batch1whitelist",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "batchCheck",
     values?: undefined
@@ -213,16 +206,24 @@ export interface PrimesInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getParents",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getPrimeFactors",
     values: [BigNumberish, NumberDataStruct]
   ): string;
   encodeFunctionData(
+    functionFragment: "getSuitors",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "initBatch0",
-    values: [BigNumberish[], BigNumberish, BytesLike]
+    values: [BigNumberish[], BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "initBatch1",
-    values: [BigNumberish[], BigNumberish, BytesLike]
+    values: [BigNumberish[], BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "initBatch2",
@@ -242,11 +243,11 @@ export interface PrimesInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "mintRandomPrime",
-    values: [BytesLike[]]
+    values: [BigNumberish, BigNumberish, BytesLike[]]
   ): string;
   encodeFunctionData(
     functionFragment: "mintRandomPrimes",
-    values: [BigNumberish, BytesLike[]]
+    values: [BigNumberish, BigNumberish, BigNumberish, BytesLike[]]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "nonce", values?: undefined): string;
@@ -312,6 +313,10 @@ export interface PrimesInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "users", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "whitelistRootHash",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
   decodeFunctionResult(
@@ -332,14 +337,6 @@ export interface PrimesInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "batch0whitelist",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "batch1whitelist",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "batchCheck", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "batchStartTime",
@@ -379,10 +376,12 @@ export interface PrimesInterface extends ethers.utils.Interface {
     functionFragment: "getNumberData",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "getParents", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getPrimeFactors",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "getSuitors", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initBatch0", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initBatch1", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initBatch2", data: BytesLike): Result;
@@ -446,6 +445,10 @@ export interface PrimesInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "twins", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "unlist", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "users", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "whitelistRootHash",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
@@ -458,6 +461,7 @@ export interface PrimesInterface extends ethers.utils.Interface {
     "MetaTransactionExecuted(address,address,bytes)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "PrimeClaimed(uint256)": EventFragment;
+    "RevealedAttributes(uint256,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
     "UnListed(uint16)": EventFragment;
   };
@@ -471,6 +475,7 @@ export interface PrimesInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "MetaTransactionExecuted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PrimeClaimed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RevealedAttributes"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UnListed"): EventFragment;
 }
@@ -528,6 +533,14 @@ export type PrimeClaimedEvent = TypedEvent<[BigNumber], { tokenId: BigNumber }>;
 
 export type PrimeClaimedEventFilter = TypedEventFilter<PrimeClaimedEvent>;
 
+export type RevealedAttributesEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  { tokenId: BigNumber; attributes: BigNumber }
+>;
+
+export type RevealedAttributesEventFilter =
+  TypedEventFilter<RevealedAttributesEvent>;
+
 export type TransferEvent = TypedEvent<
   [string, string, BigNumber],
   { from: string; to: string; tokenId: BigNumber }
@@ -582,10 +595,6 @@ export interface Primes extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    batch0whitelist(overrides?: CallOverrides): Promise<[string]>;
-
-    batch1whitelist(overrides?: CallOverrides): Promise<[string]>;
-
     batchCheck(
       overrides?: CallOverrides
     ): Promise<
@@ -607,9 +616,9 @@ export interface Primes extends BaseContract {
     ): Promise<ContractTransaction>;
 
     cousins(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[[number, number]]>;
+    ): Promise<[[number, number]] & { matches: [number, number] }>;
 
     crossBreed(
       _parent1: BigNumberish,
@@ -727,23 +736,31 @@ export interface Primes extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[NumberDataStructOutput]>;
 
+    getParents(
+      _tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[[number, number]]>;
+
     getPrimeFactors(
       _tokenId: BigNumberish,
       _numberData: NumberDataStruct,
       overrides?: CallOverrides
     ): Promise<[number[]] & { factors: number[] }>;
 
+    getSuitors(
+      _tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[[number, number, number, number, number, number]]>;
+
     initBatch0(
       _data: BigNumberish[],
       _length: BigNumberish,
-      _batch0whitelist: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     initBatch1(
       _data: BigNumberish[],
       _length: BigNumberish,
-      _batch1whitelist: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -774,12 +791,16 @@ export interface Primes extends BaseContract {
     ): Promise<ContractTransaction>;
 
     mintRandomPrime(
+      _batch0Cap: BigNumberish,
+      _batch1Cap: BigNumberish,
       _merkleProof: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     mintRandomPrimes(
       _count: BigNumberish,
+      _batch0Cap: BigNumberish,
+      _batch1Cap: BigNumberish,
       _merkleProof: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -848,9 +869,9 @@ export interface Primes extends BaseContract {
     setupAddr(overrides?: CallOverrides): Promise<[string]>;
 
     sexyPrimes(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[[number, number]]>;
+    ): Promise<[[number, number]] & { matches: [number, number] }>;
 
     start(
       _auctionHouse: string,
@@ -882,9 +903,9 @@ export interface Primes extends BaseContract {
     ): Promise<ContractTransaction>;
 
     twins(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[[number, number]]>;
+    ): Promise<[[number, number]] & { matches: [number, number] }>;
 
     unlist(
       _tokenId: BigNumberish,
@@ -895,6 +916,8 @@ export interface Primes extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<[number, number] & { tranche0: number; tranche1: number }>;
+
+    whitelistRootHash(overrides?: CallOverrides): Promise<[string]>;
 
     withdraw(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -917,10 +940,6 @@ export interface Primes extends BaseContract {
 
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  batch0whitelist(overrides?: CallOverrides): Promise<string>;
-
-  batch1whitelist(overrides?: CallOverrides): Promise<string>;
-
   batchCheck(
     overrides?: CallOverrides
   ): Promise<
@@ -942,7 +961,7 @@ export interface Primes extends BaseContract {
   ): Promise<ContractTransaction>;
 
   cousins(
-    _tokenId: BigNumberish,
+    _primeIndex: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[number, number]>;
 
@@ -1028,23 +1047,31 @@ export interface Primes extends BaseContract {
     overrides?: CallOverrides
   ): Promise<NumberDataStructOutput>;
 
+  getParents(
+    _tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[number, number]>;
+
   getPrimeFactors(
     _tokenId: BigNumberish,
     _numberData: NumberDataStruct,
     overrides?: CallOverrides
   ): Promise<number[]>;
 
+  getSuitors(
+    _tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[number, number, number, number, number, number]>;
+
   initBatch0(
     _data: BigNumberish[],
     _length: BigNumberish,
-    _batch0whitelist: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   initBatch1(
     _data: BigNumberish[],
     _length: BigNumberish,
-    _batch1whitelist: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1075,12 +1102,16 @@ export interface Primes extends BaseContract {
   ): Promise<ContractTransaction>;
 
   mintRandomPrime(
+    _batch0Cap: BigNumberish,
+    _batch1Cap: BigNumberish,
     _merkleProof: BytesLike[],
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   mintRandomPrimes(
     _count: BigNumberish,
+    _batch0Cap: BigNumberish,
+    _batch1Cap: BigNumberish,
     _merkleProof: BytesLike[],
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1146,7 +1177,7 @@ export interface Primes extends BaseContract {
   setupAddr(overrides?: CallOverrides): Promise<string>;
 
   sexyPrimes(
-    _tokenId: BigNumberish,
+    _primeIndex: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[number, number]>;
 
@@ -1177,7 +1208,7 @@ export interface Primes extends BaseContract {
   ): Promise<ContractTransaction>;
 
   twins(
-    _tokenId: BigNumberish,
+    _primeIndex: BigNumberish,
     overrides?: CallOverrides
   ): Promise<[number, number]>;
 
@@ -1190,6 +1221,8 @@ export interface Primes extends BaseContract {
     arg0: string,
     overrides?: CallOverrides
   ): Promise<[number, number] & { tranche0: number; tranche1: number }>;
+
+  whitelistRootHash(overrides?: CallOverrides): Promise<string>;
 
   withdraw(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1212,10 +1245,6 @@ export interface Primes extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    batch0whitelist(overrides?: CallOverrides): Promise<string>;
-
-    batch1whitelist(overrides?: CallOverrides): Promise<string>;
-
     batchCheck(
       overrides?: CallOverrides
     ): Promise<
@@ -1237,7 +1266,7 @@ export interface Primes extends BaseContract {
     ): Promise<void>;
 
     cousins(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[number, number]>;
 
@@ -1324,23 +1353,31 @@ export interface Primes extends BaseContract {
       overrides?: CallOverrides
     ): Promise<NumberDataStructOutput>;
 
+    getParents(
+      _tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[number, number]>;
+
     getPrimeFactors(
       _tokenId: BigNumberish,
       _numberData: NumberDataStruct,
       overrides?: CallOverrides
     ): Promise<number[]>;
 
+    getSuitors(
+      _tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[number, number, number, number, number, number]>;
+
     initBatch0(
       _data: BigNumberish[],
       _length: BigNumberish,
-      _batch0whitelist: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
     initBatch1(
       _data: BigNumberish[],
       _length: BigNumberish,
-      _batch1whitelist: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1371,12 +1408,16 @@ export interface Primes extends BaseContract {
     ): Promise<void>;
 
     mintRandomPrime(
+      _batch0Cap: BigNumberish,
+      _batch1Cap: BigNumberish,
       _merkleProof: BytesLike[],
       overrides?: CallOverrides
     ): Promise<void>;
 
     mintRandomPrimes(
       _count: BigNumberish,
+      _batch0Cap: BigNumberish,
+      _batch1Cap: BigNumberish,
       _merkleProof: BytesLike[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1438,7 +1479,7 @@ export interface Primes extends BaseContract {
     setupAddr(overrides?: CallOverrides): Promise<string>;
 
     sexyPrimes(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[number, number]>;
 
@@ -1469,7 +1510,7 @@ export interface Primes extends BaseContract {
     ): Promise<void>;
 
     twins(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[number, number]>;
 
@@ -1479,6 +1520,8 @@ export interface Primes extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<[number, number] & { tranche0: number; tranche1: number }>;
+
+    whitelistRootHash(overrides?: CallOverrides): Promise<string>;
 
     withdraw(overrides?: CallOverrides): Promise<void>;
   };
@@ -1545,6 +1588,15 @@ export interface Primes extends BaseContract {
     "PrimeClaimed(uint256)"(tokenId?: null): PrimeClaimedEventFilter;
     PrimeClaimed(tokenId?: null): PrimeClaimedEventFilter;
 
+    "RevealedAttributes(uint256,uint256)"(
+      tokenId?: null,
+      attributes?: null
+    ): RevealedAttributesEventFilter;
+    RevealedAttributes(
+      tokenId?: null,
+      attributes?: null
+    ): RevealedAttributesEventFilter;
+
     "Transfer(address,address,uint256)"(
       from?: string | null,
       to?: string | null,
@@ -1577,10 +1629,6 @@ export interface Primes extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    batch0whitelist(overrides?: CallOverrides): Promise<BigNumber>;
-
-    batch1whitelist(overrides?: CallOverrides): Promise<BigNumber>;
-
     batchCheck(overrides?: CallOverrides): Promise<BigNumber>;
 
     batchStartTime(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1594,7 +1642,7 @@ export interface Primes extends BaseContract {
     ): Promise<BigNumber>;
 
     cousins(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1647,23 +1695,31 @@ export interface Primes extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getParents(
+      _tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getPrimeFactors(
       _tokenId: BigNumberish,
       _numberData: NumberDataStruct,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getSuitors(
+      _tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initBatch0(
       _data: BigNumberish[],
       _length: BigNumberish,
-      _batch0whitelist: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     initBatch1(
       _data: BigNumberish[],
       _length: BigNumberish,
-      _batch1whitelist: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1694,12 +1750,16 @@ export interface Primes extends BaseContract {
     ): Promise<BigNumber>;
 
     mintRandomPrime(
+      _batch0Cap: BigNumberish,
+      _batch1Cap: BigNumberish,
       _merkleProof: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     mintRandomPrimes(
       _count: BigNumberish,
+      _batch0Cap: BigNumberish,
+      _batch1Cap: BigNumberish,
       _merkleProof: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1758,7 +1818,7 @@ export interface Primes extends BaseContract {
     setupAddr(overrides?: CallOverrides): Promise<BigNumber>;
 
     sexyPrimes(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1792,7 +1852,7 @@ export interface Primes extends BaseContract {
     ): Promise<BigNumber>;
 
     twins(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1802,6 +1862,8 @@ export interface Primes extends BaseContract {
     ): Promise<BigNumber>;
 
     users(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    whitelistRootHash(overrides?: CallOverrides): Promise<BigNumber>;
 
     withdraw(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1830,10 +1892,6 @@ export interface Primes extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    batch0whitelist(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    batch1whitelist(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     batchCheck(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     batchStartTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1847,7 +1905,7 @@ export interface Primes extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     cousins(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1908,23 +1966,31 @@ export interface Primes extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getParents(
+      _tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getPrimeFactors(
       _tokenId: BigNumberish,
       _numberData: NumberDataStruct,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getSuitors(
+      _tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     initBatch0(
       _data: BigNumberish[],
       _length: BigNumberish,
-      _batch0whitelist: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     initBatch1(
       _data: BigNumberish[],
       _length: BigNumberish,
-      _batch1whitelist: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1955,12 +2021,16 @@ export interface Primes extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     mintRandomPrime(
+      _batch0Cap: BigNumberish,
+      _batch1Cap: BigNumberish,
       _merkleProof: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     mintRandomPrimes(
       _count: BigNumberish,
+      _batch0Cap: BigNumberish,
+      _batch1Cap: BigNumberish,
       _merkleProof: BytesLike[],
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -2024,7 +2094,7 @@ export interface Primes extends BaseContract {
     setupAddr(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     sexyPrimes(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2058,7 +2128,7 @@ export interface Primes extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     twins(
-      _tokenId: BigNumberish,
+      _primeIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2071,6 +2141,8 @@ export interface Primes extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    whitelistRootHash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     withdraw(
       overrides?: Overrides & { from?: string | Promise<string> }

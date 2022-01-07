@@ -11,7 +11,11 @@ const batchTitleMapping: Record<number, string> = {
   2: `Gödel Escher Batch: An Eternal Golden Raid`,
 }
 
-const Container = styled.div``
+const Container = styled.div`
+  h2 {
+    margin-bottom: 4rem;
+  }
+`
 
 export const BatchAuction: FC = () => {
   const { batchId } = useParams<{ batchId: string }>()

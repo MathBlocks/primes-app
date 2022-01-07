@@ -11,7 +11,7 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "_primesDao",
+        name: "_dao",
         type: "address",
       },
       {
@@ -27,6 +27,11 @@ const _abi = [
       {
         internalType: "bytes32",
         name: "_attributesRootHash",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "_whitelistRootHash",
         type: "bytes32",
       },
     ],
@@ -201,6 +206,25 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "attributes",
+        type: "uint256",
+      },
+    ],
+    name: "RevealedAttributes",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "from",
@@ -326,32 +350,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "batch0whitelist",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "batch1whitelist",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "batchCheck",
     outputs: [
       {
@@ -418,7 +416,7 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_tokenId",
+        name: "_primeIndex",
         type: "uint256",
       },
     ],
@@ -426,7 +424,7 @@ const _abi = [
     outputs: [
       {
         internalType: "uint16[2]",
-        name: "",
+        name: "matches",
         type: "uint16[2]",
       },
     ],
@@ -727,6 +725,25 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "getParents",
+    outputs: [
+      {
+        internalType: "uint16[2]",
+        name: "",
+        type: "uint16[2]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint16",
         name: "_tokenId",
         type: "uint16",
@@ -807,6 +824,25 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "getSuitors",
+    outputs: [
+      {
+        internalType: "uint16[6]",
+        name: "",
+        type: "uint16[6]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256[]",
         name: "_data",
         type: "uint256[]",
@@ -815,11 +851,6 @@ const _abi = [
         internalType: "uint256",
         name: "_length",
         type: "uint256",
-      },
-      {
-        internalType: "bytes32",
-        name: "_batch0whitelist",
-        type: "bytes32",
       },
     ],
     name: "initBatch0",
@@ -838,11 +869,6 @@ const _abi = [
         internalType: "uint256",
         name: "_length",
         type: "uint256",
-      },
-      {
-        internalType: "bytes32",
-        name: "_batch1whitelist",
-        type: "bytes32",
       },
     ],
     name: "initBatch1",
@@ -941,6 +967,16 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "_batch0Cap",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_batch1Cap",
+        type: "uint256",
+      },
+      {
         internalType: "bytes32[]",
         name: "_merkleProof",
         type: "bytes32[]",
@@ -956,6 +992,16 @@ const _abi = [
       {
         internalType: "uint256",
         name: "_count",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_batch0Cap",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_batch1Cap",
         type: "uint256",
       },
       {
@@ -1197,7 +1243,7 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_tokenId",
+        name: "_primeIndex",
         type: "uint256",
       },
     ],
@@ -1205,7 +1251,7 @@ const _abi = [
     outputs: [
       {
         internalType: "uint16[2]",
-        name: "",
+        name: "matches",
         type: "uint16[2]",
       },
     ],
@@ -1316,7 +1362,7 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_tokenId",
+        name: "_primeIndex",
         type: "uint256",
       },
     ],
@@ -1324,7 +1370,7 @@ const _abi = [
     outputs: [
       {
         internalType: "uint16[2]",
-        name: "",
+        name: "matches",
         type: "uint16[2]",
       },
     ],
@@ -1363,6 +1409,19 @@ const _abi = [
         internalType: "uint8",
         name: "tranche1",
         type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "whitelistRootHash",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
       },
     ],
     stateMutability: "view",

@@ -1,68 +1,155 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import styled from 'styled-components'
 import { BigNumber } from 'ethers'
-import { parseEther } from 'ethers/lib/utils'
+import { formatEther, parseEther } from 'ethers/lib/utils'
 
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { usePrimeBatchQuery } from '../../graphql/subgraph/subgraph'
 import { useWhitelistProof } from '../../merkleTree'
 import { useContracts } from '../App/DAppContext'
 import { useOnboard } from '../App/OnboardProvider'
-import { AccountLink } from '../AccountLink'
 
 const batchPriceMapping: Record<number, BigNumber> = {
   0: parseEther('0.05'),
-  1: parseEther('0.1'),
+  1: parseEther('0.075'),
 }
 
-const MintRandomPrimeForm: FC<{ batchId: number }> = ({
-  batchId,
-}) => {
-  const { Primes } = useContracts<true>()
+const MintRandomPrimeFormContainer = styled.div`
+  padding: 2rem;
+  border-radius: 1rem;
+  background-color: #111;
+  > :first-child {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    gap: 4rem;
+    margin-bottom: 2rem;
+    h4 {
+      margin-bottom: 0.5rem;
+      span {
+        font-size: 0.8rem;
+      }
+    }
+    input[type='range'] {
+      min-width: 14rem;
+    }
+  }
+`
+
+const MintRandomPrimeForm: FC<{
+  batchId: number
+  remaining?: number
+}> = ({ batchId, remaining }) => {
+  const contracts = useContracts()
   const { address } = useOnboard()
 
-  const proof = useWhitelistProof(
-    `whitelist-batch-${batchId}.json`,
+  const whitelistProof = useWhitelistProof(
     address as string | undefined,
   )
 
+  const [count, setCount] = useState<number>(1)
+
+  if (!contracts) return <div>Loading...</div>
+
+  const baseArgs = [
+    whitelistProof.batch0Cap,
+    whitelistProof.batch1Cap,
+    whitelistProof.proof,
+    {
+      value: batchPriceMapping[batchId],
+    },
+  ]
+
+  const cap =
+    whitelistProof[batchId === 0 ? 'batch0Cap' : 'batch1Cap']
+
   return (
-    <div>
+    <MintRandomPrimeFormContainer>
+      <div>
+        <div>
+          <h4>Primes to mint</h4>
+          <div>
+            <div>{count}</div>
+            <input
+              defaultValue="1"
+              type="range"
+              min="1"
+              step="1"
+              onChange={(el) => {
+                setCount(parseInt(el.target.value))
+              }}
+              max={Math.min(cap || 100, remaining ?? 100).toString()}
+            />
+          </div>
+        </div>
+        <div>
+          <h4>Whitelist cap</h4>
+          <div>{cap}</div>
+        </div>
+        <div>
+          <h4>
+            Total cost <span>(excl. gas)</span>
+          </h4>
+          <div>
+            {formatEther(batchPriceMapping[batchId].mul(count))} ETH
+          </div>
+        </div>
+      </div>
       <SendTransactionWidget
-        contract={Primes}
-        functionName="mintRandomPrime"
-        args={[
-          proof,
-          {
-            value: batchPriceMapping[batchId],
-          },
-        ]}
-        transactionOptions={{ transactionName: 'Mint random Prime' }}
+        contract={contracts.Primes}
+        functionName={
+          count > 1 ? 'mintRandomPrimes' : 'mintRandomPrime'
+        }
+        args={count > 1 ? [count, ...baseArgs] : baseArgs}
+        transactionOptions={{
+          transactionName:
+            count > 1
+              ? `Mint ${count} random Primes`
+              : 'Mint random Prime',
+        }}
       />
-    </div>
+    </MintRandomPrimeFormContainer>
   )
 }
 
-const BatchForm: FC<{ batchId: number }> = ({ batchId }) => {
+const BatchForm: FC<{ batchId: number; remaining?: number }> = ({
+  batchId,
+  remaining,
+}) => {
   const contracts = useContracts()
   const { address } = useOnboard()
   return (
     <div className="form">
       {contracts && address && (
-        <MintRandomPrimeForm batchId={batchId} />
+        <MintRandomPrimeForm
+          batchId={batchId}
+          remaining={remaining}
+        />
       )}
     </div>
   )
 }
 
 const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  > :first-child {
+    max-width: 14rem;
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
   .stats {
     display: flex;
-    gap: 1rem;
-    justify-content: space-between;
+    gap: 4rem;
+    justify-content: center;
+    text-align: center;
 
     h4 {
-      margin: 0;
+      margin-bottom: 0.5rem;
     }
 
     > div {
@@ -76,13 +163,22 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
     variables: { id: batchId.toString() },
   })
   const primeBatch = primeBatchQuery.data?.primeBatch
+  // TODO get whitelist time remaining
   return (
     <Container>
+      <div>
+        <img alt="Prime box" src="/prime-box.svg" />
+        <p>
+          The first two auctions will sell off the largest Primes.
+          Minting is random with a flat price. Whitelisted users have
+          a 12-hour period to mint first.
+        </p>
+      </div>
       {primeBatch ? (
-        <>
+        <div>
           <div className="stats">
             <div>
-              <h4>Remaining</h4>
+              <h4>Primes Remaining</h4>
               <div>{primeBatch.remaining}</div>
             </div>
             <div>
@@ -90,20 +186,21 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
               <div>{primeBatch.active ? 'Yes' : 'No'}</div>
             </div>
             <div>
-              <h4>Whitelist</h4>
+              <h4>Whitelist time remaining</h4>
               <div>
-                {primeBatch.whitelist
-                  ?.split(',')
-                  .map((account: string) => (
-                    <div key={account}>
-                      <AccountLink account={account} />
-                    </div>
-                  ))}
+                {primeBatch.active ? '12 hours' : 'Open to all'}
               </div>
             </div>
+            <div>
+              <h4>Price</h4>
+              <div>{batchId === 0 ? '0.05' : '0.075'} ETH</div>
+            </div>
           </div>
-          <BatchForm batchId={batchId} />
-        </>
+          <BatchForm
+            batchId={batchId}
+            remaining={primeBatch.remaining}
+          />
+        </div>
       ) : (
         'Loading...'
       )}

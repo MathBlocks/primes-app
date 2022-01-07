@@ -1,13 +1,14 @@
-import {
-  AllPrimeAuctionsQueryResult,
-  useAllPrimeAuctionsQuery,
-} from '../../graphql/subgraph/subgraph'
 import styled from 'styled-components'
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { formatEther } from 'ethers/lib/utils'
 import { formatISO9075, fromUnixTime } from 'date-fns'
+
 import { AccountLink } from '../AccountLink'
+import {
+  AllPrimeAuctionsQueryResult,
+  useAllPrimeAuctionsQuery,
+} from '../../graphql/subgraph/subgraph'
 
 type PrimeAuctionData = NonNullable<
   AllPrimeAuctionsQueryResult['data']

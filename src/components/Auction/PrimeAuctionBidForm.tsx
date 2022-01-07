@@ -10,7 +10,7 @@ import { ETHInput } from '../ETHInput'
 export const PrimeAuctionBidForm: FC<{ tokenId: number }> = ({
   tokenId,
 }) => {
-  const { PrimesAuctionHouse } = useContracts<true>()
+  const contracts = useContracts()
   const auctionStatusQuery = useAuctionStatusQuery()
   const primesAuctionHouse =
     auctionStatusQuery.data?.primesAuctionHouses?.[0]
@@ -44,23 +44,25 @@ export const PrimeAuctionBidForm: FC<{ tokenId: number }> = ({
                 <p>{errors.bid}</p>
               ) : null}
             </div>
-            <SendTransactionWidget
-              contract={PrimesAuctionHouse}
-              functionName="createBid"
-              args={[
-                tokenId,
-                {
-                  value: values.bid
-                    ? parseEther(values.bid.toFixed(18))
-                    : 0,
-                },
-              ]}
-              transactionOptions={{ transactionName: 'Place bid' }}
-              buttonProps={{
-                type: 'submit',
-                disabled: isSubmitting || !isValid,
-              }}
-            />
+            {contracts && (
+              <SendTransactionWidget
+                contract={contracts.PrimesAuctionHouse}
+                functionName="createBid"
+                args={[
+                  tokenId,
+                  {
+                    value: values.bid
+                      ? parseEther(values.bid.toFixed(18))
+                      : 0,
+                  },
+                ]}
+                transactionOptions={{ transactionName: 'Place bid' }}
+                buttonProps={{
+                  type: 'submit',
+                  disabled: isSubmitting || !isValid,
+                }}
+              />
+            )}
           </Form>
         )
       }}

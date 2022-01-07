@@ -90,6 +90,7 @@ type Prime {
   primeFactors: [Int!]!
   primeIndex: Int
   repdigitNumber: Boolean!
+  revealed: Boolean!
   semiperfectNumber: Boolean!
   sexyPrimes(first: Int = 100, orderBy: Prime_orderBy, orderDirection: OrderDirection, skip: Int = 0, where: Prime_filter): [Prime!]!
   sophieGermainPrime: Boolean!
@@ -292,7 +293,6 @@ type PrimeBatch {
   active: Boolean!
   id: ID!
   remaining: Int!
-  whitelist: Bytes
 }
 
 input PrimeBatch_filter {
@@ -316,19 +316,12 @@ input PrimeBatch_filter {
   remaining_lte: Int
   remaining_not: Int
   remaining_not_in: [Int!]
-  whitelist: Bytes
-  whitelist_contains: Bytes
-  whitelist_in: [Bytes!]
-  whitelist_not: Bytes
-  whitelist_not_contains: Bytes
-  whitelist_not_in: [Bytes!]
 }
 
 enum PrimeBatch_orderBy {
   active
   id
   remaining
-  whitelist
 }
 
 input Prime_filter {
@@ -516,6 +509,10 @@ input Prime_filter {
   repdigitNumber_in: [Boolean!]
   repdigitNumber_not: Boolean
   repdigitNumber_not_in: [Boolean!]
+  revealed: Boolean
+  revealed_in: [Boolean!]
+  revealed_not: Boolean
+  revealed_not_in: [Boolean!]
   semiperfectNumber: Boolean
   semiperfectNumber_in: [Boolean!]
   semiperfectNumber_not: Boolean
@@ -611,6 +608,7 @@ enum Prime_orderBy {
   primeFactors
   primeIndex
   repdigitNumber
+  revealed
   semiperfectNumber
   sexyPrimes
   sophieGermainPrime

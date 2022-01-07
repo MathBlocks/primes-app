@@ -14,7 +14,7 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "_primesDao",
+        name: "_dao",
         type: "address",
       },
       {

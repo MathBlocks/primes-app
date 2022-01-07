@@ -7,6 +7,7 @@ import { truncateAddress } from '../../utils'
 import { Modal } from '../Modal'
 import { AccountLink } from '../AccountLink'
 import { formatEther } from 'ethers/lib/utils'
+import { useHistory } from 'react-router'
 
 const WalletModalContent = styled.div`
   .connection,
@@ -18,6 +19,9 @@ const WalletModalContent = styled.div`
     display: flex;
     gap: 1rem;
     justify-content: space-between;
+    .red {
+      color: red;
+    }
   }
 `
 
@@ -44,6 +48,7 @@ export const WalletButton: FC = () => {
     balance,
   } = useOnboard()
 
+  const history = useHistory()
   const [isConnecting, toggleIsConnecting] = useToggle(false)
   const [showWalletModal, toggleShowWalletModal] = useToggle(false)
 
@@ -93,8 +98,18 @@ export const WalletButton: FC = () => {
             Balance: {formatEther(balance ?? '0')} ETH
           </div>
           <div className="buttons">
-            <button onClick={disconnectWallet}>Disconnect</button>
+            <button
+              onClick={() => {
+                history.push('/account')
+                toggleShowWalletModal(false)
+              }}
+            >
+              Account
+            </button>
             <button onClick={toggleShowWalletModal}>Close</button>
+            <button className="red" onClick={disconnectWallet}>
+              Disconnect
+            </button>
           </div>
         </WalletModalContent>
       </Modal>

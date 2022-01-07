@@ -40,16 +40,6 @@ const SubmitBreed: FC = () => {
     skip: !values.otherTokenId,
     fetchPolicy: 'cache-first',
   })
-  // const otherPrimeQuery = {
-  //   data: {
-  //     prime: {
-  //       id: '5',
-  //       owner: '0x',
-  //       studFee: '10000000000000000000',
-  //       isPrime: false,
-  //     },
-  //   },
-  // }
 
   const primeData = primeQuery.data?.prime
   const otherPrimeData = otherPrimeQuery.data?.prime
@@ -93,7 +83,7 @@ const SubmitBreed: FC = () => {
           return true
         }}
         buttonProps={{
-          disabled: !!(isValidating || !outputAttributesProof),
+          disabled: isValidating || !outputAttributesProof,
         }}
         contract={contracts?.Primes}
         functionName={isBreedPrimes ? 'breedPrimes' : 'crossBreed'}
@@ -152,6 +142,7 @@ const StyledForm = styled(Form)`
   .symbol {
     font-size: 3rem;
     line-height: 2rem;
+    margin: -1rem 0 1rem 0;
   }
 
   > .error {
@@ -159,6 +150,11 @@ const StyledForm = styled(Form)`
     padding: 1rem;
     border: 1px orangered solid;
     border-radius: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .select-row {
+    margin-bottom: 1rem;
   }
 `
 
@@ -296,7 +292,7 @@ const BreedingForm: FC = () => {
 
         return (
           <StyledForm>
-            <div>
+            <div className="select-row">
               <BreedingSelect
                 options={groups.myBreedablePrimes}
                 field={getFieldProps('tokenId')}
@@ -312,7 +308,7 @@ const BreedingForm: FC = () => {
               <div className="tip">You must own this Prime</div>
             </div>
             <div className="symbol">x</div>
-            <div>
+            <div className="select-row">
               <BreedingSelect
                 options={groups.allBreedablePrimes}
                 field={getFieldProps('otherTokenId')}
@@ -337,15 +333,15 @@ const BreedingForm: FC = () => {
                 }}
                 placeholder="Parent 2"
               />
-              {showRentalData && (
-                <RentalData tokenId={values.otherTokenId} />
-              )}
               <div className="tip">
                 This can be a Prime you own, or a Prime you can rent
               </div>
+              {showRentalData && (
+                <RentalData tokenId={values.otherTokenId} />
+              )}
             </div>
             <div className="symbol">=</div>
-            <div>
+            <div className="select-row output">
               <BreedingOutput
                 name="desiredOutput"
                 onChange={handleChange}

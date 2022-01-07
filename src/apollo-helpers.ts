@@ -6,7 +6,7 @@ export type AccountFieldPolicy = {
 	primeAuctionBids?: FieldPolicy<any> | FieldReadFunction<any>,
 	primes?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PrimeKeySpecifier = ('childrenAsParent1' | 'childrenAsParent2' | 'claimed' | 'colossallyAbundantNumber' | 'cousins' | 'deadline' | 'emirp' | 'eulersLuckyNumber' | 'evilNumber' | 'fibonacciNumber' | 'friendlyNumber' | 'frugalNumber' | 'goodPrime' | 'happyNumber' | 'harshadNumber' | 'id' | 'image' | 'isListed' | 'isPrime' | 'isRentable' | 'lastBred' | 'luckyNumber' | 'magicNumber' | 'number' | 'owner' | 'parent1' | 'parent2' | 'perfectNumber' | 'primeFactorCount' | 'primeFactors' | 'primeIndex' | 'repdigitNumber' | 'semiperfectNumber' | 'sexyPrimes' | 'sophieGermainPrime' | 'squareNumber' | 'strongPrime' | 'studFee' | 'suitors' | 'taxicabNumber' | 'triangularNumber' | 'twins' | 'uniquePrime' | 'untouchableNumber' | 'weirdNumber' | 'whitelistOnly' | PrimeKeySpecifier)[];
+export type PrimeKeySpecifier = ('childrenAsParent1' | 'childrenAsParent2' | 'claimed' | 'colossallyAbundantNumber' | 'cousins' | 'deadline' | 'emirp' | 'eulersLuckyNumber' | 'evilNumber' | 'fibonacciNumber' | 'friendlyNumber' | 'frugalNumber' | 'goodPrime' | 'happyNumber' | 'harshadNumber' | 'id' | 'image' | 'isListed' | 'isPrime' | 'isRentable' | 'lastBred' | 'luckyNumber' | 'magicNumber' | 'number' | 'owner' | 'parent1' | 'parent2' | 'perfectNumber' | 'primeFactorCount' | 'primeFactors' | 'primeIndex' | 'repdigitNumber' | 'revealed' | 'semiperfectNumber' | 'sexyPrimes' | 'sophieGermainPrime' | 'squareNumber' | 'strongPrime' | 'studFee' | 'suitors' | 'taxicabNumber' | 'triangularNumber' | 'twins' | 'uniquePrime' | 'untouchableNumber' | 'weirdNumber' | 'whitelistOnly' | PrimeKeySpecifier)[];
 export type PrimeFieldPolicy = {
 	childrenAsParent1?: FieldPolicy<any> | FieldReadFunction<any>,
 	childrenAsParent2?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -40,6 +40,7 @@ export type PrimeFieldPolicy = {
 	primeFactors?: FieldPolicy<any> | FieldReadFunction<any>,
 	primeIndex?: FieldPolicy<any> | FieldReadFunction<any>,
 	repdigitNumber?: FieldPolicy<any> | FieldReadFunction<any>,
+	revealed?: FieldPolicy<any> | FieldReadFunction<any>,
 	semiperfectNumber?: FieldPolicy<any> | FieldReadFunction<any>,
 	sexyPrimes?: FieldPolicy<any> | FieldReadFunction<any>,
 	sophieGermainPrime?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -76,12 +77,11 @@ export type PrimeAuctionBidFieldPolicy = {
 	timestamp?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PrimeBatchKeySpecifier = ('active' | 'id' | 'remaining' | 'whitelist' | PrimeBatchKeySpecifier)[];
+export type PrimeBatchKeySpecifier = ('active' | 'id' | 'remaining' | PrimeBatchKeySpecifier)[];
 export type PrimeBatchFieldPolicy = {
 	active?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	remaining?: FieldPolicy<any> | FieldReadFunction<any>,
-	whitelist?: FieldPolicy<any> | FieldReadFunction<any>
+	remaining?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PrimesAuctionHouseKeySpecifier = ('address' | 'breedingCooldown' | 'currentPrimeAuction' | 'id' | 'minBidIncrementPercentage' | 'paused' | 'primes' | 'reservePrice' | 'timeBuffer' | PrimesAuctionHouseKeySpecifier)[];
 export type PrimesAuctionHouseFieldPolicy = {

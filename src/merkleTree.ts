@@ -170,33 +170,78 @@ export const createTreeWithAccounts = (
   return new MerkleTree(elements)
 }
 
+export const createWhitelistTree = (
+  allocations: Record<string, [number, number]>,
+): MerkleTree => {
+  const elements = Object.entries(allocations).map(
+    ([account, [batch0Cap, batch1Cap]]) =>
+      soliditySha3(account, batch0Cap, batch1Cap),
+  ) as string[]
+  return new MerkleTree(elements)
+}
+
 export const getAccountProof = (
   tree: MerkleTree,
   account: string,
+  batch0Cap: number,
+  batch1Cap: number,
 ) => {
-  const element = soliditySha3(account) as string
+  const element = soliditySha3(
+    account,
+    batch0Cap,
+    batch1Cap,
+  ) as string
   return tree.getHexProof(element)
 }
 
-export const useWhitelistProof = (
-  filename: string,
-  account?: string,
-) => {
-  const [proof, setProof] = useState<string[] | undefined>()
+const EMPTY_WHITELIST_PROOF = {
+  batch0Cap: 0,
+  batch1Cap: 0,
+  proof: [],
+}
+
+export const useWhitelistProof = (account?: string) => {
+  const [proof, setProof] = useState<{
+    batch0Cap: number
+    batch1Cap: number
+    proof: string[]
+  }>(EMPTY_WHITELIST_PROOF)
 
   useAsync(async () => {
-    if (!account) return
+    if (!account) {
+      setProof(EMPTY_WHITELIST_PROOF)
+      return
+    }
+
     try {
       const response = await fetch(
-        `${window.location.origin}/${filename}`,
+        `${window.location.origin}/whitelist.json`,
       )
-      const json = await response.json()
-      const tree = createTreeWithAccounts(Object.keys(json))
-      setProof(getAccountProof(tree, account))
+
+      const json = (await response.json()) as Record<
+        string,
+        [number, number]
+      >
+
+      if (!json[account]) {
+        setProof(EMPTY_WHITELIST_PROOF)
+        return
+      }
+
+      const [batch0Cap, batch1Cap] = json[account]
+      const tree = createWhitelistTree(json)
+      const proof = getAccountProof(
+        tree,
+        account,
+        batch0Cap,
+        batch1Cap,
+      )
+
+      setProof({ batch0Cap, batch1Cap, proof })
     } catch (error) {
       console.error(error)
     }
-  }, [filename, account])
+  }, [account])
 
   return proof
 }

@@ -7,10 +7,12 @@ import isPrime from 'is-prime'
 import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
 import { ATTRIBUTE_NAMES, Attributes } from '../../attributes'
 import { useAttributes } from '../App/PrimesContext'
-import { getSVGDataURI } from '../PrimeSVG'
 import { useRouteTokenId } from './Context'
 import { truncateAddress } from '../../utils'
 import { RentalData } from './RentalData'
+import { useContracts } from '../App/DAppContext'
+import { useAttributesProof } from '../../merkleTree'
+import { SendTransactionWidget } from '../SendTransactionWidget'
 
 const PrimeImage = styled.div`
   min-width: 28rem;
@@ -98,7 +100,7 @@ const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
     {tokenId > 1 && (
       <Link to={`/primes/${tokenId - 1}`}>Previous</Link>
     )}{' '}
-    {tokenId < 16383 && (
+    {tokenId < 16384 && (
       <Link to={`/primes/${tokenId + 1}`}>Next</Link>
     )}
   </div>
@@ -113,6 +115,15 @@ const PrimeDetail = styled.div`
 
   > :first-child {
     margin-bottom: 2rem;
+  }
+
+  .reveal-attributes {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px darkred solid;
+    p {
+      margin-top: 0;
+    }
   }
 `
 
@@ -153,11 +164,11 @@ export const Content: FC = () => {
     <Container>
       <PrimeImage>
         <div>
-          <img
-            src={getSVGDataURI(tokenId as number, primeAttributes)}
-            alt="Prime"
-          />
-          {/*<img src={data.prime.image} alt={tokenId} />*/}
+          {/*<img*/}
+          {/*  src={getSVGDataURI(tokenId as number, primeAttributes)}*/}
+          {/*  alt="Prime"*/}
+          {/*/>*/}
+          <img src={data?.prime?.image} alt={tokenId.toString()} />
         </div>
         <Navigation tokenId={tokenId} />
       </PrimeImage>
@@ -184,6 +195,21 @@ export const Content: FC = () => {
             )}
           </div>
         </div>
+        {data?.prime && !data.prime.revealed && (
+          <div className="reveal-attributes">
+            <p>
+              {tokenId} has {primeAttributes.length} attributes, but
+              they are not yet stored immutably on the contract and
+              do not appear on the artwork or on other platforms
+              (e.g. OpenSea).
+            </p>
+            <p>
+              You can reveal the attributes so they appear on the
+              artwork. This can be done at any time.
+            </p>
+            <RevealAttributesForm tokenId={tokenId} />
+          </div>
+        )}
         <List
           title="Attributes"
           items={primeAttributes.map(
@@ -240,5 +266,23 @@ export const Content: FC = () => {
         <RentalData tokenId={tokenId} />
       </PrimeDetail>
     </Container>
+  )
+}
+
+const RevealAttributesForm: FC<{ tokenId: number }> = ({
+  tokenId,
+}) => {
+  const contracts = useContracts()
+  const attributesProof = useAttributesProof(tokenId)
+
+  if (!contracts || !attributesProof) return null
+
+  return (
+    <SendTransactionWidget
+      functionName="revealAttributes"
+      contract={contracts.Primes}
+      args={[tokenId, attributesProof.value, attributesProof.proof]}
+      transactionOptions={{ transactionName: 'Reveal attributes' }}
+    />
   )
 }

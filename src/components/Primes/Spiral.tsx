@@ -8,6 +8,7 @@ import { Simple } from 'pixi-cull'
 import { GlowFilter } from '@pixi/filter-glow'
 
 import { getSVGDataURI } from '../PrimeSVG'
+import { getSVGDataURINew } from '../Playground'
 
 import { N_MAX, N_SIZE, SCALE } from './constants'
 import {
@@ -118,6 +119,7 @@ const SpiralContent: FC = () => {
             } else if (visible) {
               const resource = new PIXI.SVGResource(
                 (container as any).data.svg,
+                { width: 256, height: 256 },
               )
               detail.texture = PIXI.Texture.from(resource as any, {
                 resolution: 16,
@@ -160,7 +162,7 @@ const SpiralContent: FC = () => {
               const [name, symbol] =
                 ATTRIBUTE_NAMES[key as keyof Attributes]
               return { key, name, symbol }
-            }),
+            }) as any,
         ),
       }
 
@@ -178,11 +180,11 @@ const SpiralContent: FC = () => {
       container.on('mouseover', () => {
         if (!square.visible) return
         container.filters = [
-          new GlowFilter({
-            distance: 16,
-            outerStrength: 4,
-            quality: 1,
-          }),
+          // new GlowFilter({
+          //   distance: 16,
+          //   outerStrength: 4,
+          //   quality: 1,
+          // }),
         ]
         setHoveredTokenId(tokenId)
       })
