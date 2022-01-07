@@ -50,9 +50,6 @@ const Navbar: FC = () => (
         <NavLink to="/breed">Breed</NavLink>
       </li>
       <li>
-        <NavLink to="/about">About</NavLink>
-      </li>
-      <li>
         <a
           className="icon twitter"
           href="https://twitter.com/mathblocks_io"

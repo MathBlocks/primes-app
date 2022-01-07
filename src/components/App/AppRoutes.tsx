@@ -9,7 +9,6 @@ import { Breeding } from '../Breeding'
 import { Auction } from '../Auction'
 import { BatchAuction } from '../Auction/BatchAuction'
 import { PrimeAuction } from '../Auction/PrimeAuction'
-import { Playground } from '../Playground'
 
 export const AppRoutes: FC = () => (
   <Switch>
@@ -42,9 +41,6 @@ export const AppRoutes: FC = () => (
     </Route>
     <Route path="/auction/batch/2/:primeId" exact>
       <PrimeAuction />
-    </Route>
-    <Route path="/playground" exact>
-      <Playground />
     </Route>
   </Switch>
 )
