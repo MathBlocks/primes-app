@@ -10,8 +10,11 @@ import { useContracts } from '../App/DAppContext'
 import { useOnboard } from '../App/OnboardProvider'
 
 const batchPriceMapping: Record<number, BigNumber> = {
-  0: parseEther('0.05'),
-  1: parseEther('0.075'),
+  // 0: parseEther('0.05'),
+  // 1: parseEther('0.075'),
+  // FIXME revert
+  0: parseEther('0.00005'),
+  1: parseEther('0.000075'),
 }
 
 const MintRandomPrimeFormContainer = styled.div`

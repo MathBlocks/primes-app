@@ -22,7 +22,7 @@ const Container = styled.div<{ status: TransactionState }>`
       : status === 'Success'
       ? '#293f26'
       : status === 'Mining'
-      ? '#fff'
+      ? '#1c404a'
       : '#333'};
 
   button {
