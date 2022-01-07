@@ -57,7 +57,7 @@ export const Auction: FC = () => {
             <span className="monospace">533</span> Primes
           </div>
           <div>
-            <span className="monospace">0.1</span> ETH
+            <span className="monospace">0.075</span> ETH
           </div>
         </div>
         <div>
