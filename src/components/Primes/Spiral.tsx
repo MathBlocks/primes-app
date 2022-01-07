@@ -5,10 +5,9 @@ import styled from 'styled-components'
 import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 import { Simple } from 'pixi-cull'
-import { GlowFilter } from '@pixi/filter-glow'
+// import { GlowFilter } from '@pixi/filter-glow'
 
 import { getSVGDataURI } from '../PrimeSVG'
-import { getSVGDataURINew } from '../Playground'
 
 import { N_MAX, N_SIZE, SCALE } from './constants'
 import {
