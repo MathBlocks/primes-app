@@ -192,7 +192,9 @@ export const PrimesGallery: FC = () => {
   }, [mintedPrimes, visible])
   const forIds = variables.ids.length > 0
 
-  const primePreviewsQuery = usePrimePreviewsQuery({ variables })
+  const primePreviewsQuery = usePrimePreviewsQuery({
+    variables,
+  })
   const primePreviewsForIdsQuery = usePrimePreviewsForIdsQuery({
     variables,
   })

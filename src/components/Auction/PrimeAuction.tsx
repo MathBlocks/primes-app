@@ -33,7 +33,6 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
   } = usePrimeAuctionQuery({
     variables: { id: tokenId },
     fetchPolicy: 'cache-only',
-    nextFetchPolicy: 'cache-only',
     pollInterval: 30e3,
   }).data as NonNullable<
     PrimeAuctionQueryResult['data'] & {
@@ -43,12 +42,15 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
     }
   >
 
-  const auctionStatusQuery = useAuctionStatusQuery()
+  const auctionStatusQuery = useAuctionStatusQuery({
+    pollInterval: 30e3,
+  })
   const primesAuctionHouse =
     auctionStatusQuery.data?.primesAuctionHouses?.[0]
 
   const primeQuery = usePrimeQuery({
     variables: { tokenId: tokenId },
+    pollInterval: 30e3,
   })
 
   const startTime = parseInt(startTime_)

@@ -140,6 +140,7 @@ export const Content: FC = () => {
 
   const { data } = usePrimeQuery({
     variables: { tokenId: tokenId.toString() },
+    pollInterval: 30e3,
   })
 
   const primeAttributes = useMemo<
@@ -164,11 +165,11 @@ export const Content: FC = () => {
     <Container>
       <PrimeImage>
         <div>
-          {/*<img*/}
-          {/*  src={getSVGDataURI(tokenId as number, primeAttributes)}*/}
-          {/*  alt="Prime"*/}
-          {/*/>*/}
-          <img src={data?.prime?.image} alt={tokenId.toString()} />
+          {data?.prime?.image ? (
+            <img src={data?.prime?.image} alt={tokenId.toString()} />
+          ) : (
+            <div className="no-image" />
+          )}
         </div>
         <Navigation tokenId={tokenId} />
       </PrimeImage>

@@ -94,6 +94,7 @@ const OwnerListForm: FC = () => {
   const [tokenId] = useRouteTokenId()
   const primeQuery = usePrimeQuery({
     variables: { tokenId: tokenId.toString() },
+    pollInterval: 30e3,
   })
   const { address } = useOnboard()
   const { Primes } = useContracts<true>()
@@ -295,6 +296,7 @@ const OwnerForms: FC = () => {
 
   const { data } = usePrimeQuery({
     variables: { tokenId: tokenId.toString() },
+    pollInterval: 30e3,
     fetchPolicy: 'cache-only',
   })
 
@@ -337,6 +339,7 @@ const Container = styled.div`
 export const RentalData: FC<{ tokenId: number }> = ({ tokenId }) => {
   const { data } = usePrimeQuery({
     variables: { tokenId: tokenId.toString() },
+    pollInterval: 30e3,
     fetchPolicy: 'cache-and-network',
   })
 

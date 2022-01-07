@@ -11,7 +11,9 @@ export const PrimeAuctionBidForm: FC<{ tokenId: number }> = ({
   tokenId,
 }) => {
   const contracts = useContracts()
-  const auctionStatusQuery = useAuctionStatusQuery()
+  const auctionStatusQuery = useAuctionStatusQuery({
+    pollInterval: 30e3,
+  })
   const primesAuctionHouse =
     auctionStatusQuery.data?.primesAuctionHouses?.[0]
 

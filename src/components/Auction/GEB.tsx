@@ -133,7 +133,9 @@ const GEBPrimeAuction: FC<PrimeAuctionData> = ({
 }
 
 export const GEBBatch: FC = () => {
-  const allPrimeAuctionsQuery = useAllPrimeAuctionsQuery()
+  const allPrimeAuctionsQuery = useAllPrimeAuctionsQuery({
+    pollInterval: 60e3,
+  })
   const items = allPrimeAuctionsQuery.data?.primeAuctions ?? []
 
   return (
