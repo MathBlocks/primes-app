@@ -38,9 +38,9 @@ export const CONFIG = {
       WETH: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     },
     4: {
-      Primes: '0x652350a0dba48ac04c02e87f1f8d3c2b6b5ad857',
+      Primes: '0xbaec44a9c60ed424b09f611b7d600c0847771f98',
       PrimesAuctionHouse:
-        '0x6cc5983d5c6aa01101d825c87526aa8bad5a06c1',
+        '0x3b018181bf16bed1c2fd9e5db38f544038e57e0c',
       WETH: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
     },
   },
