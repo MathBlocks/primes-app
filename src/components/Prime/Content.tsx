@@ -191,7 +191,7 @@ export const Content: FC = () => {
                 </a>
               </span>
             ) : (
-              <span>Not minted</span>
+              <span>Not minted.</span>
             )}
           </div>
         </div>
