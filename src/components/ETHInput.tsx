@@ -49,7 +49,6 @@ export const ETHInput: FC<{ name: string; label?: string }> = ({
           type="number"
           name={name}
           min={0}
-          step="0.0001"
         />
       </div>
       <div>
