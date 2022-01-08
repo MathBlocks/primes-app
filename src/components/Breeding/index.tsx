@@ -44,8 +44,9 @@ const SubmitBreed: FC = () => {
   const primeData = primeQuery.data?.prime
   const otherPrimeData = otherPrimeQuery.data?.prime
 
-  const isOwnerOfPrime = primeData?.owner === account
-  const isOwnerOfOtherPrime = otherPrimeData?.owner === account
+  const isOwnerOfPrime = primeData?.owner?.address === account
+  const isOwnerOfOtherPrime =
+    otherPrimeData?.owner?.address === account
 
   const contracts = useContracts()
 
@@ -73,13 +74,10 @@ const SubmitBreed: FC = () => {
     <>
       <SendTransactionWidget
         check={() => {
-          console.log('check')
           if (needsBurnWarning && !acceptedBurnWarning) {
             toggleShowBurnWarningModal(true)
-            console.log('false')
             return false
           }
-          console.log('true')
           return true
         }}
         buttonProps={{

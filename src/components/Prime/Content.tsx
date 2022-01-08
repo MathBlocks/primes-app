@@ -196,21 +196,23 @@ export const Content: FC = () => {
             )}
           </div>
         </div>
-        {data?.prime && !data.prime.revealed && (
-          <div className="reveal-attributes">
-            <p>
-              {tokenId} has {primeAttributes.length} attributes, but
-              they are not yet stored immutably on the contract and
-              do not appear on the artwork or on other platforms
-              (e.g. OpenSea).
-            </p>
-            <p>
-              You can reveal the attributes so they appear on the
-              artwork. This can be done at any time.
-            </p>
-            <RevealAttributesForm tokenId={tokenId} />
-          </div>
-        )}
+        {data?.prime &&
+          !data.prime.revealed &&
+          primeAttributes.length > 1 && (
+            <div className="reveal-attributes">
+              <p>
+                {tokenId} has {primeAttributes.length} attributes,
+                but they are not yet stored immutably on the contract
+                and do not appear on the artwork or on other
+                platforms (e.g. OpenSea).
+              </p>
+              <p>
+                You can reveal the attributes so they appear on the
+                artwork. This can be done at any time.
+              </p>
+              <RevealAttributesForm tokenId={tokenId} />
+            </div>
+          )}
         <List
           title="Attributes"
           items={primeAttributes.map(
