@@ -89,6 +89,10 @@ const LayoutContainer = styled.div`
     a {
       border-bottom: 0;
     }
+    .logo {
+      max-width: 5rem;
+      height: auto;
+    }
   }
 
   footer {
@@ -109,7 +113,7 @@ export const AppLayout: FC = ({ children }) => (
   <LayoutContainer>
     <header>
       <NavLink to="/">
-        <img src="/primes.svg" alt="Primes" />
+        <img className="logo" src="/primes.svg" alt="Primes" />
       </NavLink>
       <Navbar />
     </header>

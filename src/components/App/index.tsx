@@ -13,7 +13,7 @@ import { OnboardProvider } from './OnboardProvider'
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
-    background: #191919;
+    background: #2C2C2C;
     color: white;
   }
   
@@ -35,8 +35,8 @@ const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     border-bottom: 1px white solid;
     &:hover, &.active {
-      color: orange;
-      border-color: orange;
+      color: #9890F4;
+      border-color: #9890F4;
     }
   }
 
