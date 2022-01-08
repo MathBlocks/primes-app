@@ -253,7 +253,7 @@ const OwnerListForm: FC = () => {
                 functionName="list"
                 args={[
                   values.tokenId,
-                  parseEther((values.fee ?? 0).toFixed(18)),
+                  parseEther((values.fee || 0).toFixed(18)),
                   values.deadline
                     ? getUnixTime(
                         Date.parse(values.deadline.toString()),
