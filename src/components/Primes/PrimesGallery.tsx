@@ -114,9 +114,10 @@ const AttributesSelector: FC = () => {
 
 const PrimePreviewContainer = styled.div<{ isPrime: boolean }>`
   background-color: ${({ isPrime }) =>
-    isPrime ? 'black' : 'black'}; // FIXME white, black
-  border-radius: 0.5rem;
-  padding: 1rem;
+    isPrime ? '#888' : '#151515'};
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  font-size: 0;
   img {
     width: 100%;
     height: auto;
@@ -253,7 +254,7 @@ export const PrimesGallery: FC = () => {
             <PrimePreview
               tokenId={prime.number}
               key={prime.id}
-              isPrime={prime.isPrime}
+              isPrime={prime.isPrime && prime.number !== 1}
               image={prime.image}
             />
           ))}
