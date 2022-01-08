@@ -22,7 +22,7 @@ export const Auction: FC = () => {
       <div className="batches">
         <div>
           <h3>
-            <Link to="/auction/batch/0">
+            <Link to="/primes/auction/batch/0">
               0. Fermat's Last Choice
             </Link>
           </h3>
@@ -42,7 +42,7 @@ export const Auction: FC = () => {
         </div>
         <div>
           <h3>
-            <Link to="/auction/batch/1">
+            <Link to="/primes/auction/batch/1">
               1. Eratosthenes's Gold Sieve
             </Link>
           </h3>
@@ -62,7 +62,7 @@ export const Auction: FC = () => {
         </div>
         <div>
           <h3>
-            <Link to="/auction/batch/2">
+            <Link to="/primes/auction/batch/2">
               2. Gödel Escher Batch: An Eternal Golden Raid
             </Link>
           </h3>

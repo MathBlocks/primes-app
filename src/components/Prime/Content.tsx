@@ -8,11 +8,11 @@ import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
 import { ATTRIBUTE_NAMES, Attributes } from '../../attributes'
 import { useAttributes } from '../App/PrimesContext'
 import { useRouteTokenId } from './Context'
-import { truncateAddress } from '../../utils'
 import { RentalData } from './RentalData'
 import { useContracts } from '../App/DAppContext'
 import { useAttributesProof } from '../../merkleTree'
 import { SendTransactionWidget } from '../SendTransactionWidget'
+import { AccountLink } from '../AccountLink'
 
 const PrimeImage = styled.div`
   min-width: 28rem;
@@ -184,12 +184,7 @@ export const Content: FC = () => {
             {data?.prime?.owner.address ? (
               <span>
                 Owned by{' '}
-                <a
-                  className="monospace"
-                  href={`https://etherscan.io/address/${data.prime.owner.address}`}
-                >
-                  {truncateAddress(data.prime.owner.address)}
-                </a>
+                <AccountLink account={data.prime.owner.address} />
               </span>
             ) : (
               <span>Not minted.</span>

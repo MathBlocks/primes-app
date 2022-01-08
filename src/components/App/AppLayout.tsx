@@ -41,13 +41,13 @@ const Navbar: FC = () => (
   <NavbarContainer>
     <ul>
       <li>
-        <NavLink to="/auction">Auction</NavLink>
+        <NavLink to="/primes/auction">Auction</NavLink>
       </li>
       <li>
         <NavLink to="/primes">Primes</NavLink>
       </li>
       <li>
-        <NavLink to="/breed">Breed</NavLink>
+        <NavLink to="/primes/breed">Breed</NavLink>
       </li>
       <li>
         <a

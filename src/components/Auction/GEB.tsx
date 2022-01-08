@@ -89,7 +89,7 @@ const GEBPrimeAuction: FC<PrimeAuctionData> = ({
         <div className="prime">
           <Link
             className="monospace"
-            to={`/auction/batch/2/${prime.id}`}
+            to={`/primes/auction/batch/2/${prime.id}`}
           >
             <span>
               <img src={prime.image} alt={prime.id} />

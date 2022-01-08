@@ -6,6 +6,7 @@ import { useOnboard } from '../App/OnboardProvider'
 
 import { usePrimesForAccountQuery } from '../../graphql/subgraph/subgraph'
 import { AccountLink } from '../AccountLink'
+import { useParams } from 'react-router'
 
 const Container = styled.div`
   .primes {
@@ -25,28 +26,27 @@ const Container = styled.div`
   }
 `
 
-export const Account: FC<{ account?: string }> = ({
-  account: account_,
-}) => {
+export const Account: FC = () => {
+  const { account: accountParam } = useParams<{ account?: string }>()
   const { address: myAccount } = useOnboard()
-  const account = account_ ?? myAccount ?? undefined
+  const account = accountParam ?? myAccount ?? undefined
 
   const primesQuery = usePrimesForAccountQuery({
-    variables: { account: account as string },
+    variables: { account: (account as string).toLowerCase() },
     skip: !account,
   })
 
   return (
     <Container>
-      <h3>
-        {account ? (
-          <AccountLink account={account} />
-        ) : (
-          'Not connected'
-        )}
-      </h3>
       <div>
-        <h4>My Primes</h4>
+        <h3>
+          Primes owned{' '}
+          {account && (
+            <>
+              by <AccountLink account={account} />
+            </>
+          )}
+        </h3>
         <div className="primes">
           {primesQuery.data &&
             primesQuery.data.primes.map((prime) => (

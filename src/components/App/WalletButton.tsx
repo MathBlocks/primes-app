@@ -88,7 +88,8 @@ export const WalletButton: FC = () => {
         <WalletModalContent>
           {address ? (
             <div className="connection">
-              Connected as <AccountLink account={address} /> via{' '}
+              Connected as{' '}
+              <AccountLink account={address} etherscan /> via{' '}
               {wallet?.name}
             </div>
           ) : (
@@ -100,7 +101,7 @@ export const WalletButton: FC = () => {
           <div className="buttons">
             <button
               onClick={() => {
-                history.push('/account')
+                history.push('/primes/account')
                 toggleShowWalletModal(false)
               }}
             >
