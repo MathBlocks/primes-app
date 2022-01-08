@@ -51,7 +51,7 @@ const GEBPrimeAuctionContainer = styled.div`
       font-weight: bold;
 
       &:hover {
-        color: orange;
+        color: #9890f4;
       }
 
       span {
@@ -62,7 +62,6 @@ const GEBPrimeAuctionContainer = styled.div`
         }
         &:last-child {
           line-height: 100%;
-          border-bottom: 1px white solid;
         }
       }
     }
