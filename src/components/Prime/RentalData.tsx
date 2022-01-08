@@ -288,7 +288,7 @@ const OwnerUnlistForm: FC = () => {
 }
 
 const OwnerFormsContainer = styled.div`
-  padding: 1rem 0;
+  padding: 1rem 0 0.5rem 0;
 `
 
 const OwnerForms: FC = () => {
@@ -330,9 +330,18 @@ const OwnerForms: FC = () => {
 }
 
 const Container = styled.div`
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+  background-color: #222;
+
   h3 {
     font-size: 1.2rem;
     margin-bottom: 0.75rem;
+  }
+
+  button {
+    width: 100%;
   }
 `
 
@@ -353,7 +362,7 @@ export const RentalData: FC<{ tokenId: number }> = ({ tokenId }) => {
 
   return data?.prime ? (
     <Container>
-      <h3>Rental data</h3>
+      <h3>Breeding rental</h3>
       <div>
         <div>{data.prime.isListed ? 'Listed' : 'Not listed'}</div>
         {data.prime.isListed && (
