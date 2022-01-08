@@ -227,37 +227,61 @@ export const Content: FC = () => {
             }),
           )}
         />
-        {prime ? (
+        {data?.prime && prime ? (
           <>
             <List
               title="Twin Primes"
-              items={(data?.prime?.twins ?? []).map(({ id }) => ({
+              items={(data.prime.twins ?? []).map(({ id }) => ({
                 id,
                 value: <PrimeLink id={id} />,
               }))}
             />
             <List
               title="Cousin Primes"
-              items={(data?.prime?.cousins ?? []).map(({ id }) => ({
+              items={(data.prime.cousins ?? []).map(({ id }) => ({
                 id,
                 value: <PrimeLink id={id} />,
               }))}
             />
             <List
               title="Sexy Primes"
-              items={(data?.prime?.sexyPrimes ?? []).map(
-                ({ id }) => ({
-                  id,
-                  value: <PrimeLink id={id} />,
-                }),
-              )}
+              items={(data.prime.sexyPrimes ?? []).map(({ id }) => ({
+                id,
+                value: <PrimeLink id={id} />,
+              }))}
             />
           </>
-        ) : data?.prime?.primeFactors.length ? (
+        ) : (
+          <List
+            title="Parents"
+            items={(
+              [data?.prime?.parent1, data?.prime?.parent2] as [
+                { id: string },
+                { id: string },
+              ]
+            )
+              .filter(Boolean)
+              .map(({ id }) => ({
+                id,
+                value: <PrimeLink id={id} />,
+              }))}
+          />
+        )}
+        <List
+          title="Children"
+          items={[
+            ...(data?.prime?.childrenAsParent1 ?? []),
+            ...(data?.prime?.childrenAsParent2 ?? []),
+          ].map(({ id }) => ({
+            id,
+            value: <PrimeLink id={id} />,
+          }))}
+        />
+        {data?.prime?.primeFactors.length ? (
           <>
             <List
               title="Prime Factors"
-              items={data.prime.primeFactors
+              items={data?.prime?.primeFactors
                 .map((id) => id.toString())
                 .map((id) => ({
                   id,
