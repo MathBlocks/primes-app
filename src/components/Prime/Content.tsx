@@ -140,7 +140,7 @@ export const Content: FC = () => {
 
   const { data } = usePrimeQuery({
     variables: { tokenId: tokenId.toString() },
-    pollInterval: 30e3,
+    pollInterval: 20e3,
   })
 
   const primeAttributes = useMemo<

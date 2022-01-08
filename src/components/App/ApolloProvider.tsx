@@ -92,6 +92,11 @@ export const ApolloProvider: FC = ({ children }) => {
     return new ApolloClient<NormalizedCacheObject>({
       cache,
       link,
+      defaultOptions: {
+        query: {
+          fetchPolicy: 'cache-and-network',
+        } as any,
+      },
     })
   }, [chainId, persisted])
 

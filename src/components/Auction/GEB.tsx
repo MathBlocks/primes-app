@@ -132,16 +132,28 @@ const GEBPrimeAuction: FC<PrimeAuctionData> = ({
   )
 }
 
+const GEBBatchContainer = styled.div`
+  .more-to-come {
+    padding: 2rem;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+`
+
 export const GEBBatch: FC = () => {
   const allPrimeAuctionsQuery = useAllPrimeAuctionsQuery({
-    pollInterval: 60e3,
+    pollInterval: 20e3,
   })
   const items = allPrimeAuctionsQuery.data?.primeAuctions ?? []
 
   return (
-    <div>
+    <GEBBatchContainer>
       {items.map(GEBPrimeAuction)}
-      {items.length < 32 && <div>More auctions to come...</div>}
-    </div>
+      {items.length < 32 && (
+        <div className="more-to-come">
+          Auctions will continue until Primes #2 is sold
+        </div>
+      )}
+    </GEBBatchContainer>
   )
 }

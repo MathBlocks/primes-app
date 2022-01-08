@@ -1,9 +1,10 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { useParams } from 'react-router'
+import { useInterval } from 'react-use'
 import { formatEther } from 'ethers/lib/utils'
 import styled from 'styled-components'
 import {
-  formatDistanceToNow,
+  formatDistanceToNowStrict,
   formatRFC7231,
   fromUnixTime,
 } from 'date-fns'
@@ -18,22 +19,19 @@ import { getNowUnix } from '../../utils'
 import { AccountLink } from '../AccountLink'
 import { PrimeAuctionBidForm } from './PrimeAuctionBidForm'
 
-const nowUnix = getNowUnix()
-
 const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
   const {
     primeAuction: {
       amount = '0',
       bids,
       endTime: endTime_,
-      startTime: startTime_,
       winner,
       bidder,
     },
   } = usePrimeAuctionQuery({
     variables: { id: tokenId },
-    fetchPolicy: 'cache-only',
-    pollInterval: 30e3,
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 15e3,
   }).data as NonNullable<
     PrimeAuctionQueryResult['data'] & {
       primeAuction: NonNullable<
@@ -43,18 +41,28 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
   >
 
   const auctionStatusQuery = useAuctionStatusQuery({
-    pollInterval: 30e3,
+    pollInterval: 15e3,
   })
   const primesAuctionHouse =
     auctionStatusQuery.data?.primesAuctionHouses?.[0]
 
   const primeQuery = usePrimeQuery({
     variables: { tokenId: tokenId },
-    pollInterval: 30e3,
+    pollInterval: 60e3,
   })
 
-  const startTime = parseInt(startTime_)
+  const nowUnix = getNowUnix()
   const endTime = parseInt(endTime_)
+  const [remaining, setRemaining] = useState<string>('–')
+
+  useInterval(() => {
+    const diff = endTime - nowUnix
+    const unit =
+      diff < 120 ? 'second' : diff < 3600 ? 'minute' : 'hour'
+    setRemaining(
+      formatDistanceToNowStrict(fromUnixTime(endTime), { unit }),
+    )
+  }, 1e3)
 
   return (
     <>
@@ -73,18 +81,10 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
                 <div>
                   {endTime < nowUnix
                     ? 'Auction ended'
-                    : startTime < nowUnix
-                    ? 'Auction in progress'
-                    : 'Auction not started'}
+                    : 'Auction in progress'}
                 </div>
                 <div>
-                  {endTime > nowUnix
-                    ? `${formatDistanceToNow(
-                        fromUnixTime(
-                          startTime < nowUnix ? endTime : startTime,
-                        ),
-                      )} remaining`
-                    : ''}
+                  {endTime > nowUnix && `${remaining} remaining`}
                 </div>
               </div>
             </div>
@@ -108,7 +108,7 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
                 <h4>Minimum bid increment</h4>
                 <p>
                   {primesAuctionHouse?.minBidIncrementPercentage ??
-                    '-'}
+                    '–'}
                   %
                 </p>
               </div>
@@ -136,6 +136,7 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
       <div className="bids">
         <h4>Bids</h4>
         <div>
+          {bids.length === 0 ? <div>No bids yet</div> : null}
           {bids.map(({ value, id, sender, timestamp }) => (
             <div key={id}>
               <div>
@@ -160,6 +161,8 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
 }
 
 const Container = styled.div`
+  margin-bottom: 8rem;
+
   > :first-child {
     display: flex;
     justify-content: space-between;
@@ -241,7 +244,7 @@ export const PrimeAuction: FC = () => {
   const auctionQuery = usePrimeAuctionQuery({
     variables: { id: primeId as string },
     skip: !primeId,
-    pollInterval: 30e3,
+    pollInterval: 20e3,
   })
 
   if (!primeId) {

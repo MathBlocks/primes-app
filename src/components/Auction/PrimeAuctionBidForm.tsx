@@ -11,15 +11,15 @@ export const PrimeAuctionBidForm: FC<{ tokenId: number }> = ({
   tokenId,
 }) => {
   const contracts = useContracts()
-  const auctionStatusQuery = useAuctionStatusQuery({
-    pollInterval: 30e3,
-  })
+  const auctionStatusQuery = useAuctionStatusQuery()
   const primesAuctionHouse =
     auctionStatusQuery.data?.primesAuctionHouses?.[0]
 
   return (
     <Formik
-      onSubmit={() => {}}
+      onSubmit={(values, formikHelpers) => {
+        formikHelpers.setSubmitting(false)
+      }}
       initialValues={{ bid: 0 }}
       validate={async ({ bid }: Partial<{ bid: number }>) => {
         const errors: { bid?: string } = {}

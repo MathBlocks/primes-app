@@ -164,7 +164,7 @@ const Container = styled.div`
 export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
   const primeBatchQuery = usePrimeBatchQuery({
     variables: { id: batchId.toString() },
-    pollInterval: 30e3,
+    pollInterval: 20e3,
   })
   const primeBatch = primeBatchQuery.data?.primeBatch
   // TODO get whitelist time remaining
