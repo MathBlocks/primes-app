@@ -131,7 +131,7 @@ query PrimeAuction($id: ID!) {
 }
 
 query AllPrimeAuctions {
-    primeAuctions(orderBy: startTime, orderDirection: asc) {
+    primeAuctions(orderBy: startTime, orderDirection: desc) {
         ...PrimeAuctionAll
         prime {
             id

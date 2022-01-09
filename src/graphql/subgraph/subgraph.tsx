@@ -1488,7 +1488,7 @@ export type PrimeAuctionLazyQueryHookResult = ReturnType<typeof usePrimeAuctionL
 export type PrimeAuctionQueryResult = Apollo.QueryResult<PrimeAuctionQuery, PrimeAuctionQueryVariables>;
 export const AllPrimeAuctionsDocument = gql`
     query AllPrimeAuctions {
-  primeAuctions(orderBy: startTime, orderDirection: asc) {
+  primeAuctions(orderBy: startTime, orderDirection: desc) {
     ...PrimeAuctionAll
     prime {
       id
