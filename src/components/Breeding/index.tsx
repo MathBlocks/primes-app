@@ -1,7 +1,8 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Form, Formik, useFormikContext } from 'formik'
 import { BigNumber } from 'ethers'
+import { useToggle } from 'react-use'
 
 import {
   useListedPrimesQuery,
@@ -15,8 +16,58 @@ import { RentalData } from '../Prime/RentalData'
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { BreedingOutput, BreedingSelect } from './BreedingSelect'
 import { Values } from './types'
-import { useToggle } from 'react-use'
 import { Modal } from '../Modal'
+
+const ModalContent = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .prime-events {
+    > * {
+      margin-bottom: 0.5rem;
+    }
+    .burn {
+      color: orangered;
+    }
+    .mint {
+      color: lawngreen;
+    }
+  }
+
+  .confirm-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    label,
+    input {
+      display: block;
+    }
+    input {
+      text-align: center;
+      border-radius: 0.5rem;
+      border: none;
+      outline: none;
+      font-size: 1.5rem;
+    }
+  }
+
+  .confirm-button {
+    button {
+      border: 2px darkred solid;
+      background-color: transparent;
+      color: red;
+      font-size: 1.5rem;
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+`
+
+const BURN_CONFIRM_MSG = 'This is what Euler would have wanted'
 
 const SubmitBreed: FC = () => {
   const { address: account } = useOnboard()
@@ -65,6 +116,10 @@ const SubmitBreed: FC = () => {
   const [showBurnWarningModal, toggleShowBurnWarningModal] =
     useToggle(false)
 
+  const [confirmBurnMsg, setConfirmBurnMsg] = useState<
+    string | undefined
+  >()
+
   const needsBurnWarning =
     primeData &&
     otherPrimeData &&
@@ -99,29 +154,54 @@ const SubmitBreed: FC = () => {
         ]}
       />
       <Modal
-        title="Confirm "
+        title="Confirm breed and burn"
         isOpen={showBurnWarningModal}
         onBackgroundClick={toggleShowBurnWarningModal}
         onEscapeKeydown={toggleShowBurnWarningModal}
       >
-        {primeData && !primeData.isPrime && (
-          <div>#{primeData.id} will be burned</div>
-        )}
-        {otherPrimeData && !otherPrimeData.isPrime && (
-          <div>#{otherPrimeData.id} will be burned</div>
-        )}
-        <button
-          onClick={() => {
-            toggleAcceptedBurnWarning(true)
-            toggleShowBurnWarningModal(false)
-          }}
-        >
-          Burn{' '}
-          {!otherPrimeData?.isPrime && !primeData?.isPrime
-            ? 'them'
-            : 'it'}
-          .
-        </button>
+        <ModalContent>
+          <div className="prime-events">
+            {primeData && !primeData.isPrime && (
+              <div className="burn">
+                #{primeData.id} will be burned
+              </div>
+            )}
+            {otherPrimeData && !otherPrimeData.isPrime && (
+              <div className="burn">
+                #{otherPrimeData.id} will be burned
+              </div>
+            )}
+            <div className="burn">#4 will be burned</div>
+            <div className="burn">#69 will be burned</div>
+            <div className="mint">#276 will be minted</div>
+          </div>
+          <div className="confirm-form">
+            <label>
+              Please enter "{BURN_CONFIRM_MSG}" to confirm
+            </label>
+            <input
+              type="text"
+              onChange={(event) => {
+                setConfirmBurnMsg(event.target.value)
+              }}
+            />
+          </div>
+          <div className="confirm-button">
+            <button
+              disabled={confirmBurnMsg !== BURN_CONFIRM_MSG}
+              onClick={() => {
+                toggleAcceptedBurnWarning(true)
+                toggleShowBurnWarningModal(false)
+              }}
+            >
+              Burn{' '}
+              {!otherPrimeData?.isPrime && !primeData?.isPrime
+                ? 'them'
+                : 'it'}
+              .
+            </button>
+          </div>
+        </ModalContent>
       </Modal>
     </>
   )
@@ -156,7 +236,6 @@ const StyledForm = styled(Form)`
   }
 `
 
-// TODO: burning warning
 const BreedingForm: FC = () => {
   const { address } = useOnboard()
   const contracts = useContracts()
