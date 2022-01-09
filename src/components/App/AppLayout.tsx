@@ -44,7 +44,10 @@ const Navbar: FC = () => (
         <NavLink to="/primes/auction">Auction</NavLink>
       </li>
       <li>
-        <NavLink to="/primes">Primes</NavLink>
+        <NavLink to="/primes/gallery">Gallery</NavLink>
+      </li>{' '}
+      <li>
+        <NavLink to="/primes/spiral">Spiral</NavLink>
       </li>
       <li>
         <NavLink to="/primes/breed">Breed</NavLink>
