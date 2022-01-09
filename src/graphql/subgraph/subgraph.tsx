@@ -387,6 +387,7 @@ export type PrimeBatch = {
   active: Scalars['Boolean'];
   id: Scalars['ID'];
   remaining: Scalars['Int'];
+  startTime: Scalars['BigInt'];
 };
 
 export type PrimeBatch_Filter = {
@@ -410,12 +411,21 @@ export type PrimeBatch_Filter = {
   remaining_lte?: Maybe<Scalars['Int']>;
   remaining_not?: Maybe<Scalars['Int']>;
   remaining_not_in?: Maybe<Array<Scalars['Int']>>;
+  startTime?: Maybe<Scalars['BigInt']>;
+  startTime_gt?: Maybe<Scalars['BigInt']>;
+  startTime_gte?: Maybe<Scalars['BigInt']>;
+  startTime_in?: Maybe<Array<Scalars['BigInt']>>;
+  startTime_lt?: Maybe<Scalars['BigInt']>;
+  startTime_lte?: Maybe<Scalars['BigInt']>;
+  startTime_not?: Maybe<Scalars['BigInt']>;
+  startTime_not_in?: Maybe<Array<Scalars['BigInt']>>;
 };
 
 export enum PrimeBatch_OrderBy {
   Active = 'active',
   Id = 'id',
-  Remaining = 'remaining'
+  Remaining = 'remaining',
+  StartTime = 'startTime'
 }
 
 export type Prime_Filter = {
@@ -1158,7 +1168,7 @@ export type PrimeBatchQueryVariables = Exact<{
 }>;
 
 
-export type PrimeBatchQuery = { primeBatch?: { id: string, active: boolean, remaining: number } | null | undefined };
+export type PrimeBatchQuery = { primeBatch?: { id: string, active: boolean, startTime: string, remaining: number } | null | undefined };
 
 export type PrimesForAccountQueryVariables = Exact<{
   account: Scalars['String'];
@@ -1577,6 +1587,7 @@ export const PrimeBatchDocument = gql`
   primeBatch(id: $id) {
     id
     active
+    startTime
     remaining
   }
 }

@@ -293,6 +293,7 @@ type PrimeBatch {
   active: Boolean!
   id: ID!
   remaining: Int!
+  startTime: BigInt!
 }
 
 input PrimeBatch_filter {
@@ -316,12 +317,21 @@ input PrimeBatch_filter {
   remaining_lte: Int
   remaining_not: Int
   remaining_not_in: [Int!]
+  startTime: BigInt
+  startTime_gt: BigInt
+  startTime_gte: BigInt
+  startTime_in: [BigInt!]
+  startTime_lt: BigInt
+  startTime_lte: BigInt
+  startTime_not: BigInt
+  startTime_not_in: [BigInt!]
 }
 
 enum PrimeBatch_orderBy {
   active
   id
   remaining
+  startTime
 }
 
 input Prime_filter {

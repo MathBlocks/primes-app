@@ -164,6 +164,7 @@ query PrimeBatch($id: ID!) {
     primeBatch(id: $id) {
         id
         active
+        startTime
         remaining
     }
 }
