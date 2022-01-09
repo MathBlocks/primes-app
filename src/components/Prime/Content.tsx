@@ -13,6 +13,7 @@ import { useContracts } from '../App/DAppContext'
 import { useAttributesProof } from '../../merkleTree'
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { AccountLink } from '../AccountLink'
+import { Attribute } from './Attribute'
 
 const PrimeImage = styled.div`
   min-width: 28rem;
@@ -73,20 +74,6 @@ const PrimeLinkContainer = styled(Link)`
   border-radius: 1rem;
   padding: 0.25rem 1rem;
   color: white;
-`
-
-const Attribute = styled.div`
-  border: 1px white solid;
-  border-radius: 1rem;
-  padding: 0.25rem 1rem;
-  color: white;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  > :first-child {
-    height: 1rem;
-    width: auto;
-  }
 `
 
 const PrimeLink: FC<{ id: string }> = ({ id }) => (
@@ -196,31 +183,24 @@ export const Content: FC = () => {
           primeAttributes.length > 1 && (
             <div className="reveal-attributes">
               <p>
-                {tokenId} has {primeAttributes.length} attributes,
+                {tokenId} has {primeAttributes.length} properties,
                 but they are not yet stored immutably on the contract
                 and do not appear on the artwork or on other
                 platforms (e.g. OpenSea).
               </p>
               <p>
-                You can reveal the attributes so they appear on the
+                You can reveal the properties so they appear on the
                 artwork. This can be done at any time.
               </p>
               <RevealAttributesForm tokenId={tokenId} />
             </div>
           )}
         <List
-          title="Attributes"
-          items={primeAttributes.map(
-            ({ key: id, symbol: Symbol, name }) => ({
-              id,
-              value: (
-                <Attribute>
-                  <Symbol />
-                  <span>{name}</span>
-                </Attribute>
-              ),
-            }),
-          )}
+          title="Properties"
+          items={primeAttributes.map(({ key: id }) => ({
+            id,
+            value: <Attribute id={id as keyof Attributes} />,
+          }))}
         />
         {data?.prime && prime ? (
           <>
@@ -265,9 +245,13 @@ export const Content: FC = () => {
         <List
           title="Children"
           items={[
-            ...(data?.prime?.childrenAsParent1 ?? []),
-            ...(data?.prime?.childrenAsParent2 ?? []),
-          ].map(({ id }) => ({
+            ...new Set(
+              [
+                ...(data?.prime?.childrenAsParent1 ?? []),
+                ...(data?.prime?.childrenAsParent2 ?? []),
+              ].map((x) => x.id),
+            ),
+          ].map((id) => ({
             id,
             value: <PrimeLink id={id} />,
           }))}

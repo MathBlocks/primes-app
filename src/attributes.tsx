@@ -2,7 +2,7 @@
 import isPrime from 'is-prime'
 // @ts-ignore
 import getPrimeFactors from 'get-prime-factors'
-import { ReactNode } from 'react'
+import { FC } from 'react'
 
 import { ReactComponent as IconUnit } from './icons/unit.svg'
 import { ReactComponent as IconPrime } from './icons/prime.svg'
@@ -67,45 +67,45 @@ export type Attributes = PackedAttributes & CoreAttributes
 
 export const packedAttributeNames: Record<
   keyof PackedAttributes,
-  [string, ReactNode]
+  [string, FC]
 > = {
-  taxicabNumber: ['Taxicab Number', IconTaxicabNumber],
-  perfectNumber: ['Perfect Number', IconPerfectNumber],
+  taxicabNumber: ['Taxicab', IconTaxicabNumber],
+  perfectNumber: ['Perfect', IconPerfectNumber],
   eulersLuckyNumbers: [
-    "Euler's Lucky Numbers",
+    "Euler's Lucky Number",
     IconEulersLuckyNumbers,
   ],
-  uniquePrimeNumber: ['Unique Prime Number', IconUniquePrimeNumber],
-  friendlyNumber: ['Friendly Number', IconFriendlyNumber],
+  uniquePrimeNumber: ['Unique Prime', IconUniquePrimeNumber],
+  friendlyNumber: ['Friendly', IconFriendlyNumber],
   colossallyAbundantNumber: [
-    'Colossally Abundant Number',
+    'Colossally Abundant',
     IconCollosallyAbundant,
   ],
-  fibonacciNumber: ['Fibonacci Number', IconFibonacciNumber],
+  fibonacciNumber: ['Fibonacci', IconFibonacciNumber],
   repdigit: ['Repdigit', IconRepdigit],
-  weirdNumber: ['Weird Number', IconWeirdNumber],
-  triangularNumber: ['Triangular Number', IconTriangularNumber],
+  weirdNumber: ['Weird', IconWeirdNumber],
+  triangularNumber: ['Triangular', IconTriangularNumber],
   sophieGermainPrime: [
     'Sophie-Germain Prime',
     IconSophieGermainPrime,
   ],
   strongPrime: ['Strong Prime', IconStrongPrime],
-  frugalNumber: ['Frugal Number', IconFrugalNumber],
-  squareNumber: ['Square Number', IconSquareNumber],
+  frugalNumber: ['Frugal', IconFrugalNumber],
+  squareNumber: ['Square', IconSquareNumber],
   emirp: ['EMIRP', IconEmirp],
-  magicNumber: ['Magic Number', IconMagicNumber],
-  luckyNumber: ['Lucky Number', IconLuckyNumber],
+  magicNumber: ['Magic', IconMagicNumber],
+  luckyNumber: ['Lucky', IconLuckyNumber],
   goodPrime: ['Good Prime', IconGoodPrime],
-  happyNumber: ['Happy Number', IconHappyNumber],
-  untouchableNumber: ['Untouchable Number‍️', IconUntouchableNumber],
-  semiperfectNumber: ['Semiperfect Number', IconSemiperfectNumber],
-  harshadNumber: ['Harshad Number', IconHarshadNumber],
-  evilNumber: ['Evil Number', IconEvilNumber],
+  happyNumber: ['Happy', IconHappyNumber],
+  untouchableNumber: ['Untouchable‍️', IconUntouchableNumber],
+  semiperfectNumber: ['Semiperfect', IconSemiperfectNumber],
+  harshadNumber: ['Harshad', IconHarshadNumber],
+  evilNumber: ['Evil', IconEvilNumber],
 }
 
 const coreAttributeNames: Record<
   keyof CoreAttributes,
-  [string, ReactNode]
+  [string, FC]
 > = {
   unit: ['Unit', IconUnit],
   prime: ['Prime', IconPrime],
