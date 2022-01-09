@@ -164,7 +164,7 @@ const OwnerListForm: FC = () => {
                   You can optionally charge a stud fee, which must be
                   paid by other users breeding with this Prime. 90%
                   of this fee will be paid to you, and 10% will be
-                  paid to the Primes DAO.
+                  paid to the MathBlocks DAO.
                 </p>
                 {errors.fee && (
                   <div className="error">{errors.fee}</div>
