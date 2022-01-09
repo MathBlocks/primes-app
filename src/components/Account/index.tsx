@@ -7,6 +7,7 @@ import { useOnboard } from '../App/OnboardProvider'
 import { usePrimesForAccountQuery } from '../../graphql/subgraph/subgraph'
 import { AccountLink } from '../AccountLink'
 import { useParams } from 'react-router'
+import { WalletButton } from '../App/WalletButton'
 
 const Container = styled.div`
   .primes {
@@ -32,9 +33,18 @@ export const Account: FC = () => {
   const account = accountParam ?? myAccount ?? undefined
 
   const primesQuery = usePrimesForAccountQuery({
-    variables: { account: (account as string).toLowerCase() },
+    variables: { account: (account as string)?.toLowerCase() ?? '' },
     skip: !account,
   })
+
+  if (!account) {
+    return (
+      <Container>
+        <p>Please connect to begin</p>
+        <WalletButton />
+      </Container>
+    )
+  }
 
   return (
     <Container>
