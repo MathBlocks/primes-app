@@ -18,16 +18,32 @@ import {
 import { getNowUnix } from '../../utils'
 import { AccountLink } from '../AccountLink'
 import { PrimeAuctionBidForm } from './PrimeAuctionBidForm'
+import { PrimeDetailLists } from '../Prime/PrimeDetailLists'
+
+const Bid: FC<{
+  bid: {
+    id: string
+    sender: { id: string }
+    timestamp: string
+    value: string
+  }
+}> = ({ bid: { id, sender, timestamp, value } }) => (
+  <div>
+    <div>
+      <h5>
+        <AccountLink account={sender.id} />
+      </h5>
+      <div>{formatRFC7231(fromUnixTime(parseInt(timestamp)))}</div>
+    </div>
+    <div>
+      <div className="monospace">{formatEther(value)} ETH</div>
+    </div>
+  </div>
+)
 
 const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
   const {
-    primeAuction: {
-      amount = '0',
-      bids,
-      endTime: endTime_,
-      winner,
-      bidder,
-    },
+    primeAuction: { bids, endTime: endTime_, winner, bidder },
   } = usePrimeAuctionQuery({
     variables: { id: tokenId },
     fetchPolicy: 'cache-and-network',
@@ -66,7 +82,18 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
 
   return (
     <>
-      <div>
+      <h2>Auction of Primes #{tokenId}</h2>
+      <div className="bids current">
+        <h4>Current bid</h4>
+        <div>
+          {bids.length === 0 ? (
+            <div>No bids yet</div>
+          ) : (
+            <Bid bid={bids[0]} />
+          )}
+        </div>
+      </div>
+      <div className="prime">
         <div className="prime-image">
           <img
             src={primeQuery.data?.prime?.image ?? ''}
@@ -74,9 +101,11 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
           />
         </div>
         <div className="prime-auction">
+          {endTime > nowUnix && (
+            <PrimeAuctionBidForm tokenId={parseInt(tokenId)} />
+          )}
           <div>
             <div>
-              <h2>Prime #{tokenId}</h2>
               <div className="auction-time">
                 <div>
                   {endTime < nowUnix
@@ -90,26 +119,28 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
             </div>
             <div className="items">
               <div>
-                <h4>Current bid</h4>
-                <p className="monospace">
-                  {amount ? formatEther(amount) : '-'} ETH
-                </p>
-              </div>
-              <div>
-                <h4>Reserve price</h4>
-                <p className="monospace">
+                <h4>Auction rules</h4>
+                <p>
+                  The reserve price is{' '}
                   {formatEther(
                     primesAuctionHouse?.reservePrice ?? '0',
                   )}{' '}
-                  ETH
+                  ETH.
                 </p>
-              </div>
-              <div>
-                <h4>Minimum bid increment</h4>
                 <p>
+                  Each bid must be at least{' '}
                   {primesAuctionHouse?.minBidIncrementPercentage ??
                     '–'}
-                  %
+                  % higher than the previous bid.
+                </p>
+                <p>
+                  The contract only keeps the current highest bid in
+                  escrow. If somebody else bids higher than you, you
+                  will be automatically refunded immediately.
+                </p>
+                <p>
+                  The highest bidder wins when the auction ends (i.e.
+                  a first price auction).
                 </p>
               </div>
               {bidder && (
@@ -130,32 +161,19 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
               )}
             </div>
           </div>
-          <PrimeAuctionBidForm tokenId={parseInt(tokenId)} />
+          <PrimeDetailLists tokenId={parseInt(tokenId)} />
         </div>
       </div>
-      <div className="bids">
-        <h4>Bids</h4>
-        <div>
-          {bids.length === 0 ? <div>No bids yet</div> : null}
-          {bids.map(({ value, id, sender, timestamp }) => (
-            <div key={id}>
-              <div>
-                <h5>
-                  <AccountLink account={sender.id} />
-                </h5>
-                <div>
-                  {formatRFC7231(fromUnixTime(parseInt(timestamp)))}
-                </div>
-              </div>
-              <div>
-                <div className="monospace">
-                  {formatEther(value)} ETH
-                </div>
-              </div>
-            </div>
-          ))}
+      {bids.length > 1 ? (
+        <div className="bids previous">
+          <h4>Previous bids</h4>
+          <div>
+            {bids.slice(1).map((bid) => (
+              <Bid bid={bid} key={bid.id} />
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
     </>
   )
 }
@@ -163,7 +181,7 @@ const Content: FC<{ tokenId: string }> = ({ tokenId }) => {
 const Container = styled.div`
   margin-bottom: 8rem;
 
-  > :first-child {
+  > .prime {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -187,11 +205,11 @@ const Container = styled.div`
     > div {
       margin-bottom: 2rem;
       h4 {
-        margin-bottom: 0;
+        margin-bottom: 0.5rem;
         font-size: 1rem;
       }
       p {
-        margin: 0;
+        margin: 0 0 0.5rem 0;
       }
     }
   }
@@ -211,6 +229,7 @@ const Container = styled.div`
   }
 
   .bids {
+    margin-bottom: 2rem;
     h4 {
       padding-bottom: 1rem;
       border-bottom: 1px white solid;

@@ -1,11 +1,11 @@
-import { FC, ReactChild, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 // @ts-ignore
 import isPrime from 'is-prime'
 
 import { usePrimeQuery } from '../../graphql/subgraph/subgraph'
-import { ATTRIBUTE_NAMES, Attributes } from '../../attributes'
+import { Attributes } from '../../attributes'
 import { useAttributes } from '../App/PrimesContext'
 import { useRouteTokenId } from './Context'
 import { RentalData } from './RentalData'
@@ -13,7 +13,7 @@ import { useContracts } from '../App/DAppContext'
 import { useAttributesProof } from '../../merkleTree'
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { AccountLink } from '../AccountLink'
-import { Attribute } from './Attribute'
+import { PrimeDetailLists } from './PrimeDetailLists'
 
 const PrimeImage = styled.div`
   min-width: 28rem;
@@ -34,53 +34,6 @@ const PrimeImage = styled.div`
     display: block;
   }
 `
-
-const ListContainer = styled.div`
-  padding: 1rem 0;
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.75rem;
-  }
-`
-
-const List: FC<{
-  title: string
-  items: { id: string; value: ReactChild }[]
-}> = ({ title, items }) => (
-  <ListContainer>
-    <h3>{title}</h3>
-    <ul>
-      {items.length ? (
-        items.map((item) => <li key={item.id}>{item.value}</li>)
-      ) : (
-        <li>None</li>
-      )}
-    </ul>
-  </ListContainer>
-)
-
-const PrimeLinkContainer = styled(Link)`
-  border: 1px white solid;
-  border-radius: 1rem;
-  padding: 0.25rem 1rem;
-  color: white;
-`
-
-const PrimeLink: FC<{ id: string }> = ({ id }) => (
-  <PrimeLinkContainer className="monospace" to={`/primes/${id}`}>
-    {id}
-  </PrimeLinkContainer>
-)
 
 const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
   <div className="navigation">
@@ -130,20 +83,12 @@ export const Content: FC = () => {
     pollInterval: 20e3,
   })
 
-  const primeAttributes = useMemo<
-    { key: string; name: string; symbol: FC }[]
-  >(() => {
-    if (!attributes) return []
+  const attributesCount = useMemo<number>(() => {
+    if (!attributes) return 0
 
-    return Object.keys(attributes)
-      .filter((key) =>
-        attributes[key as keyof Attributes].has(tokenId as number),
-      )
-      .map((key) => {
-        const [name, symbol] =
-          ATTRIBUTE_NAMES[key as keyof Attributes]
-        return { key, name, symbol: symbol as FC }
-      })
+    return Object.keys(attributes).filter((key) =>
+      attributes[key as keyof Attributes].has(tokenId as number),
+    ).length
   }, [attributes, tokenId])
 
   const prime = useMemo<boolean>(() => isPrime(tokenId), [tokenId])
@@ -178,97 +123,22 @@ export const Content: FC = () => {
             )}
           </div>
         </div>
-        {data?.prime &&
-          !data.prime.revealed &&
-          primeAttributes.length > 1 && (
-            <div className="reveal-attributes">
-              <p>
-                {tokenId} has {primeAttributes.length} properties,
-                but they are not yet stored immutably on the contract
-                and do not appear on the artwork or on other
-                platforms (e.g. OpenSea).
-              </p>
-              <p>
-                You can reveal the properties so they appear on the
-                artwork. This can be done at any time.
-              </p>
-              <RevealAttributesForm tokenId={tokenId} />
-            </div>
-          )}
-        <List
-          title="Properties"
-          items={primeAttributes.map(({ key: id }) => ({
-            id,
-            value: <Attribute id={id as keyof Attributes} />,
-          }))}
-        />
-        {data?.prime && prime ? (
-          <>
-            <List
-              title="Twin Primes"
-              items={(data.prime.twins ?? []).map(({ id }) => ({
-                id,
-                value: <PrimeLink id={id} />,
-              }))}
-            />
-            <List
-              title="Cousin Primes"
-              items={(data.prime.cousins ?? []).map(({ id }) => ({
-                id,
-                value: <PrimeLink id={id} />,
-              }))}
-            />
-            <List
-              title="Sexy Primes"
-              items={(data.prime.sexyPrimes ?? []).map(({ id }) => ({
-                id,
-                value: <PrimeLink id={id} />,
-              }))}
-            />
-          </>
-        ) : (
-          <List
-            title="Parents"
-            items={(
-              [data?.prime?.parent1, data?.prime?.parent2] as [
-                { id: string },
-                { id: string },
-              ]
-            )
-              .filter(Boolean)
-              .map(({ id }) => ({
-                id,
-                value: <PrimeLink id={id} />,
-              }))}
-          />
+        {data?.prime && !data.prime.revealed && attributesCount > 1 && (
+          <div className="reveal-attributes">
+            <p>
+              {tokenId} has {attributesCount} properties, but they
+              are not yet stored immutably on the contract and do not
+              appear on the artwork or on other platforms (e.g.
+              OpenSea).
+            </p>
+            <p>
+              You can reveal the properties so they appear on the
+              artwork. This can be done at any time.
+            </p>
+            <RevealAttributesForm tokenId={tokenId} />
+          </div>
         )}
-        <List
-          title="Children"
-          items={[
-            ...new Set(
-              [
-                ...(data?.prime?.childrenAsParent1 ?? []),
-                ...(data?.prime?.childrenAsParent2 ?? []),
-              ].map((x) => x.id),
-            ),
-          ].map((id) => ({
-            id,
-            value: <PrimeLink id={id} />,
-          }))}
-        />
-        {data?.prime?.primeFactors.length ? (
-          <>
-            <List
-              title="Prime Factors"
-              items={data?.prime?.primeFactors
-                .map((id) => id.toString())
-                .map((id) => ({
-                  id,
-                  value: <PrimeLink id={id} />,
-                }))}
-            />
-          </>
-        ) : null}
+        <PrimeDetailLists tokenId={tokenId} />
         <RentalData tokenId={tokenId} />
       </PrimeDetail>
     </Container>
