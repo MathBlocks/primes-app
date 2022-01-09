@@ -1,9 +1,11 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import ReactTooltip from 'react-tooltip'
 
 import { WalletButton } from './WalletButton'
+import { useInterval } from 'react-use'
+import { getUnixTime } from 'date-fns'
 
 const NavbarContainer = styled.nav`
   font-weight: bold;
@@ -112,16 +114,56 @@ const LayoutContainer = styled.div`
   }
 `
 
-export const AppLayout: FC = ({ children }) => (
-  <LayoutContainer>
-    <header>
-      <NavLink to="/">
-        <img className="logo" src="/primes.svg" alt="Primes" />
-      </NavLink>
-      <Navbar />
-    </header>
-    <main>{children}</main>
-    <Footer />
-    <ReactTooltip />
-  </LayoutContainer>
-)
+// TODO update when we deploy on mainnet
+const EPOCH_TIME = 1641761683
+
+const PrimesLogo = styled.div`
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  .epoch {
+    padding: 1rem 1rem 1rem 0;
+    color: dimgrey;
+    cursor: help;
+    font-size: 0.6rem;
+  }
+`
+
+const Epoch: FC = () => {
+  const [time, setTime] = useState<number>()
+
+  useInterval(() => {
+    setTime(getUnixTime(Date.now()) - EPOCH_TIME)
+  }, 1e3)
+
+  return (
+    <div
+      className="epoch monospace"
+      data-tip="Seconds since Primes began"
+    >
+      {time}
+    </div>
+  )
+}
+
+export const AppLayout: FC = ({ children }) => {
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [])
+  return (
+    <LayoutContainer>
+      <header>
+        <PrimesLogo>
+          <NavLink to="/">
+            <img className="logo" src="/primes.svg" alt="Primes" />
+          </NavLink>
+          <Epoch />
+        </PrimesLogo>
+        <Navbar />
+      </header>
+      <main>{children}</main>
+      <Footer />
+      <ReactTooltip />
+    </LayoutContainer>
+  )
+}

@@ -1,5 +1,5 @@
 import { FC, useState } from 'react'
-import { useInterval } from 'react-use'
+import { useAsync, useInterval } from 'react-use'
 import styled from 'styled-components'
 import { BigNumber } from 'ethers'
 import { formatEther, parseEther } from 'ethers/lib/utils'
@@ -11,6 +11,9 @@ import { useWhitelistProof } from '../../merkleTree'
 import { useContracts } from '../App/DAppContext'
 import { useOnboard } from '../App/OnboardProvider'
 import { getNowUnix } from '../../utils'
+import { Primes } from '../../typechain'
+
+type Awaited<T> = T extends PromiseLike<infer U> ? U : T
 
 const batchPriceMapping: Record<number, BigNumber> = {
   // 0: parseEther('0.05'),
@@ -174,11 +177,30 @@ const formatDistance = (
 }
 
 export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
+  const contracts = useContracts()
   const primeBatchQuery = usePrimeBatchQuery({
     variables: { id: batchId.toString() },
     pollInterval: 20e3,
   })
   const primeBatch = primeBatchQuery.data?.primeBatch
+
+  const [batchCheck, setBatchCheck] =
+    useState<Awaited<ReturnType<Primes['batchCheck']>>>()
+  const [update, setUpdate] = useState<number>(0)
+
+  useInterval(() => {
+    setUpdate(update + 1)
+  }, 20e3)
+
+  useAsync(async () => {
+    if (!contracts) return
+    try {
+      const batchCheck_ = await contracts.Primes.batchCheck()
+      setBatchCheck(batchCheck_)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [contracts, update])
 
   const [timeToStart, setTimeToStart] = useState<
     string | undefined
@@ -186,7 +208,9 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
   const [whitelistTimeRemaining, setWhitelistTimeRemaining] =
     useState<string | undefined>()
   const nowUnix = getNowUnix()
-  const startTime = parseInt(primeBatch?.startTime ?? '0')
+  const startTime = (
+    batchCheck?.startTime ?? BigNumber.from(0)
+  ).toNumber()
 
   useInterval(() => {
     if (startTime === 0) {
@@ -207,6 +231,10 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
     }
   }, 1e3)
 
+  const active = batchCheck?.active ?? primeBatch?.active
+  const remaining =
+    batchCheck?.remaining?.toNumber() ?? primeBatch?.remaining
+
   return (
     <Container>
       <div>
@@ -222,14 +250,16 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
           <div className="stats">
             <div>
               <h4>Primes Remaining</h4>
-              <div>{primeBatch.remaining}</div>
+              <div>
+                {nowUnix > startTime && !active ? 0 : remaining}
+              </div>
             </div>
             <div>
               <h4>Status</h4>
               <div>
                 {startTime === 0
                   ? 'Auctions not started'
-                  : primeBatch.active
+                  : active
                   ? 'Active'
                   : 'Not active'}
               </div>
@@ -246,10 +276,7 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
               <div>{batchId === 0 ? '0.05' : '0.075'} ETH</div>
             </div>
           </div>
-          <BatchForm
-            batchId={batchId}
-            remaining={primeBatch.remaining}
-          />
+          <BatchForm batchId={batchId} remaining={remaining} />
         </div>
       ) : (
         'Auction not found or not active yet...'

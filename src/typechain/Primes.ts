@@ -598,10 +598,11 @@ export interface Primes extends BaseContract {
     batchCheck(
       overrides?: CallOverrides
     ): Promise<
-      [boolean, BigNumber, BigNumber] & {
+      [boolean, BigNumber, BigNumber, BigNumber] & {
         active: boolean;
         batch: BigNumber;
         remaining: BigNumber;
+        startTime: BigNumber;
       }
     >;
 
@@ -943,10 +944,11 @@ export interface Primes extends BaseContract {
   batchCheck(
     overrides?: CallOverrides
   ): Promise<
-    [boolean, BigNumber, BigNumber] & {
+    [boolean, BigNumber, BigNumber, BigNumber] & {
       active: boolean;
       batch: BigNumber;
       remaining: BigNumber;
+      startTime: BigNumber;
     }
   >;
 
@@ -1248,10 +1250,11 @@ export interface Primes extends BaseContract {
     batchCheck(
       overrides?: CallOverrides
     ): Promise<
-      [boolean, BigNumber, BigNumber] & {
+      [boolean, BigNumber, BigNumber, BigNumber] & {
         active: boolean;
         batch: BigNumber;
         remaining: BigNumber;
+        startTime: BigNumber;
       }
     >;
 

@@ -367,6 +367,11 @@ const _abi = [
         name: "remaining",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "startTime",
+        type: "uint256",
+      },
     ],
     stateMutability: "view",
     type: "function",
