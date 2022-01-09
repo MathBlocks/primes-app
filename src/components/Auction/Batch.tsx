@@ -3,11 +3,7 @@ import { useInterval } from 'react-use'
 import styled from 'styled-components'
 import { BigNumber } from 'ethers'
 import { formatEther, parseEther } from 'ethers/lib/utils'
-import {
-  formatDistanceToNowStrict,
-  fromUnixTime,
-  differenceInHours,
-} from 'date-fns'
+import { formatDistanceToNowStrict, fromUnixTime } from 'date-fns'
 
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { usePrimeBatchQuery } from '../../graphql/subgraph/subgraph'
@@ -197,20 +193,16 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
       return
     }
 
-    const seconds = Math.abs(
-      Math.max(startTime, nowUnix) - Math.min(startTime, nowUnix),
-    )
-
-    if (nowUnix > startTime) {
-      setTimeToStart(formatDistance(startTime, seconds))
+    if (nowUnix < startTime) {
+      setTimeToStart(formatDistance(startTime, startTime - nowUnix))
       setWhitelistTimeRemaining(undefined)
     } else {
       setTimeToStart(undefined)
-      if (
-        startTime < nowUnix &&
-        differenceInHours(fromUnixTime(startTime), Date.now()) < 24
-      ) {
-        setWhitelistTimeRemaining(formatDistance(nowUnix, seconds))
+      const whitelistEnds = 24 * 60 * 60 + startTime
+      if (nowUnix < whitelistEnds) {
+        setWhitelistTimeRemaining(
+          formatDistance(whitelistEnds, whitelistEnds - nowUnix),
+        )
       }
     }
   }, 1e3)
@@ -222,7 +214,7 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
         <p>
           The first two auctions will sell off the largest Primes.
           Minting is random with a flat price. Whitelisted users have
-          a 12-hour period to mint first.
+          a 24-hour period to mint first.
         </p>
       </div>
       {primeBatch ? (
@@ -260,7 +252,7 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
           />
         </div>
       ) : (
-        'Loading...'
+        'Auction not found or not active yet...'
       )}
     </Container>
   )
