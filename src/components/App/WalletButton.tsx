@@ -105,12 +105,19 @@ export const WalletButton: FC = () => {
                 toggleShowWalletModal(false)
               }}
             >
-              Account
+              My account
             </button>
-            <button onClick={toggleShowWalletModal}>Close</button>
             <button className="red" onClick={disconnectWallet}>
               Disconnect
             </button>
+            <button
+              onClick={() => {
+                localStorage.removeItem('apollo-cache-persist')
+              }}
+            >
+              Clear cache
+            </button>
+            <button onClick={toggleShowWalletModal}>x</button>
           </div>
         </WalletModalContent>
       </Modal>
