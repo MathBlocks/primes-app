@@ -1,13 +1,20 @@
 import { FC, useState } from 'react'
+import { useInterval } from 'react-use'
 import styled from 'styled-components'
 import { BigNumber } from 'ethers'
 import { formatEther, parseEther } from 'ethers/lib/utils'
+import {
+  formatDistanceToNowStrict,
+  fromUnixTime,
+  differenceInHours,
+} from 'date-fns'
 
 import { SendTransactionWidget } from '../SendTransactionWidget'
 import { usePrimeBatchQuery } from '../../graphql/subgraph/subgraph'
 import { useWhitelistProof } from '../../merkleTree'
 import { useContracts } from '../App/DAppContext'
 import { useOnboard } from '../App/OnboardProvider'
+import { getNowUnix } from '../../utils'
 
 const batchPriceMapping: Record<number, BigNumber> = {
   // 0: parseEther('0.05'),
@@ -81,7 +88,7 @@ const MintRandomPrimeForm: FC<{
               onChange={(el) => {
                 setCount(parseInt(el.target.value))
               }}
-              max={Math.min(cap || 100, remaining ?? 100).toString()}
+              max={Math.min(cap || 20, remaining ?? 20).toString()}
             />
           </div>
         </div>
@@ -161,13 +168,53 @@ const Container = styled.div`
   }
 `
 
+const formatDistance = (
+  unixTime: number,
+  seconds: number,
+): string => {
+  const unit =
+    seconds < 120 ? 'second' : seconds < 3600 ? 'minute' : 'hour'
+  return formatDistanceToNowStrict(fromUnixTime(unixTime), { unit })
+}
+
 export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
   const primeBatchQuery = usePrimeBatchQuery({
     variables: { id: batchId.toString() },
     pollInterval: 20e3,
   })
   const primeBatch = primeBatchQuery.data?.primeBatch
-  // TODO get whitelist time remaining
+
+  const [timeToStart, setTimeToStart] = useState<
+    string | undefined
+  >()
+  const [whitelistTimeRemaining, setWhitelistTimeRemaining] =
+    useState<string | undefined>()
+  const nowUnix = getNowUnix()
+  const startTime = parseInt(primeBatch?.startTime ?? '0')
+
+  useInterval(() => {
+    if (startTime === 0) {
+      return
+    }
+
+    const seconds = Math.abs(
+      Math.max(startTime, nowUnix) - Math.min(startTime, nowUnix),
+    )
+
+    if (nowUnix > startTime) {
+      setTimeToStart(formatDistance(startTime, seconds))
+      setWhitelistTimeRemaining(undefined)
+    } else {
+      setTimeToStart(undefined)
+      if (
+        startTime < nowUnix &&
+        differenceInHours(fromUnixTime(startTime), Date.now()) < 24
+      ) {
+        setWhitelistTimeRemaining(formatDistance(nowUnix, seconds))
+      }
+    }
+  }, 1e3)
+
   return (
     <Container>
       <div>
@@ -186,14 +233,21 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
               <div>{primeBatch.remaining}</div>
             </div>
             <div>
-              <h4>Active</h4>
-              <div>{primeBatch.active ? 'Yes' : 'No'}</div>
-            </div>
-            <div>
-              <h4>Whitelist time remaining</h4>
+              <h4>Status</h4>
               <div>
-                {primeBatch.active ? '12 hours' : 'Open to all'}
+                {startTime === 0
+                  ? 'Auctions not started'
+                  : primeBatch.active
+                  ? 'Active'
+                  : 'Not active'}
               </div>
+              {timeToStart && <div>{timeToStart} until start</div>}
+              {whitelistTimeRemaining && (
+                <div>
+                  {whitelistTimeRemaining} remaining for
+                  whitelist-only minting
+                </div>
+              )}
             </div>
             <div>
               <h4>Price</h4>

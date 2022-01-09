@@ -28,7 +28,7 @@ export const Auction: FC = () => {
           </h3>
           <p>Mint a random Prime in this batch for a fixed price.</p>
           <p>
-            For the first 12 hours, only whitelisted users can mint.
+            For the first 24 hours, only whitelisted users can mint.
           </p>
           <div>
             <span className="monospace">4099...16831</span>
@@ -48,7 +48,7 @@ export const Auction: FC = () => {
           </h3>
           <p>Mint a random Prime in this batch for a fixed price.</p>
           <p>
-            For the first 12 hours, only whitelisted users can mint.
+            For the first 24 hours, only whitelisted users can mint.
           </p>
           <div>
             <span className="monospace">131...4093</span>
@@ -79,7 +79,7 @@ export const Auction: FC = () => {
           </div>
           <div>
             Reserve price starting at{' '}
-            <span className="monospace">X</span> ETH
+            <span className="monospace">0.1</span> ETH
           </div>
         </div>
       </div>
