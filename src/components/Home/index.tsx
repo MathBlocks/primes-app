@@ -52,7 +52,7 @@ export const Home: FC = () => (
     <p>
       Primes are equipped with a special power: they can "breed".
       That means they can be multiplied together, creating
-      Composites, i.e.{' '}
+      Composites:{'  '}
       <a
         target="_blank"
         rel="noreferrer"
@@ -68,8 +68,8 @@ export const Home: FC = () => (
       width="70%"
     />
     <p>
-      The artwork evolves with each new generation, i.e. rows that
-      correspond to prime factors are passed onto the children after
+      The artwork evolves with each new generation, that is, rows that
+      correspond to prime factors are passed onto the child after
       breeding.
     </p>
     <p>
@@ -130,7 +130,7 @@ export const Home: FC = () => (
       <a
         target="_blank"
         rel="noreferrer"
-        href="https://en.wikipedia.org/wiki/Magic_number"
+        href="https://en.wikipedia.org/wiki/Polydivisible_number"
       >
         magic number
       </a>
@@ -142,7 +142,7 @@ export const Home: FC = () => (
       >
         taxicab number
       </a>
-      , etc.
+      , etc. with varying levels of rarity.
     </p>
   </div>
 )
