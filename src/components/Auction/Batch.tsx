@@ -53,22 +53,7 @@ const MintRandomPrimeFormContainer = styled.div`
   }
 `
 
-const getPrimeGas = (count: number) => {
-  switch (count) {
-    case 1:
-      return 165000
-    case 2:
-      return 265000
-    case 3:
-      return 370000
-    case 4:
-      return 460000
-    case 5:
-      return 565000
-    default:
-      return count * 115000
-  }
-}
+const getPrimeGas = (count: number) => count * 170000
 
 const MintRandomPrimeForm: FC<{
   batchId: number

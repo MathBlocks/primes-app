@@ -1,5 +1,5 @@
 import { Reducer, useCallback, useReducer } from 'react'
-import { Contract, ContractTransaction } from 'ethers'
+import { BigNumber, Contract, ContractTransaction } from 'ethers'
 import {
   TransactionResponse,
   TransactionReceipt,
@@ -15,6 +15,7 @@ export type TransactionState =
 
 export interface TransactionStatus {
   status: TransactionState
+  gasLimit?: BigNumber
   transaction?: TransactionResponse
   receipt?: TransactionReceipt
   chainId?: number
@@ -27,6 +28,7 @@ type TransactionAction =
       type: 'START'
     }
   | { type: 'SENT'; payload: TransactionResponse }
+  | { type: 'ESTIMATE'; payload: BigNumber }
   | { type: 'FAIL' }
   | { type: 'SUCCESS' }
   | { type: 'RECEIPT'; payload: TransactionReceipt }
@@ -45,6 +47,8 @@ const transactionStatusReducer: Reducer<
         status: 'Mining',
         transaction: action.payload,
       }
+    case 'ESTIMATE':
+      return { ...state, gasLimit: action.payload }
     case 'RECEIPT':
       return { ...state, receipt: action.payload }
     case 'SUCCESS':
@@ -74,15 +78,47 @@ export const useContractFunction = <
     status: 'None',
   })
 
-  const send = useCallback(
+  const estimate = useCallback(
     async (...args: Args) => {
+      if (!contract) return
+
+      try {
+        const gasEstimate = await contract.estimateGas[
+          functionName as string
+        ](...args)
+        dispatch({ type: 'ESTIMATE', payload: gasEstimate })
+      } catch (error) {
+        dispatch({
+          type: 'ERROR',
+          payload: `Error estimating gas: ${error}`,
+        })
+      }
+    },
+    [contract, functionName],
+  )
+
+  const send = useCallback(
+    async (gasLimit: BigNumber, ...args: Args) => {
       if (!contract) return
 
       dispatch({ type: 'START' })
 
       try {
+        let options = { gasLimit }
+
+        // Some txs have value, that's the only extra transaction option set
+        const lastArg = args.pop()
+        if (lastArg.value) {
+          // Add the value to the gasLimit
+          options = { ...options, ...lastArg }
+        } else {
+          // Otherwise add the last arg back
+          args.push(lastArg)
+        }
+
         const tx = (await contract[functionName](
           ...args,
+          options,
         )) as ContractTransaction
 
         dispatch({ type: 'SENT', payload: tx })
@@ -113,6 +149,7 @@ export const useContractFunction = <
   return {
     send,
     state,
+    estimate,
   }
 }
 
