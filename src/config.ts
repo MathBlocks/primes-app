@@ -23,9 +23,7 @@ export const CONFIG = {
   graphqlEndpoints: {
     1: {
       subgraph:
-        // FIXME
-        // 'https://api.thegraph.com/subgraphs/name/jameslefrere/primes',
-        'https://api.thegraph.com/subgraphs/name/jameslefrere/stealth-launch-nft-shhh',
+        'https://api.thegraph.com/subgraphs/name/jameslefrere/primes',
     },
     4: {
       subgraph:
@@ -36,7 +34,7 @@ export const CONFIG = {
     1: {
       Primes: '0xBDA937F5C5f4eFB2261b6FcD25A71A1C350FdF20',
       PrimesAuctionHouse:
-        '0xBDA937F5C5f4eFB2261b6FcD25A71A1C350FdF20', // FIXME wait for deploy
+        '0x4357969Ba06ad99a3379C28B34034c994cae804D',
       WETH: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     },
     4: {

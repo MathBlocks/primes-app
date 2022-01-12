@@ -114,10 +114,10 @@ const useOnboardBase = (
 
       setIsWalletSelected(true)
 
-      // onboard.config({
-      //   darkMode: options?.darkMode,
-      //   networkId: DEFAULT_CHAIN_ID,
-      // })
+      onboard.config({
+        darkMode: options?.darkMode,
+        networkId: DEFAULT_CHAIN_ID,
+      })
     }
   }
 
@@ -217,13 +217,12 @@ const getOnboardOptions = (
 })
 
 export const OnboardProvider: FC = ({ children }) => {
-  // TODO get chain ID/network name/RPC
   const options = useMemo(
     () =>
       getOnboardOptions(
-        4,
-        'Rinkeby',
-        'https://rinkeby.infura.io/v3/62bdcedba8ba449d9a795ef6310e713c',
+        1,
+        'Mainnet',
+        'https://mainnet.infura.io/v3/84c26c063d1f447093e3333b74674ec3',
       ),
     [],
   )
