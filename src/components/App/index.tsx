@@ -33,7 +33,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   a {
-    color: ${theme.purple};
+    color: ${theme.grey[4]};
     text-decoration: none;
     &:hover, &.active {
       color: white;
