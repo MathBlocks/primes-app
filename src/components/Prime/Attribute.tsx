@@ -54,7 +54,7 @@ const ATTRIBUTE_DESCRIPTIONS: Record<
     'https://en.wikipedia.org/wiki/Perfect_number',
   ],
   eulersLuckyNumbers: [
-    '$n$ such that for all integers $k$ with $1 ≤ k < n$, the polynomial $k^2 − k + n$ produces a prime number.',
+    '$n$ such that for all integers $k$ with $1 ≤ k < n$, the polynomial $k^2 - k + n$ produces a prime number.',
     'https://en.wikipedia.org/wiki/Lucky_numbers_of_Euler',
   ],
   uniquePrimeNumber: [
