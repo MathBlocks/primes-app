@@ -2,6 +2,7 @@ import { FC, DetailedHTMLProps, ButtonHTMLAttributes } from 'react'
 import styled from 'styled-components'
 import { Contract } from 'ethers'
 
+import { theme } from '../theme'
 import {
   TransactionState,
   useContractFunction,
@@ -16,14 +17,7 @@ const Container = styled.div<{ status: TransactionState }>`
   border-radius: 1rem;
   padding: 0;
 
-  background-color: ${({ status }) =>
-    status === 'Fail' || status === 'Exception'
-      ? '#4a2323'
-      : status === 'Success'
-      ? '#293f26'
-      : status === 'Mining'
-      ? '#1c404a'
-      : '#333'};
+  background-color: ${theme.grey[1]};
 
   button {
     width: 100%;
@@ -34,16 +28,16 @@ const Container = styled.div<{ status: TransactionState }>`
     border: none;
 
     &:hover {
-      background: #888;
+      background: ${theme.grey[3]};
     }
     background: ${({ status }) =>
       status === 'Fail' || status === 'Exception'
-        ? '#ae5656'
+        ? theme.red
         : status === 'Success'
-        ? '#3e5b38'
+        ? theme.green
         : status === 'Mining'
-        ? '#265967'
-        : '#555'};
+        ? theme.purple
+        : theme.grey[2]};
   }
 
   > div {

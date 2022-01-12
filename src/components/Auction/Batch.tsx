@@ -12,15 +12,13 @@ import { useContracts } from '../App/DAppContext'
 import { useOnboard } from '../App/OnboardProvider'
 import { getNowUnix } from '../../utils'
 import { Primes } from '../../typechain'
+import { theme } from '../../theme'
 
 type Awaited<T> = T extends PromiseLike<infer U> ? U : T
 
 const batchPriceMapping: Record<number, BigNumber> = {
-  // 0: parseEther('0.05'),
-  // 1: parseEther('0.075'),
-  // FIXME revert
-  0: parseEther('0.00005'),
-  1: parseEther('0.000075'),
+  0: parseEther('0.05'),
+  1: parseEther('0.075'),
 }
 
 const MintRandomPrimeFormContainer = styled.div`
@@ -43,7 +41,34 @@ const MintRandomPrimeFormContainer = styled.div`
       min-width: 14rem;
     }
   }
+
+  .tx-note {
+    color: ${theme.orange};
+  }
+
+  @media (max-width: 480px) {
+    > :first-child {
+      flex-direction: column;
+    }
+  }
 `
+
+const getPrimeGas = (count: number) => {
+  switch (count) {
+    case 1:
+      return 165000
+    case 2:
+      return 265000
+    case 3:
+      return 370000
+    case 4:
+      return 460000
+    case 5:
+      return 565000
+    default:
+      return count * 115000
+  }
+}
 
 const MintRandomPrimeForm: FC<{
   batchId: number
@@ -117,6 +142,16 @@ const MintRandomPrimeForm: FC<{
               : 'Mint random Prime',
         }}
       />
+      <div className="tx-note">
+        <p>
+          To prevent transactions from failing, make sure you submit
+          with the recommended gas limit:
+        </p>
+        <p>
+          {getPrimeGas(count)} gas for {count} Prime
+          {count === 1 ? '' : 's'}.
+        </p>
+      </div>
     </MintRandomPrimeFormContainer>
   )
 }
@@ -144,6 +179,7 @@ const Container = styled.div`
   justify-content: space-between;
   gap: 1rem;
   align-items: flex-start;
+
   > :first-child {
     max-width: 14rem;
     img {
@@ -163,6 +199,16 @@ const Container = styled.div`
 
     > div {
       margin-bottom: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    > :first-child {
+      max-width: 100%;
+      img {
+        display: none;
+      }
     }
   }
 `

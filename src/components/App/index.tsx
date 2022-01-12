@@ -9,12 +9,14 @@ import { ApolloProvider } from './ApolloProvider'
 import { DAppContext } from './DAppContext'
 import { PrimesContext } from './PrimesContext'
 import { OnboardProvider } from './OnboardProvider'
+import { theme } from '../../theme'
 
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
-    background: #2C2C2C;
+    background: ${theme.grey[1]};
     color: white;
+    overflow-y: scroll !important;
   }
   
   html, body, #root {
@@ -31,12 +33,10 @@ const GlobalStyle = createGlobalStyle`
   }
 
   a {
-    color: white;
+    color: ${theme.purple};
     text-decoration: none;
-    border-bottom: 1px white solid;
     &:hover, &.active {
-      color: #9890F4;
-      border-color: #9890F4;
+      color: white;
     }
   }
 
@@ -59,20 +59,18 @@ const GlobalStyle = createGlobalStyle`
   button {
     appearance: none;
     border: none;
-    background: white;
-    color: black;
+    background: ${theme.grey[5]};
+    color: ${theme.grey[0]};
     border-radius: 1rem;
     padding: 0.25rem 1rem;
     text-align: center;
     font-size: 1.2rem;
     cursor: pointer;
     &:hover {
-      background: #ddd;
+      background: ${theme.grey[5]};
     }
   }
 `
-
-const theme = {}
 
 export const App: FC = () => (
   <ThemeProvider theme={theme}>

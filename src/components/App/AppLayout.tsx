@@ -9,6 +9,9 @@ import { getUnixTime } from 'date-fns'
 
 const NavbarContainer = styled.nav`
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 
   ul {
     display: flex;
@@ -30,6 +33,20 @@ const NavbarContainer = styled.nav`
       background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd'%3E%3Cpath fill='white' d='M19.5 0C21 0 22 1.1 22 2.5V24l-2.6-2.3-1.4-1.3-1.6-1.5.7 2.3H3.5A2.5 2.5 0 0 1 1 18.7V2.5C1 1 2.1 0 3.5 0h16zM15 15.7c2.7-.1 3.7-1.9 3.7-1.9 0-3.8-1.7-7-1.7-7-1.8-1.2-3.4-1.2-3.4-1.2l-.2.2c2 .6 3 1.5 3 1.5a9.8 9.8 0 0 0-6-1.1H10a9 9 0 0 0-2.8.8l-.7.3s1-1 3.2-1.6l-.1-.1S8 5.6 6.3 6.9c0 0-1.7 3-1.7 7 0 0 1 1.7 3.6 1.8l.8-1a3.7 3.7 0 0 1-2-1.4l.3.2h.1l.9.5c.5.2 1 .4 1.8.5a8.4 8.4 0 0 0 6.2-1.2s-.6 1-2.2 1.4l.8 1zM9.3 10c-.7 0-1.2.6-1.2 1.3 0 .7.6 1.3 1.2 1.3.7 0 1.3-.6 1.3-1.3 0-.7-.6-1.3-1.3-1.3zm4.4 0c-.7 0-1.2.6-1.2 1.3 0 .7.5 1.3 1.2 1.3s1.2-.6 1.2-1.3c0-.7-.5-1.3-1.2-1.3z'/%3E%3C/svg%3E");
     }
   }
+
+  @media (max-width: 480px) {
+    display: block;
+    ul {
+      gap: 1rem;
+      &.wallet {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 0;
+        padding: 0;
+      }
+    }
+  }
 `
 
 const Footer: FC = () => (
@@ -47,10 +64,11 @@ const Navbar: FC = () => (
       </li>
       <li>
         <NavLink to="/primes/gallery">Gallery</NavLink>
-      </li>{' '}
-      <li>
-        <NavLink to="/primes/spiral">Spiral</NavLink>
       </li>
+      {/*TODO reinstate with updated artwork*/}
+      {/*<li>*/}
+      {/*  <NavLink to="/primes/spiral">Spiral</NavLink>*/}
+      {/*</li>*/}
       <li>
         <NavLink to="/primes/breed">Breed</NavLink>
       </li>
@@ -72,12 +90,26 @@ const Navbar: FC = () => (
           title="MathBlocks Discord"
         />
       </li>
+    </ul>
+    <ul className="wallet">
       <li>
         <WalletButton />
       </li>
     </ul>
   </NavbarContainer>
 )
+
+const PrimesLogo = styled.div`
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  .epoch {
+    padding: 1rem 1rem 1rem 0;
+    color: dimgrey;
+    cursor: help;
+    font-size: 0.6rem;
+  }
+`
 
 const LayoutContainer = styled.div`
   display: grid;
@@ -112,22 +144,26 @@ const LayoutContainer = styled.div`
     max-width: 100ch;
     margin: 0 auto;
   }
-`
 
-// TODO update when we deploy on mainnet
-const EPOCH_TIME = 1641761683
-
-const PrimesLogo = styled.div`
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  .epoch {
-    padding: 1rem 1rem 1rem 0;
-    color: dimgrey;
-    cursor: help;
-    font-size: 0.6rem;
+  @media (max-width: 480px) {
+    header {
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+      height: auto;
+      gap: 0;
+      ${PrimesLogo} {
+        align-self: center;
+        padding-top: 1rem;
+        .epoch {
+          display: none;
+        }
+      }
+    }
   }
 `
+
+const EPOCH_TIME = 1641998587
 
 const Epoch: FC = () => {
   const [time, setTime] = useState<number>()

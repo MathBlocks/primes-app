@@ -1,7 +1,17 @@
 import { FC } from 'react'
+import styled from 'styled-components'
+
+const Container = styled.div`
+  max-width: 65ch;
+  margin: 0 auto;
+
+  p {
+    line-height: 1.5rem;
+  }
+`
 
 export const Home: FC = () => (
-  <div>
+  <Container>
     <h1>
       Primes: a blockchain game that will span <u>decades</u>
     </h1>
@@ -36,15 +46,11 @@ export const Home: FC = () => (
         rel="noreferrer"
         href="https://en.wikipedia.org/wiki/Lindy_effect"
       >
-        withstand hundreds of years of of cultural evolution
+        withstand hundreds of years of cultural evolution
       </a>{' '}
       and be recognized by many generations to come:
     </p>
-    <img
-      src="/primes-13-demo.svg"
-      alt="Prime 13 design"
-      width="70%"
-    />
+    <img src="/primes-13-demo.svg" alt="Prime 13 design" />
     <p>
       The Primes Collection will start with the first 1900 prime
       numbers 2,...,16381. There will only be 1900 Primes.
@@ -62,15 +68,11 @@ export const Home: FC = () => (
       </a>
       .
     </p>
-    <img
-      src="/prime-breeding-demo.svg"
-      alt="Prime breeding demo"
-      width="70%"
-    />
+    <img src="/prime-breeding-demo.svg" alt="Prime breeding demo" />
     <p>
-      The artwork evolves with each new generation, that is, rows that
-      correspond to prime factors are passed onto the child after
-      breeding.
+      The artwork evolves with each new generation, that is, rows
+      that correspond to prime factors are passed onto the child
+      after breeding.
     </p>
     <p>
       The goal is to unlock all Composites up to 2¹⁴ = 16384. There
@@ -144,5 +146,5 @@ export const Home: FC = () => (
       </a>
       , etc. with varying levels of rarity.
     </p>
-  </div>
+  </Container>
 )

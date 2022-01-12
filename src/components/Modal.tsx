@@ -1,6 +1,7 @@
 import { ComponentProps, FC } from 'react'
 import BaseModal from 'styled-react-modal'
 import styled from 'styled-components'
+import { theme } from '../theme'
 
 const StyledModal = styled(BaseModal)``
 
@@ -12,9 +13,10 @@ const Inner = styled.div`
   max-width: 40rem;
   padding: 2rem;
   border-radius: 0.25rem;
-  border: 1px white solid;
-  background-color: black;
+  background-color: ${theme.grey[1]};
   max-height: 90vh;
+
+  ${theme.dropShadow1}
 
   > .content {
     overflow-y: auto;
@@ -22,7 +24,8 @@ const Inner = styled.div`
 
   > .title {
     font-weight: bold;
-    font-size: 1.4rem;
+    margin-top: -0.5rem;
+    font-size: 1.2rem;
     text-align: center;
   }
 `

@@ -8,6 +8,7 @@ import { Modal } from '../Modal'
 import { AccountLink } from '../AccountLink'
 import { formatEther } from 'ethers/lib/utils'
 import { useHistory } from 'react-router'
+import { theme } from '../../theme'
 
 const WalletModalContent = styled.div`
   .connection,
@@ -20,7 +21,7 @@ const WalletModalContent = styled.div`
     gap: 1rem;
     justify-content: space-between;
     .red {
-      color: red;
+      color: ${theme.red};
     }
   }
 `
@@ -28,14 +29,18 @@ const WalletModalContent = styled.div`
 const Container = styled.div`
   button {
     appearance: none;
-    border: 1px white solid;
+    border: 1px ${theme.grey[0]} solid;
     border-radius: 1rem;
     padding: 0.25rem 1rem;
-    color: white;
-    background: none;
+    color: ${theme.grey[0]};
+    background: ${theme.grey[5]};
     height: 2rem;
+    line-height: 100%;
     font-size: 1rem;
     min-width: 10rem;
+    &:hover {
+      background: ${theme.grey[4]};
+    }
   }
 `
 
