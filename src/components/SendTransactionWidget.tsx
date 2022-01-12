@@ -1,4 +1,5 @@
 import { FC, DetailedHTMLProps, ButtonHTMLAttributes } from 'react'
+import { usePrevious } from 'react-use'
 import styled from 'styled-components'
 import { Contract } from 'ethers'
 
@@ -77,26 +78,44 @@ export const SendTransactionWidget: <
 }) => {
   const {
     send,
-    state: { status, transaction, errorMessage },
+    estimate,
+    state: { status, transaction, errorMessage, gasLimit },
   } = useContractFunction(contract, functionName)
 
   const explorerTransactionLink = useExplorerTransactionLink(
     transaction?.hash,
   )
 
+  const prevArgs = usePrevious(args)
+
   return (
     <Container status={status}>
       <button
         {...buttonProps}
         onClick={() => {
+          const needsEstimate =
+            !gasLimit ||
+            (args &&
+              prevArgs &&
+              !args.every((arg, idx) => prevArgs[idx] === arg))
+
+          if (needsEstimate) {
+            estimate(...args).catch((error) => {
+              console.error(error)
+            })
+          }
+
+          if (!gasLimit) return
           if (check && !check()) return
 
-          send(...args).catch((error) => {
+          send(gasLimit, ...args).catch((error) => {
             console.error(error)
           })
         }}
       >
-        {transactionOptions?.transactionName ?? 'Send'}
+        {`${!gasLimit ? 'Estimate' : ''} ${
+          transactionOptions?.transactionName ?? 'Send'
+        }`}
       </button>
       {(status !== 'None' || transaction?.hash) && (
         <div>
