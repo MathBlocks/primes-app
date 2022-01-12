@@ -1,7 +1,7 @@
 import { FC, DetailedHTMLProps, ButtonHTMLAttributes } from 'react'
 import { usePrevious } from 'react-use'
 import styled from 'styled-components'
-import { Contract } from 'ethers'
+import { BigNumber, Contract } from 'ethers'
 
 import { theme } from '../theme'
 import {
@@ -106,9 +106,26 @@ export const SendTransactionWidget: <
           }
 
           if (!gasLimit) return
+
+          let adjustedGasLimit = gasLimit
+
+          if (
+            (functionName as string).startsWith('mintRandomPrime')
+          ) {
+            let count: number = 1
+            if ((functionName as string) === 'mintRandomPrimes') {
+              count = args[0] as number
+            }
+            // 170000 => safe mint cost for a Prime
+            const safeGasLimit = BigNumber.from(170000).mul(count)
+            if (gasLimit.lt(safeGasLimit)) {
+              adjustedGasLimit = safeGasLimit
+            }
+          }
+
           if (check && !check()) return
 
-          send(gasLimit, ...args).catch((error) => {
+          send(adjustedGasLimit, ...args).catch((error) => {
             console.error(error)
           })
         }}
