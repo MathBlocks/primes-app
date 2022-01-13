@@ -91,7 +91,11 @@ export const useContractFunction = <
       } catch (error) {
         dispatch({
           type: 'ERROR',
-          payload: `Error estimating gas: ${error}`,
+          payload:
+            (error as any).error?.message ??
+            (error as any).reason ??
+            error.message ??
+            error.toString(),
         })
       }
     },
