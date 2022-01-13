@@ -295,13 +295,7 @@ export const Batch: FC<{ batchId: number }> = ({ batchId }) => {
             </div>
             <div>
               <h4>Status</h4>
-              <div>
-                {startTime === 0
-                  ? 'Auctions not started'
-                  : active
-                  ? 'Active'
-                  : 'Not active'}
-              </div>
+              <div>{active ? 'Active' : 'Not active'}</div>
               {timeToStart && <div>{timeToStart} until start</div>}
               {whitelistTimeRemaining && (
                 <div>
