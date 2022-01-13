@@ -122,6 +122,13 @@ export const Content: FC = () => {
               <span>Not minted.</span>
             )}
           </div>
+          <div className="opensea">
+            <a
+              href={`https://opensea.io/assets/0xbda937f5c5f4efb2261b6fcd25a71a1c350fdf20/${tokenId}`}
+            >
+              View on OpenSea
+            </a>
+          </div>
         </div>
         {data?.prime && !data.prime.revealed && attributesCount > 1 && (
           <div className="reveal-attributes">

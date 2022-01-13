@@ -2,9 +2,14 @@ import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { theme } from '../../theme'
+import { useAuctionStatusQuery } from '../../graphql/subgraph/subgraph'
 
 const Container = styled.div`
   .about {
+  }
+  .active-batch {
+    padding: 1rem 0 2rem 0;
+    font-size: 1.5rem;
   }
   .batches {
     display: flex;
@@ -24,6 +29,10 @@ const Container = styled.div`
       flex-direction: column;
 
       cursor: pointer;
+
+      &.active {
+        border-color: ${theme.purple};
+      }
 
       &:hover {
         border-color: white;
@@ -65,14 +74,26 @@ const Container = styled.div`
 `
 
 export const Auction: FC = () => {
+  const auctionStatusQuery = useAuctionStatusQuery()
+  const activeBatchId = auctionStatusQuery.data?.primeBatches?.find(
+    (p) => p.active,
+  )?.id
   return (
     <Container>
       <div className="about">
         <h2>Primes Auction</h2>
         <p>The auctions for Primes are split into three batches.</p>
       </div>
+      <div className="active-batch">
+        Current sale:{' '}
+        {activeBatchId === '0'
+          ? `Fermat's Last Choice`
+          : activeBatchId === '1'
+          ? `Erasthosthenes's Golden Sieve`
+          : `Gödel Escher Batch: An Eternal Golden Raid`}
+      </div>
       <div className="batches">
-        <div>
+        <div className={activeBatchId === '0' ? 'active' : ''}>
           <div>
             <h3>
               <Link to="/primes/auction/batch/0">
@@ -104,7 +125,7 @@ export const Auction: FC = () => {
             </button>
           </div>
         </div>
-        <div>
+        <div className={activeBatchId === '1' ? 'active' : ''}>
           <div>
             <h3>
               <Link to="/primes/auction/batch/1">
@@ -136,7 +157,7 @@ export const Auction: FC = () => {
             </button>
           </div>
         </div>
-        <div>
+        <div className={activeBatchId === '2' ? 'active' : ''}>
           <div>
             <h3>
               <Link to="/primes/auction/batch/2">

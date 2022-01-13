@@ -52,6 +52,14 @@ const NavbarContainer = styled.nav`
 const Footer: FC = () => (
   <footer>
     <a href="https://mathblocks.io">mathblocks.io</a>
+    <div>
+      <a href="https://etherscan.io/address/0xBDA937F5C5f4eFB2261b6FcD25A71A1C350FdF20">
+        Primes Contract
+      </a>
+      <a href="https://etherscan.io/address/0x4357969Ba06ad99a3379C28B34034c994cae804D">
+        Auction House Contract
+      </a>
+    </div>
   </footer>
 )
 
@@ -60,7 +68,7 @@ const Navbar: FC = () => (
   <NavbarContainer>
     <ul>
       <li>
-        <NavLink to="/primes/auction">Auction</NavLink>
+        <NavLink to="/primes/auction">Minting & Auctions</NavLink>
       </li>
       <li>
         <NavLink to="/primes/gallery">Gallery</NavLink>
@@ -71,6 +79,15 @@ const Navbar: FC = () => (
       {/*</li>*/}
       <li>
         <NavLink to="/primes/breed">Breed</NavLink>
+      </li>
+      <li>
+        <a
+          href="https://opensea.io/collection/mathblocks-primes"
+          rel="noreferrer"
+          target="_blank"
+        >
+          OpenSea
+        </a>
       </li>
       <li>
         <a
@@ -135,6 +152,14 @@ const LayoutContainer = styled.div`
   footer {
     padding: 1rem 0;
     border-top: 1px #444 solid;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    > div {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
   }
 
   header,
@@ -159,6 +184,9 @@ const LayoutContainer = styled.div`
           display: none;
         }
       }
+    }
+    footer {
+      flex-direction: column;
     }
   }
 `
