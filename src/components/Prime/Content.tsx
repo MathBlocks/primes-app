@@ -33,6 +33,10 @@ const PrimeImage = styled.div`
     height: auto;
     display: block;
   }
+
+  @media (max-width: 480px) {
+    min-width: 100%;
+  }
 `
 
 const Navigation: FC<{ tokenId: number }> = ({ tokenId }) => (
@@ -72,6 +76,11 @@ const Container = styled.div`
   display: flex;
   gap: 4rem;
   justify-content: space-between;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
 `
 
 export const Content: FC = () => {

@@ -38,6 +38,8 @@ const NavbarContainer = styled.nav`
     display: block;
     ul {
       gap: 1rem;
+      padding-left: 0;
+      padding-right: 0;
       &.wallet {
         width: 100%;
         display: flex;
@@ -68,7 +70,7 @@ const Navbar: FC = () => (
   <NavbarContainer>
     <ul>
       <li>
-        <NavLink to="/primes/auction">Minting & Auctions</NavLink>
+        <NavLink to="/primes/auction">Minting</NavLink>
       </li>
       <li>
         <NavLink to="/primes/gallery">Gallery</NavLink>
@@ -187,6 +189,9 @@ const LayoutContainer = styled.div`
     }
     footer {
       flex-direction: column;
+      > div {
+        flex-direction: column;
+      }
     }
   }
 `
