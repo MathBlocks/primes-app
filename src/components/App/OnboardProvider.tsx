@@ -99,9 +99,19 @@ const useOnboardBase = (
       onboard
         .walletSelect(previouslySelectedWallet)
         .then(() => {
+          onboard
+            .walletCheck()
+            .then((checked) => {
+              if (!checked) setIsWalletSelected(false)
+            })
+            .catch((error) => {
+              setIsWalletSelected(false)
+              console.error(error)
+            })
           setIsWalletSelected(true)
         })
         .catch((error) => {
+          setIsWalletSelected(false)
           console.error(error)
         })
     }
@@ -109,15 +119,22 @@ const useOnboardBase = (
 
   const selectWallet = async () => {
     if (!isWalletSelected && onboard) {
-      await onboard.walletSelect()
-      await onboard.walletCheck()
+      try {
+        await onboard.walletSelect()
+        await onboard.walletCheck()
 
-      setIsWalletSelected(true)
+        setIsWalletSelected(true)
 
-      onboard.config({
-        darkMode: options?.darkMode,
-        networkId: DEFAULT_CHAIN_ID,
-      })
+        onboard.config({
+          darkMode: options?.darkMode,
+          networkId: DEFAULT_CHAIN_ID,
+        })
+      } catch (error) {
+        console.error(error)
+        setIsWalletSelected(false)
+      }
+    } else {
+      setIsWalletSelected(false)
     }
   }
 

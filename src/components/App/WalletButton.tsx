@@ -54,7 +54,7 @@ export const WalletButton: FC = () => {
   } = useOnboard()
 
   const history = useHistory()
-  const [isConnecting, toggleIsConnecting] = useToggle(false)
+  const [, toggleIsConnecting] = useToggle(false)
   const [showWalletModal, toggleShowWalletModal] = useToggle(false)
 
   return (
@@ -63,11 +63,12 @@ export const WalletButton: FC = () => {
         onClick={() => {
           if (address) {
             toggleShowWalletModal(true)
-          } else if (!isConnecting) {
+          } else {
             toggleIsConnecting(true)
             selectWallet()
               .catch((error) => {
                 console.error(error)
+                disconnectWallet()
                 toggleIsConnecting(false)
               })
               .then(() => {
