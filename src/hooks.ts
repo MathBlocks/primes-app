@@ -11,7 +11,7 @@ export type TransactionState =
   | 'Mining'
   | 'Success'
   | 'Fail'
-  | 'Exception'
+  | 'Error'
 
 export interface TransactionStatus {
   status: TransactionState
@@ -58,7 +58,7 @@ const transactionStatusReducer: Reducer<
     case 'ERROR':
       return {
         ...state,
-        status: 'Exception',
+        status: 'Error',
         errorMessage: action.payload,
       }
     default:
