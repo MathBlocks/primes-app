@@ -87,6 +87,7 @@ export const useContractFunction = <
           functionName as string
         ](...args)
         dispatch({ type: 'ESTIMATE', payload: gasEstimate })
+        return gasEstimate
       } catch (error) {
         dispatch({
           type: 'ERROR',

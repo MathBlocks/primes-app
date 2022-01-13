@@ -92,33 +92,38 @@ export const SendTransactionWidget: <
     <Container status={status}>
       <button
         {...buttonProps}
-        onClick={() => {
+        onClick={async () => {
           const needsEstimate =
             !gasLimit ||
             (args &&
               prevArgs &&
               !args.every((arg, idx) => prevArgs[idx] === arg))
 
+          let adjustedGasLimit: BigNumber = gasLimit as BigNumber
+
           if (needsEstimate) {
-            estimate(...args).catch((error) => {
-              console.error(error)
-            })
+            adjustedGasLimit = (await estimate(...args)) as BigNumber
           }
-
-          if (!gasLimit) return
-
-          let adjustedGasLimit = gasLimit
+          if (!adjustedGasLimit) return
 
           if (
             (functionName as string).startsWith('mintRandomPrime')
           ) {
             let count: number = 1
+            let hasMerkleProof = args[2].length > 0
             if ((functionName as string) === 'mintRandomPrimes') {
               count = args[0] as number
+              hasMerkleProof = args[3].length > 0
             }
-            // 170000 => safe mint cost for a Prime
-            const safeGasLimit = BigNumber.from(170000).mul(count)
-            if (gasLimit.lt(safeGasLimit)) {
+            // TODO get estimate for mint without whitelist
+            // Safe mint cost for a Prime:
+            // with whitelist active => 190000
+            // without whitelist => 190000
+            const safeGasLimit = BigNumber.from(
+              hasMerkleProof ? 190000 : 190000,
+            ).mul(count)
+
+            if (adjustedGasLimit.lt(safeGasLimit)) {
               adjustedGasLimit = safeGasLimit
             }
           }
@@ -130,9 +135,7 @@ export const SendTransactionWidget: <
           })
         }}
       >
-        {`${!gasLimit ? 'Estimate' : ''} ${
-          transactionOptions?.transactionName ?? 'Send'
-        }`}
+        {transactionOptions?.transactionName ?? 'Send'}
       </button>
       {(status !== 'None' || transaction?.hash) && (
         <div>
