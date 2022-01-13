@@ -53,7 +53,9 @@ const MintRandomPrimeFormContainer = styled.div`
   }
 `
 
-const getPrimeGas = (count: number) => count * 170000
+// TODO get estimate for mint without whitelist
+const getPrimeGas = (count: number, whitelistActive: boolean) =>
+  count * (whitelistActive ? 190000 : 190000)
 
 const MintRandomPrimeForm: FC<{
   batchId: number
@@ -78,6 +80,7 @@ const MintRandomPrimeForm: FC<{
       value: batchPriceMapping[batchId].mul(count),
     },
   ]
+  const whitelistActive = whitelistProof.proof.length > 0
 
   const cap =
     whitelistProof[batchId === 0 ? 'batch0Cap' : 'batch1Cap']
@@ -133,7 +136,7 @@ const MintRandomPrimeForm: FC<{
           with the recommended gas limit:
         </p>
         <p>
-          {getPrimeGas(count)} gas for {count} Prime
+          {getPrimeGas(count, whitelistActive)} gas for {count} Prime
           {count === 1 ? '' : 's'}.
         </p>
       </div>
