@@ -139,6 +139,11 @@ const MintRandomPrimeForm: FC<{
           {getPrimeGas(count, whitelistActive)} gas for {count} Prime
           {count === 1 ? '' : 's'}.
         </p>
+        <p>
+          The safe gas limit is 10-20% higher than the average
+          minting cost to prevent it from failing due to random mint.
+          The transaction will likely use less gas.
+        </p>
       </div>
     </MintRandomPrimeFormContainer>
   )

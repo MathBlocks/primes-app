@@ -32,7 +32,7 @@ const Container = styled.div<{ status: TransactionState }>`
       background: ${theme.grey[3]};
     }
     background: ${({ status }) =>
-      status === 'Fail' || status === 'Exception'
+      status === 'Fail' || status === 'Error'
         ? theme.red
         : status === 'Success'
         ? theme.green

@@ -11,7 +11,7 @@ export type TransactionState =
   | 'Mining'
   | 'Success'
   | 'Fail'
-  | 'Exception'
+  | 'Error'
 
 export interface TransactionStatus {
   status: TransactionState
@@ -58,7 +58,7 @@ const transactionStatusReducer: Reducer<
     case 'ERROR':
       return {
         ...state,
-        status: 'Exception',
+        status: 'Error',
         errorMessage: action.payload,
       }
     default:
@@ -91,7 +91,11 @@ export const useContractFunction = <
       } catch (error) {
         dispatch({
           type: 'ERROR',
-          payload: `Error estimating gas: ${error}`,
+          payload:
+            (error as any).error?.message ??
+            (error as any).reason ??
+            error.message ??
+            error.toString(),
         })
       }
     },
