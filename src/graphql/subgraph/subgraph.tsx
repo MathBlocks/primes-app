@@ -1120,6 +1120,8 @@ export type PrimeAttributesFragment = { colossallyAbundantNumber: boolean, emirp
 
 export type PrimeAllFragment = { id: string, claimed: boolean, deadline?: string | null | undefined, image: string, isListed: boolean, isPrime: boolean, isRentable: boolean, lastBred: string, revealed: boolean, primeFactorCount: number, primeIndex?: number | null | undefined, primeFactors: Array<number>, studFee?: string | null | undefined, whitelistOnly: boolean, childrenAsParent1: Array<{ id: string }>, childrenAsParent2: Array<{ id: string }>, cousins: Array<{ id: string }>, owner: { id: string, address: string }, parent1?: { id: string } | null | undefined, parent2?: { id: string } | null | undefined, sexyPrimes: Array<{ id: string }>, suitors: Array<{ id: string }>, twins: Array<{ id: string }> };
 
+export type PrimePreviewFragment = { id: string, number: number, isPrime: boolean, revealed: boolean, image: string };
+
 export type PrimeQueryVariables = Exact<{
   tokenId: Scalars['ID'];
 }>;
@@ -1132,12 +1134,12 @@ export type PrimesFromLastIdQueryVariables = Exact<{
 }>;
 
 
-export type PrimesFromLastIdQuery = { primes: Array<{ id: string }> };
+export type PrimesFromLastIdQuery = { primes: Array<{ id: string, image: string }> };
 
 export type AllPrimesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllPrimesQuery = { primes: Array<{ id: string }> };
+export type AllPrimesQuery = { primes: Array<{ id: string, image: string }> };
 
 export type ListedPrimesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1182,9 +1184,7 @@ export type AccountQueryVariables = Exact<{
 }>;
 
 
-export type AccountQuery = { account?: { primes: Array<{ id: string, revealed: boolean }> } | null | undefined };
-
-export type PrimePreviewFragment = { id: string, number: number, isPrime: boolean, revealed: boolean, image: string };
+export type AccountQuery = { account?: { primes: Array<{ id: string, number: number, isPrime: boolean, revealed: boolean, image: string }> } | null | undefined };
 
 export type PrimePreviewsQueryVariables = Exact<{
   offset: Scalars['Int'];
@@ -1202,13 +1202,6 @@ export type PrimePreviewsForIdsQueryVariables = Exact<{
 
 
 export type PrimePreviewsForIdsQuery = { primes: Array<{ id: string, number: number, isPrime: boolean, revealed: boolean, image: string }> };
-
-export type PrimesTestQueryVariables = Exact<{
-  numbers: Array<Scalars['Int']> | Scalars['Int'];
-}>;
-
-
-export type PrimesTestQuery = { primes: Array<{ id: string, claimed: boolean, deadline?: string | null | undefined, image: string, isListed: boolean, isPrime: boolean, isRentable: boolean, lastBred: string, revealed: boolean, primeFactorCount: number, primeIndex?: number | null | undefined, primeFactors: Array<number>, studFee?: string | null | undefined, whitelistOnly: boolean, childrenAsParent1: Array<{ id: string }>, childrenAsParent2: Array<{ id: string }>, cousins: Array<{ id: string }>, owner: { id: string, address: string }, parent1?: { id: string } | null | undefined, parent2?: { id: string } | null | undefined, sexyPrimes: Array<{ id: string }>, suitors: Array<{ id: string }>, twins: Array<{ id: string }> }> };
 
 export const PrimeAttributesFragmentDoc = gql`
     fragment PrimeAttributes on Prime {
@@ -1283,6 +1276,15 @@ export const PrimeAllFragmentDoc = gql`
   whitelistOnly
 }
     `;
+export const PrimePreviewFragmentDoc = gql`
+    fragment PrimePreview on Prime {
+  id
+  number
+  isPrime
+  revealed
+  image
+}
+    `;
 export const PrimeAuctionAllFragmentDoc = gql`
     fragment PrimeAuctionAll on PrimeAuction {
   id
@@ -1296,15 +1298,6 @@ export const PrimeAuctionAllFragmentDoc = gql`
   winner {
     id
   }
-}
-    `;
-export const PrimePreviewFragmentDoc = gql`
-    fragment PrimePreview on Prime {
-  id
-  number
-  isPrime
-  revealed
-  image
 }
     `;
 export const PrimeDocument = gql`
@@ -1346,6 +1339,7 @@ export const PrimesFromLastIdDocument = gql`
     query PrimesFromLastID($lastID: ID!) {
   primes(first: 1000, where: {id_gt: $lastID}) {
     id
+    image
   }
 }
     `;
@@ -1379,8 +1373,9 @@ export type PrimesFromLastIdLazyQueryHookResult = ReturnType<typeof usePrimesFro
 export type PrimesFromLastIdQueryResult = Apollo.QueryResult<PrimesFromLastIdQuery, PrimesFromLastIdQueryVariables>;
 export const AllPrimesDocument = gql`
     query AllPrimes {
-  primes {
+  primes(first: 1000) {
     id
+    image
   }
 }
     `;
@@ -1664,12 +1659,11 @@ export const AccountDocument = gql`
     query Account($account: ID!) {
   account(id: $account) {
     primes(orderBy: number, orderDirection: asc) {
-      id
-      revealed
+      ...PrimePreview
     }
   }
 }
-    `;
+    ${PrimePreviewFragmentDoc}`;
 
 /**
  * __useAccountQuery__
@@ -1777,38 +1771,3 @@ export function usePrimePreviewsForIdsLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type PrimePreviewsForIdsQueryHookResult = ReturnType<typeof usePrimePreviewsForIdsQuery>;
 export type PrimePreviewsForIdsLazyQueryHookResult = ReturnType<typeof usePrimePreviewsForIdsLazyQuery>;
 export type PrimePreviewsForIdsQueryResult = Apollo.QueryResult<PrimePreviewsForIdsQuery, PrimePreviewsForIdsQueryVariables>;
-export const PrimesTestDocument = gql`
-    query PrimesTest($numbers: [Int!]!) {
-  primes(where: {number_in: $numbers}) {
-    ...PrimeAll
-  }
-}
-    ${PrimeAllFragmentDoc}`;
-
-/**
- * __usePrimesTestQuery__
- *
- * To run a query within a React component, call `usePrimesTestQuery` and pass it any options that fit your needs.
- * When your component renders, `usePrimesTestQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = usePrimesTestQuery({
- *   variables: {
- *      numbers: // value for 'numbers'
- *   },
- * });
- */
-export function usePrimesTestQuery(baseOptions: Apollo.QueryHookOptions<PrimesTestQuery, PrimesTestQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<PrimesTestQuery, PrimesTestQueryVariables>(PrimesTestDocument, options);
-      }
-export function usePrimesTestLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PrimesTestQuery, PrimesTestQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<PrimesTestQuery, PrimesTestQueryVariables>(PrimesTestDocument, options);
-        }
-export type PrimesTestQueryHookResult = ReturnType<typeof usePrimesTestQuery>;
-export type PrimesTestLazyQueryHookResult = ReturnType<typeof usePrimesTestLazyQuery>;
-export type PrimesTestQueryResult = Apollo.QueryResult<PrimesTestQuery, PrimesTestQueryVariables>;

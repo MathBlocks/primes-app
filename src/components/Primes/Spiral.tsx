@@ -1,13 +1,11 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory } from 'react-router'
 import { useWindowSize } from 'react-use'
 import styled from 'styled-components'
 import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 import { Simple } from 'pixi-cull'
-// import { GlowFilter } from '@pixi/filter-glow'
-
-import { getSVGDataURI } from '../PrimeSVG'
+import { GlowFilter } from '@pixi/filter-glow'
 
 import { N_MAX, N_SIZE, SCALE } from './constants'
 import {
@@ -15,10 +13,10 @@ import {
   useAttributes,
   useVisible,
   useHoveredTokenId,
-  useMintedPrimes,
+  useMyPrimes,
 } from '../App/PrimesContext'
 import { ulamSpiral } from '../../ulamSpiral'
-import { ATTRIBUTE_NAMES, Attributes } from '../../attributes'
+import { useAllPrimesQuery } from '../../graphql/subgraph/subgraph'
 
 const PixiContainer = styled.div`
   width: 100%;
@@ -30,6 +28,25 @@ const PixiContainer = styled.div`
   }
 `
 
+const useAllPrimeImages = (): {
+  ready: boolean
+  images: Record<number, string>
+} => {
+  const allPrimes = useAllPrimesQuery()
+  return useMemo(() => {
+    const images = Object.fromEntries(
+      (allPrimes.data?.primes ?? []).map(({ id, image }) => [
+        parseInt(id),
+        image,
+      ]),
+    )
+    return {
+      images,
+      ready: !!(allPrimes.data && allPrimes.data.primes.length > 0),
+    }
+  }, [allPrimes.data])
+}
+
 const SpiralContent: FC = () => {
   const history = useHistory()
   const windowSize = useWindowSize()
@@ -37,7 +54,8 @@ const SpiralContent: FC = () => {
   const [visible] = useVisible()
   const [selectedTokenId, setSelectedTokenId] = useSelectedTokenId()
   const [, setHoveredTokenId] = useHoveredTokenId()
-  const [mintedPrimes] = useMintedPrimes()
+  const [myPrimes] = useMyPrimes()
+  const allPrimeImages = useAllPrimeImages()
 
   // Refs for Pixi
   const app = useRef<PIXI.Application>()
@@ -115,7 +133,7 @@ const SpiralContent: FC = () => {
               if (!visible) {
                 detail.texture.destroy()
               }
-            } else if (visible) {
+            } else if (visible && (container as any).data.svg) {
               const resource = new PIXI.SVGResource(
                 (container as any).data.svg,
                 { width: 256, height: 256 },
@@ -138,7 +156,17 @@ const SpiralContent: FC = () => {
 
   useEffect(() => {
     for (const [tokenId, posX, posY] of ulamSpiral(N_MAX, N_SIZE)) {
-      if (!attributes || !viewport.current) return
+      if (
+        !attributes ||
+        !viewport.current ||
+        !allPrimeImages.ready
+      ) {
+        return
+      }
+
+      if (!allPrimeImages.images[tokenId]) {
+        continue
+      }
 
       const prime = attributes.prime.has(tokenId)
 
@@ -152,24 +180,13 @@ const SpiralContent: FC = () => {
       container.data = {
         tokenId,
         prime,
-        // FIXME optimise primeAttributes
-        svg: getSVGDataURI(
-          tokenId,
-          Object.entries(attributes)
-            .filter(([_, set]) => set.has(tokenId))
-            .map(([key]) => {
-              const [name, symbol] =
-                ATTRIBUTE_NAMES[key as keyof Attributes]
-              return { key, name, symbol }
-            }) as any,
-        ),
+        svg: allPrimeImages.images[tokenId],
       }
 
       const square = new PIXI.Sprite(PIXI.Texture.WHITE)
       square.width = 1
       square.height = 1
       square.tint = prime ? 0xffffff : 0x000000
-      // square.alpha = 0.4
       container.addChild(square)
 
       const detail = new PIXI.Sprite()
@@ -179,11 +196,11 @@ const SpiralContent: FC = () => {
       container.on('mouseover', () => {
         if (!square.visible) return
         container.filters = [
-          // new GlowFilter({
-          //   distance: 16,
-          //   outerStrength: 4,
-          //   quality: 1,
-          // }),
+          new GlowFilter({
+            distance: 16,
+            outerStrength: 4,
+            quality: 1,
+          }),
         ]
         setHoveredTokenId(tokenId)
       })
@@ -224,7 +241,14 @@ const SpiralContent: FC = () => {
         setReady(true)
       }
     }
-  }, [attributes, history, setHoveredTokenId, setSelectedTokenId])
+  }, [
+    allPrimeImages.images,
+    allPrimeImages.ready,
+    attributes,
+    history,
+    setHoveredTokenId,
+    setSelectedTokenId,
+  ])
 
   // Set visibility of squares
   useEffect(() => {
@@ -239,16 +263,21 @@ const SpiralContent: FC = () => {
 
   // Set minted state
   useEffect(() => {
-    if (!viewport.current || mintedPrimes.size === 0) return
+    if (!viewport.current || myPrimes.set.size === 0) return
 
     viewport.current.children.forEach((child) => {
-      ;(child as PIXI.Sprite).children[0].alpha = mintedPrimes.has(
-        (child as any).data.tokenId,
-      )
-        ? 1
-        : 0.25
+      if (myPrimes.set.has((child as any).data.tokenId)) {
+        ;(child as PIXI.Sprite).children[0].filters = [
+          new GlowFilter({
+            color: 0xff4959e9,
+            distance: 16,
+            outerStrength: 10,
+            quality: 1,
+          }),
+        ]
+      }
     })
-  }, [mintedPrimes])
+  }, [myPrimes, allPrimeImages])
 
   useEffect(() => {
     if (!viewport.current || !app.current || !ready) return
