@@ -100,7 +100,7 @@ const MintRandomPrimeForm: FC<{
               onChange={(el) => {
                 setCount(parseInt(el.target.value))
               }}
-              max={Math.min(cap || 20, remaining ?? 20).toString()}
+              max={20}
             />
           </div>
         </div>
