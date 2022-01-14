@@ -70,6 +70,15 @@ fragment PrimeAll on Prime {
     whitelistOnly
 }
 
+
+fragment PrimePreview on Prime {
+    id
+    number
+    isPrime
+    revealed
+    image
+}
+
 query Prime($tokenId: ID!) {
     prime(id: $tokenId) {
         ...PrimeAll
@@ -79,12 +88,14 @@ query Prime($tokenId: ID!) {
 query PrimesFromLastID($lastID: ID!) {
     primes(first: 1000, where: { id_gt: $lastID }) {
         id
+        image
     }
 }
 
 query AllPrimes {
-    primes {
+    primes(first: 1000) {
         id
+        image
     }
 }
 
@@ -179,18 +190,9 @@ query PrimesForAccount($account: String!) {
 query Account($account: ID!) {
     account(id: $account) {
         primes(orderBy: number, orderDirection: asc) {
-            id
-            revealed
+            ...PrimePreview
         }
     }
-}
-
-fragment PrimePreview on Prime {
-    id
-    number
-    isPrime
-    revealed
-    image
 }
 
 query PrimePreviews($offset: Int!, $limit: Int!) {
@@ -202,11 +204,5 @@ query PrimePreviews($offset: Int!, $limit: Int!) {
 query PrimePreviewsForIds($offset: Int!, $limit: Int!, $ids: [ID!]!) {
     primes(first: $limit, skip: $offset, orderDirection: asc, orderBy: number, where: {id_in: $ids}) {
         ...PrimePreview
-    }
-}
-
-query PrimesTest($numbers: [Int!]!) {
-    primes(where: {number_in: $numbers}) {
-        ...PrimeAll
     }
 }

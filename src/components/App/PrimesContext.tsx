@@ -119,7 +119,6 @@ const Updater: FC = () => {
         ),
       )
     }
-    // (window as any).attributes = attributes_
     setAttributes(attributes_)
   })
 

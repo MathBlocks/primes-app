@@ -15,7 +15,7 @@ const NavbarContainer = styled.nav`
 
   ul {
     display: flex;
-    gap: 3rem;
+    gap: 1rem;
   }
 
   li {
@@ -37,9 +37,10 @@ const NavbarContainer = styled.nav`
   @media (max-width: 480px) {
     display: block;
     ul {
-      gap: 1rem;
+      gap: 0.8rem;
       padding-left: 0;
       padding-right: 0;
+      font-size: 0.9rem;
       &.wallet {
         width: 100%;
         display: flex;
@@ -47,6 +48,11 @@ const NavbarContainer = styled.nav`
         gap: 0;
         padding: 0;
       }
+    }
+    .icon {
+      width: 20px;
+      height: 20px;
+      background-size: contain;
     }
   }
 `
@@ -75,10 +81,9 @@ const Navbar: FC = () => (
       <li>
         <NavLink to="/primes/gallery">Gallery</NavLink>
       </li>
-      {/*TODO reinstate with updated artwork*/}
-      {/*<li>*/}
-      {/*  <NavLink to="/primes/spiral">Spiral</NavLink>*/}
-      {/*</li>*/}
+      <li>
+        <NavLink to="/primes/spiral">Spiral</NavLink>
+      </li>
       <li>
         <NavLink to="/primes/breed">Breed</NavLink>
       </li>
