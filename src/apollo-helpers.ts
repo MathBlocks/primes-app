@@ -77,11 +77,12 @@ export type PrimeAuctionBidFieldPolicy = {
 	timestamp?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PrimeBatchKeySpecifier = ('active' | 'id' | 'remaining' | PrimeBatchKeySpecifier)[];
+export type PrimeBatchKeySpecifier = ('active' | 'id' | 'remaining' | 'startTime' | PrimeBatchKeySpecifier)[];
 export type PrimeBatchFieldPolicy = {
 	active?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	remaining?: FieldPolicy<any> | FieldReadFunction<any>
+	remaining?: FieldPolicy<any> | FieldReadFunction<any>,
+	startTime?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PrimesAuctionHouseKeySpecifier = ('address' | 'breedingCooldown' | 'currentPrimeAuction' | 'id' | 'minBidIncrementPercentage' | 'paused' | 'primes' | 'reservePrice' | 'timeBuffer' | PrimesAuctionHouseKeySpecifier)[];
 export type PrimesAuctionHouseFieldPolicy = {
