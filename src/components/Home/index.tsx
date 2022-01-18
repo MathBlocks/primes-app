@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import Latex from 'react-latex-next'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -8,6 +9,20 @@ const Container = styled.div`
 
   p {
     line-height: 1.5rem;
+  }
+  th {
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  td {
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .center {
+    margin-left: auto;
+    margin-right: auto;
   }
 `
 
@@ -33,13 +48,13 @@ export const Home: FC = () => (
     </p> */}
     <p>
       We raise funds by helping NFT artists to launch collections.
-      Artists reserve part of their revenue from NFT sales for the
-      DAO treasury, which is then used to support our mission.{' '}
-      <Link to={`/dao`}>Learn more about this in the DAO page.</Link>
+      Artists reserve a portion of their revenue from NFT sales for
+      the DAO treasury, which is then used to support our mission.{' '}
+      <Link to={`/dao`}>Learn more in the DAO page.</Link>
     </p>
     <p>
       MathBlocks DAO has launched Primes, the primary NFT collection
-      which will be used to to govern itself:
+      which is used to to govern itself:
     </p>
 
     <h3>
@@ -82,8 +97,8 @@ export const Home: FC = () => (
     </p>
     <img src="/primes-13-demo.svg" alt="Prime 13 design" />
     <p>
-      The Primes Collection will start with the first 1900 prime
-      numbers 2,...,16381. There will only be 1900 Primes.
+      The Primes Collection started with the first 1900 prime
+      numbers: 2,...,16381. There will only be 1900 Primes.
     </p>
     <p>
       Primes are equipped with a special power: they can "breed".
@@ -139,9 +154,9 @@ export const Home: FC = () => (
         for 24 hours after it is born before it can breed.
       </li>
     </ul>
+    <h4>Mathematical scarcity instead of artificial scarcity</h4>
     <p>
-      <b>Mathematical scarcity instead of artificial scarcity:</b>{' '}
-      Primes and Composites will have traits that are derived from 23
+      Primes and Composites have traits that are derived from 23
       mathematical properties, e.g.{' '}
       <a
         target="_blank"
@@ -180,5 +195,110 @@ export const Home: FC = () => (
       </a>{' '}
       for more details on traits.
     </p>
+    <h4>Breeding opportunities</h4>
+    <p>
+      Whereas Composites get burned when they breed, Primes will have
+      the opportunity to breed many many times.
+    </p>
+
+    <table className="center">
+      <thead>
+        <tr>
+          <th>Prime</th>
+          <th>Minimum breeding count</th>
+          <th>Maximum breeding count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2</td>
+          <td>3331</td>
+          <td>16383</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>1414</td>
+          <td>8191</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>672</td>
+          <td>4095</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>449</td>
+          <td>2729</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>279</td>
+          <td>1637</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td>237</td>
+          <td>1364</td>
+        </tr>
+        <tr>
+          <td>17</td>
+          <td>182</td>
+          <td>1023</td>
+        </tr>
+        <tr>
+          <td>19</td>
+          <td>165</td>
+          <td>909</td>
+        </tr>
+        <tr>
+          <td>23</td>
+          <td>137</td>
+          <td>743</td>
+        </tr>
+        <tr>
+          <td>29</td>
+          <td>111</td>
+          <td>584</td>
+        </tr>
+        <tr>
+          <td>31</td>
+          <td>106</td>
+          <td>545</td>
+        </tr>
+        <tr>
+          <td>…</td>
+          <td>…</td>
+          <td>…</td>
+        </tr>
+        <tr>
+          <td>…</td>
+          <td>…</td>
+          <td>…</td>
+        </tr>
+      </tbody>
+    </table>
+
+    {/* <h4>Valuing Primes and Composites</h4>
+    <p>
+      Items from the Primes collection will be valued according to a
+      combination of 6 different factors
+    </p>
+    <Latex>
+      {`$$\\begin{gather*}
+\\text{Prime or Composite Value}
+\\\\=
+\\\\\\text{Breeding value (for Primes)}
+\\\\+
+\\\\\\text{Burn value (for Composites)}
+\\\\+
+\\\\\\text{Meme value}
+\\\\+
+\\\\\\text{Lindy value}
+\\\\+
+\\\\\\text{Rarity value}
+\\\\+
+\\\\\\text{Governance value}
+\\end{gather*}$$`}
+    </Latex> */}
   </Container>
 )

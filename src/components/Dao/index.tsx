@@ -28,7 +28,7 @@ export const Dao: FC = () => (
     </p>
     <p>
       We raise funds by helping NFT artists to launch collections.
-      Artists reserve part of their revenue from NFT sales for the
+      Artists reserve a portion of their revenue from NFT sales for the
       DAO treasury, which is then used to support our mission. We
       offer multiple options:
     </p>
@@ -129,14 +129,12 @@ export const Dao: FC = () => (
       <a href="https://www.youtube.com/channel/UCJ0yBou72Lz9fqeMXh9mkog">
         Eugene Khutoryansky
       </a>
-      .
-    </p>
-    <p>Successful teaching channels are not grown in a day.
-      It's a long and arduous process, which might discourage talented
-      individuals from attempting to start a career in mass tutoring.
-      If you are a teacher who are trying to bootstrap a channel and
-      would benefit from financial support, you can join our{' '}
-      <a href="https://discord.gg/mathblocks">Discord</a> and
+      . Channels like these did not achieve massive success in a day.
+      It's a long and arduous process, which might discourage
+      talented individuals from attempting to start a career in mass
+      tutoring. If you are a teacher who are trying to bootstrap a
+      channel and would benefit from financial support, you can join
+      our <a href="https://discord.gg/mathblocks">Discord</a> and
       introduce yourself.
     </p>
   </Container>
