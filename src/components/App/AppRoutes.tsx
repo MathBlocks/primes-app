@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import { Home } from '../Home'
+import { Dao } from '../Dao'
 import { Prime } from '../Prime'
 import { Primes } from '../Primes'
 import { Account } from '../Account'
@@ -41,6 +42,9 @@ export const AppRoutes: FC = () => (
     </Route>
     <Route path="/primes" exact>
       <Primes />
+    </Route>
+    <Route path="/dao" exact>
+      <Dao />
     </Route>
   </Switch>
 )

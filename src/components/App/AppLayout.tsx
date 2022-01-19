@@ -88,6 +88,9 @@ const Navbar: FC = () => (
         <NavLink to="/primes/breed">Breed</NavLink>
       </li>
       <li>
+        <NavLink to="/dao">DAO &amp; Team</NavLink>
+      </li>
+      <li>
         <a
           href="https://opensea.io/collection/mathblocks-primes"
           rel="noreferrer"

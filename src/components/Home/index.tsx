@@ -1,4 +1,6 @@
 import { FC } from 'react'
+import Latex from 'react-latex-next'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -8,13 +10,67 @@ const Container = styled.div`
   p {
     line-height: 1.5rem;
   }
+  th {
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  td {
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #trait-table {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    img {
+      width: 2em;
+    }
+    td {
+      padding-top: 2px;
+    }
+  }
 `
 
 export const Home: FC = () => (
   <Container>
-    <h1>
+    <h1>Supporting Pioneers of Open Learning</h1>
+    <p>
+      We are MathBlocks, a{' '}
+      <a href="https://en.wikipedia.org/wiki/Decentralized_autonomous_organization">
+        Decentralized Autonomous Organization
+      </a>{' '}
+      (DAO) whose mission is to facilitate the creation of{' '}
+      <a href="https://en.wikipedia.org/wiki/Open_educational_resources">
+        open educational resources
+      </a>{' '}
+      for self-learning. That means we support creators (i.e.
+      teachers) and open source software that they use to produce
+      learning materials.
+    </p>
+    {/* <p>
+      Our long-term vision is to create online-first institutions for
+      permissionless and free learning.
+    </p> */}
+    <p>
+      We raise funds by helping NFT artists to launch collections.
+      Artists donate a portion of their revenue from NFT sales to the
+      DAO treasury, which is then used to support our mission.{' '}
+      <Link to={`/dao`}>Learn more in the DAO page.</Link>
+    </p>
+    <p>
+      MathBlocks has launched Primes, its primary NFT collection.
+      Primes will be used by DAO members to vote on proposals, i.e.
+      govern the DAO.
+    </p>
+
+    <h3>
       Primes: a blockchain game that will span <u>decades</u>
-    </h1>
+    </h3>
     <p>
       The <b>MathBlocks Primes</b> NFT collection is a{' '}
       <a
@@ -52,13 +108,13 @@ export const Home: FC = () => (
     </p>
     <img src="/primes-13-demo.svg" alt="Prime 13 design" />
     <p>
-      The Primes Collection will start with the first 1900 prime
-      numbers 2,...,16381. There will only be 1900 Primes.
+      The Primes Collection started with the first 1900 prime
+      numbers: 2,...,16381. There will only be 1900 Primes.
     </p>
     <p>
-      Primes are equipped with a special power: they can "breed".
-      That means they can be multiplied together, creating
-      Composites:{'  '}
+      Primes are equipped with a special power: they can
+      &ldquo;breed&rdquo;. That means they can be multiplied
+      together, creating Composites:{'  '}
       <a
         target="_blank"
         rel="noreferrer"
@@ -76,7 +132,7 @@ export const Home: FC = () => (
     </p>
     <p>
       The goal is to unlock all Composites up to 2¹⁴ = 16384. There
-      can only be 14483 Composites, and these will get unlocked over
+      can only be 14482 Composites, and these will get unlocked over
       the course of decades.
     </p>
     <p>
@@ -109,10 +165,10 @@ export const Home: FC = () => (
         for 24 hours after it is born before it can breed.
       </li>
     </ul>
+    <h4>Mathematical scarcity instead of artificial scarcity</h4>
     <p>
-      <b>Mathematical scarcity instead of artificial scarcity:</b>{' '}
-      Primes and Composites will have traits that are derived from 23
-      mathematical properties, e.g.{' '}
+      Primes and Composites have traits that are derived from 23
+      mathematical properties from number theory, e.g.{' '}
       <a
         target="_blank"
         rel="noreferrer"
@@ -144,132 +200,670 @@ export const Home: FC = () => (
       >
         taxicab number
       </a>
-      , etc. with varying levels of rarity. Check out{' '}
-      <a href="https://hackmd.io/@prism0x/primes#NFT-traits">Primes spec</a> for
-      more details on traits.
+      , etc. with varying levels of rarity. You can see how many
+      times these properties come up for numbers 1, ..., 16384:
     </p>
-    <h3>About MathBlocks</h3>
+
+    <table id="trait-table" className="center">
+      <thead>
+        <tr>
+          <th>Property/Trait</th>
+          <th># of occurrences</th>
+          <th>Symbol</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Taxicab_number"
+            >
+              Taxicab*
+            </a>
+          </td>
+          <td>3</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/taxicab.svg"
+              style={{ width: '2em' }}
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Perfect_number"
+            >
+              Perfect
+            </a>
+          </td>
+          <td>4</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/perfect.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Lucky_numbers_of_Euler"
+            >
+              Euler&#39;s Lucky Number
+            </a>
+          </td>
+          <td>6</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/euler.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Unique_prime_number"
+            >
+              Unique Prime
+            </a>
+          </td>
+          <td>6</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/unique_prime.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Colossally_abundant_number"
+            >
+              Colossally Abundant
+            </a>
+          </td>
+          <td>8</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/colossally_abundant.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Fibonacci_number"
+            >
+              Fibonacci
+            </a>
+          </td>
+          <td>21</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/fibonacci.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Weird_number"
+            >
+              Weird
+            </a>
+          </td>
+          <td>25</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/weird.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Repdigit"
+            >
+              Repdigit
+            </a>
+          </td>
+          <td>38</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/repdigit.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Friendly_number"
+            >
+              Friendly
+            </a>
+          </td>
+          <td>55</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/friendly.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Triangular_number"
+            >
+              Triangular
+            </a>
+          </td>
+          <td>181</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/triangular.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Safe_and_Sophie_Germain_primes"
+            >
+              Sophie-Germain Prime
+            </a>
+          </td>
+          <td>281</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/sophie_germain.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Strong_prime"
+            >
+              Strong Prime
+            </a>
+          </td>
+          <td>881</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/strong_prime.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Frugal_number"
+            >
+              Frugal
+            </a>
+          </td>
+          <td>138</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/frugal.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Square_number"
+            >
+              Square
+            </a>
+          </td>
+          <td>129</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/square.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Emirp"
+            >
+              Emirp
+            </a>
+          </td>
+          <td>496</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/emirp.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Polydivisible_number"
+            >
+              Magic
+            </a>
+          </td>
+          <td>636</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/magic.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Good_prime"
+            >
+              Good Prime
+            </a>
+          </td>
+          <td>982</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/good_prime.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Lucky_number"
+            >
+              Lucky
+            </a>
+          </td>
+          <td>1732</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/lucky.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Happy_number"
+            >
+              Happy
+            </a>
+          </td>
+          <td>2503</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/happy.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Untouchable_number"
+            >
+              Untouchable
+            </a>
+          </td>
+          <td>2064</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/untouchable.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Semiperfect_number"
+            >
+              Semiperfect
+            </a>
+          </td>
+          <td>4041</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/semiperfect.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Harshad_number"
+            >
+              Harshad
+            </a>
+          </td>
+          <td>2549</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/harshad.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://en.wikipedia.org/wiki/Evil_number"
+            >
+              Evil
+            </a>
+          </td>
+          <td>8192</td>
+          <td>
+            <img
+              src="https://raw.githubusercontent.com/prism0x/primes-artwork/master/trait-symbols/white/evil.svg"
+              alt=""
+            />
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>
+            *Sloane's definition from{' '}
+            <a href="https://oeis.org/A001235">OEIS A001325</a>.
+          </td>
+        </tr>
+      </tfoot>
+    </table>
     <p>
-      We are a{' '}
-      <a href="https://en.wikipedia.org/wiki/Decentralized_autonomous_organization">
-        Decentralized Autonomous Organization
+      You can see which traits your Prime or Composite <code>X</code>{' '}
+      has on its own page <code>https://mathblocks.io/primes/X</code>
+      , or you can view your NFTs by clicking your address on the top
+      right, and then clicking "My Account". Check out the{' '}
+      <a href="https://hackmd.io/@prism0x/primes#NFT-traits">
+        Primes spec
       </a>{' '}
-      (DAO) whose mission is to facilitate the creation of{' '}
-      <a href="https://en.wikipedia.org/wiki/Open_educational_resources">
-        open educational resources
+      for more details on traits.
+    </p>
+    <p>
+      Traits do not show up on the artwork right away after minting
+      and need to be &ldquo;revealed&rdquo;, i.e. submitted on-chain
+      for them to be stored permanently on Ethereum. That is because
+      it is very costly to store the data for all numbers on
+      Ethereum, and it is better for us to distribute those costs
+      among NFT owners.
+    </p>
+
+    <h4>Breeding opportunities</h4>
+    <p>
+      Whereas Composites get burned when they breed, Primes will have
+      the opportunity to breed many, many times over the course of
+      decades. The value of the Prime will influence how many times
+      it can breed—the smaller its value, the more it can breed. It
+      is not possible for anyone to predict exactly how many times a
+      Prime will breed on the way to unlocking all composites.{' '}
+    </p>
+    <p>
+      Nevertheless, we can calculate a range, i.e. a minimum and a
+      maximum number of times a Prime can breed, assuming that nobody
+      loses access to their Prime and all 14483 Composites eventually
+      get minted.
+    </p>
+
+    <table className="center">
+      <thead>
+        <tr>
+          <th>Batch</th>
+          <th>Prime</th>
+          <th>
+            Minimum number of
+            <br /> breeding opportunities
+          </th>
+          <th>
+            Minimum number of
+            <br /> breeding opportunities
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GEB</td>
+          <td>2</td>
+          <td>3331</td>
+          <td>16383</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>3</td>
+          <td>1414</td>
+          <td>8191</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>5</td>
+          <td>672</td>
+          <td>4095</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>7</td>
+          <td>449</td>
+          <td>2729</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>11</td>
+          <td>279</td>
+          <td>1637</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>13</td>
+          <td>237</td>
+          <td>1364</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>17</td>
+          <td>182</td>
+          <td>1023</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>19</td>
+          <td>165</td>
+          <td>909</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>23</td>
+          <td>137</td>
+          <td>743</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>29</td>
+          <td>111</td>
+          <td>584</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>31</td>
+          <td>106</td>
+          <td>545</td>
+        </tr>
+        <tr>
+          <td>⁞</td>
+          <td>⁞</td>
+          <td>⁞</td>
+          <td>⁞</td>
+        </tr>
+        <tr>
+          <td>GEB</td>
+          <td>127</td>
+          <td>31</td>
+          <td>129</td>
+        </tr>
+        <tr>
+          <td>EGS</td>
+          <td>131</td>
+          <td>30</td>
+          <td>125</td>
+        </tr>
+        <tr>
+          <td>⁞</td>
+          <td>⁞</td>
+          <td>⁞</td>
+          <td>⁞</td>
+        </tr>
+        <tr>
+          <td>EGS</td>
+          <td>4093</td>
+          <td>2</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td>FLC</td>
+          <td>4099</td>
+          <td>2</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>⁞</td>
+          <td>⁞</td>
+          <td>⁞</td>
+          <td>⁞</td>
+        </tr>
+        <tr>
+          <td>FLC</td>
+          <td>8191</td>
+          <td>1</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>FLC</td>
+          <td>8209</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>⁞</td>
+          <td>⁞</td>
+          <td>⁞</td>
+          <td>⁞</td>
+        </tr>
+        <tr>
+          <td>FLC</td>
+          <td>16381</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Check out the{' '}
+      <a href="https://hackmd.io/@prism0x/primes#Breeding-and-rental-value">
+        Primes spec
       </a>{' '}
-      for self-learning by financially supporting creators (i.e.
-      teachers) and open source software that they use to create.
+      to find out how we computed these numbers. For a Prime to
+      produce thousands of Composites means that it is that many
+      times more valuable than the least valuable NFT in the
+      collection.
     </p>
     <p>
-      Our long-term vision is to create online-first institutions for
-      permissionless and free learning.
+      However, one should also consider 3 factors when valuing
+      Primes: time discounting caused by the breeding cooldown (i.e.
+      breeding can happen at minimum 24 hour intervals, and only if
+      there is an opportunity to breed), appreciation of the overall
+      collection, and the inflation of the supply due to new
+      Composites over the decades. We will publish a more detailed
+      way of valuing Primes soon.
     </p>
+
+    {/* <h4>Valuing Primes and Composites</h4>
     <p>
-      We aim to achieve our mission by helping NFT artists to launch
-      collections. The artists donate some of their revenue from NFT
-      sales to the DAO treasury, which is then used to support our
-      mission. We offer multiple options:
+      Items from the Primes collection will be valued according to a
+      combination of 6 different factors
     </p>
-    <ul>
-      <li>
-        Designate a subset of NFTs from an existing or a new
-        collection which will be curated by MathBlocks, and 100% of
-        sale and/or resale fees from designated NFTs get donated to
-        the DAO Treasury.
-      </li>
-      <li>
-        Designate an entire collection for which a smaller percentage
-        of sale and/or resale fees are donated to the DAO treasury.
-        The collection then gets promoted by MathBlocks.
-      </li>
-      <li>
-        Or propose a new arrangement as long as it advances our
-        mission in an altruistic way.
-      </li>
-    </ul>
-    <h4>Primes as governance tokens</h4>
-    <p>
-      Primes are used to govern MathBlocks DAO, namely vote in
-      MathBlocks DAO Proposals (MDPs). All Primes have equal voting
-      power.
-    </p>
-    <p>
-      Composites cannot be used to vote on MDPs, as they could be
-      minted readily by the owners of smaller Primes and used to
-      manipulate the decision making process.
-    </p>
-    <h4>Beneficiaries</h4>
-    <p>
-      As stated before, MathBlocks DAO facilitates the creation of
-      free self-learning materials, i.e.{' '}
-      <a href="https://en.wikipedia.org/wiki/Open_educational_resources">
-        open educational resources
-      </a>{' '}
-      (OERs) by supporting creators and software that they use to
-      create.
-    </p>
-    <p>
-      OERs take many forms: videos of lectures, open source books,
-      lecture notes, problem sets and so on.
-    </p>
-    <p>
-      Take math OERs on Youtube for example. These exist on a wide
-      spectrum that varies from entertainment/curiosity arousal (e.g.{' '}
-      <a href="https://www.youtube.com/channel/UCoxcjq-8xIDTYp3uz647V5A">
-        Numberphile
-      </a>
-      ,{' '}
-      <a href="https://www.youtube.com/user/standupmaths">
-        Standup Maths
-      </a>
-      ) to pure formal education (e.g.{' '}
-      <a href="https://www.khanacademy.org/">KhanAcademy</a>,{' '}
-      <a href="https://www.youtube.com/channel/UC_SvYP0k05UKiJ_2ndB02IA">
-        Blackpenredpen
-      </a>
-      ). Then there are some creators who lie in the middle, such as{' '}
-      <a href="https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw">
-        3blue1brown
-      </a>
-      .
-    </p>
-    <p>
-      More STEM YouTubers with a relatively high following:{' '}
-      <a href="https://www.youtube.com/channel/UCpCSAcbqs-sjEVfk_hMfY9w">
-        Zach Star
-      </a>
-      ,{' '}
-      <a href="https://www.youtube.com/c/papaflammy/about">
-        Flammable Maths
-      </a>
-      ,{' '}
-      <a href="https://www.youtube.com/channel/UC_SvYP0k05UKiJ_2ndB02IA">
-        Blackpenredpen
-      </a>
-      ,{' '}
-      <a href="https://www.youtube.com/c/TheMathSorcerer/">
-        The Math Sorcerer
-      </a>
-      ,{' '}
-      <a href="https://www.youtube.com/channel/UCRGXV1QlxZ8aucmE45tRx8w">
-        NancyPi
-      </a>
-      ,{' '}
-      <a href="https://www.youtube.com/channel/UCoOjTxz-u5zU0W38zMkQIFw">
-        Dr Peyam
-      </a>
-      ,{' '}
-      <a href="https://www.youtube.com/channel/UCJ0yBou72Lz9fqeMXh9mkog">
-        Eugene Khutoryansky
-      </a>
-      .
-    </p>
-    <p>
-      If you are a teacher who are trying to bootstrap a channel and
-      would benefit from financial support, you can join our{' '}
-      <a href="https://discord.gg/mathblocks">Discord</a> and
-      introduce yourself.
-    </p>
+    <Latex>
+      {`$$\\begin{gather*}
+\\text{Prime or Composite Value}
+\\\\=
+\\\\\\text{Breeding value (for Primes)}
+\\\\+
+\\\\\\text{Burn value (for Composites)}
+\\\\+
+\\\\\\text{Meme value}
+\\\\+
+\\\\\\text{Lindy value}
+\\\\+
+\\\\\\text{Rarity value}
+\\\\+
+\\\\\\text{Governance value}
+\\end{gather*}$$`}
+    </Latex> */}
   </Container>
 )
