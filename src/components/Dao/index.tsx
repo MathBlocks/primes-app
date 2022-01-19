@@ -28,8 +28,8 @@ export const Dao: FC = () => (
     </p>
     <p>
       We raise funds by helping NFT artists to launch collections.
-      Artists reserve a portion of their revenue from NFT sales for the
-      DAO treasury, which is then used to support our mission. We
+      Artists reserve a portion of their revenue from NFT sales for
+      the DAO treasury, which is then used to support our mission. We
       offer multiple options:
     </p>
     <ul>
@@ -137,5 +137,58 @@ export const Dao: FC = () => (
       our <a href="https://discord.gg/mathblocks">Discord</a> and
       introduce yourself.
     </p>
+    <h2>Team, Contributors and Advisors </h2>
+    <ul>
+      <li>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://twitter.com/prism0x"
+        >
+          Prismo
+        </a>{' '}
+        (Founder)
+      </li>
+      <li>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://twitter.com/JamesLefrere"
+        >
+          JL
+        </a>{' '}
+        (Contributor)
+      </li>
+      <li>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://twitter.com/LeaFilipo"
+        >
+          Lea Filipo
+        </a>{' '}
+        (Designer)
+      </li>
+      <li>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://twitter.com/alsco77"
+        >
+          alsco77
+        </a>{' '}
+        (Contributor)
+      </li>
+      <li>
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href="https://twitter.com/sassal0x"
+        >
+          sassal
+        </a>{' '}
+        (Advisor)
+      </li>
+    </ul>
   </Container>
 )

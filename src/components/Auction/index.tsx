@@ -83,6 +83,16 @@ export const Auction: FC = () => {
       <div className="about">
         <h2>Primes Auction</h2>
         <p>The auctions for Primes are split into three batches.</p>
+        <p>
+          Sale of new batches begin automatically once the previous
+          batch gets sold.
+        </p>
+        <p>
+          <b>Whitelist period:</b> In the first two batches, there is
+          a 24 hour waiting period where only whitelisted users can
+          mint. After that, the public sale begins and goes on until
+          all of the Primes in that batch are minted.
+        </p>
       </div>
       <div className="active-batch">
         Current sale:{' '}
