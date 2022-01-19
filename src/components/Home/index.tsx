@@ -683,7 +683,7 @@ export const Home: FC = () => (
             <br /> breeding opportunities
           </th>
           <th>
-            Minimum number of
+            Maximum number of
             <br /> breeding opportunities
           </th>
         </tr>
