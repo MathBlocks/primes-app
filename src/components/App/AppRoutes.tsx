@@ -46,5 +46,14 @@ export const AppRoutes: FC = () => (
     <Route path="/dao" exact>
       <Dao />
     </Route>
+    <Route
+      path="/discord"
+      component={() => {
+        window.location.href = 'https://discord.gg/2PKH93hFF5'
+        return null
+      }}
+      exact
+    />
+    <Dao />
   </Switch>
 )
