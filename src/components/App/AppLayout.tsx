@@ -111,7 +111,7 @@ const Navbar: FC = () => (
       <li>
         <a
           className="icon discord"
-          href="https://discord.gg/mathblocks"
+          href="https://mathblocks.io/discord"
           rel="noreferrer"
           target="_blank"
           title="MathBlocks Discord"

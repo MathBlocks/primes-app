@@ -134,7 +134,7 @@ export const Dao: FC = () => (
       talented individuals from attempting to start a career in mass
       tutoring. If you are a teacher who are trying to bootstrap a
       channel and would benefit from financial support, you can join
-      our <a href="https://discord.gg/mathblocks">Discord</a> and
+      our <a href="https://mathblocks.io/discord">Discord</a> and
       introduce yourself.
     </p>
     <h2>Team, Contributors and Advisors </h2>
