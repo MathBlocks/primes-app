@@ -24,6 +24,12 @@ const Container = styled.div`
     margin-left: auto;
     margin-right: auto;
   }
+  .sale-text {
+    text-align: center;
+    font-size: 120%;
+    margin-top: 2em;
+    margin-bottom: 2em;
+  }
   #trait-table {
     margin-top: 1em;
     margin-bottom: 1em;
@@ -34,17 +40,56 @@ const Container = styled.div`
       padding-top: 2px;
     }
   }
+  #shadowBox {
+      background-color: rgb(0, 0, 0);
+      /* Fallback color */
+      background-color: rgba(0, 0, 0, 0.2);
+      /* Black w/opacity/see-through */
+      border: 3px solid;
+  }
+
+  .rainbow {
+      // text-align: center;
+      text-decoration: underline;
+      // font-size: 32px;
+      // font-family: monospace;
+      // letter-spacing: 5px;
+  }
+  .rainbow:hover {
+    background: linear-gradient(to right, #bfdcf4, #f4c2c2, #f4e7b2, #b5e6cc, #cfc9e2);
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: rainbow_animation 6s ease-in-out infinite;
+    background-size: 400% 100%;
+  }
+  .rainbow_text_animated {
+      // background: linear-gradient(to right, #6666ff, #0099ff , #00ff00, #ff3399, #6666ff);
+      background: linear-gradient(to right, #4d9de0, #e15554, #e1bc29, #3bb273, #7768ae);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: rainbow_animation 6s ease-in-out infinite;
+      background-size: 400% 100%;
+  }
+
+  @keyframes rainbow_animation {
+      0%,100% {
+          background-position: 0 0;
+      }
+
+      50% {
+          background-position: 100% 0;
+      }
+  }
 `
 
 export const Home: FC = () => (
   <Container>
     <h1>Supporting Pioneers of Open Learning</h1>
     <p>
-      We are MathBlocks, a{' '}
-      <a href="https://en.wikipedia.org/wiki/Decentralized_autonomous_organization">
-        Decentralized Autonomous Organization
-      </a>{' '}
-      (DAO) whose mission is to facilitate the creation of{' '}
+      We are MathBlocks, a community whose mission is to facilitate
+      the creation of{' '}
       <a href="https://en.wikipedia.org/wiki/Open_educational_resources">
         open educational resources
       </a>{' '}
@@ -59,14 +104,21 @@ export const Home: FC = () => (
     <p>
       We raise funds by helping NFT artists to launch collections.
       Artists donate a portion of their revenue from NFT sales to the
-      DAO treasury, which is then used to support our mission.{' '}
-      <Link to={`/dao`}>Learn more in the DAO page.</Link>
+      MathBlocks Treasury, which is then used to support our mission.{' '}
+      <Link to={`/community`}>
+        Learn more in the Community page.
+      </Link>
     </p>
     <p>
       MathBlocks has launched Primes, its primary NFT collection.
-      Primes will be used by DAO members to vote on proposals, i.e.
-      govern the DAO.
+      Primes will be used by community members to vote on proposals,
+      i.e. govern the community.
     </p>
+    <div className="sale-text ">
+      <a href="http://localhost:3000/primes/auction/batch/0" className="rainbow rainbow_text_animated">
+        Primes Public Sale has begun. Click here to mint.
+      </a>
+    </div>
 
     <h3>
       Primes: a blockchain game that will span <u>decades</u>

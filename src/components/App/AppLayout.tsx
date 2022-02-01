@@ -88,7 +88,10 @@ const Navbar: FC = () => (
         <NavLink to="/primes/breed">Breed</NavLink>
       </li>
       <li>
-        <NavLink to="/dao">DAO &amp; Team</NavLink>
+        <NavLink to="/contests">Contests</NavLink>
+      </li>
+      <li>
+        <NavLink to="/community">Community</NavLink>
       </li>
       <li>
         <a

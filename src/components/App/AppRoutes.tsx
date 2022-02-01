@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import { Home } from '../Home'
-import { Dao } from '../Dao'
+import { Community } from '../Community'
 import { Prime } from '../Prime'
 import { Primes } from '../Primes'
 import { Account } from '../Account'
@@ -10,6 +10,7 @@ import { Breeding } from '../Breeding'
 import { Auction } from '../Auction'
 import { BatchAuction } from '../Auction/BatchAuction'
 import { PrimeAuction } from '../Auction/PrimeAuction'
+import { Contests } from '../Contests'
 
 export const AppRoutes: FC = () => (
   <Switch>
@@ -43,8 +44,11 @@ export const AppRoutes: FC = () => (
     <Route path="/primes" exact>
       <Primes />
     </Route>
-    <Route path="/dao" exact>
-      <Dao />
+    <Route path="/community" exact>
+      <Community />
+    </Route>
+    <Route path="/contests" exact>
+      <Contests />
     </Route>
     <Route
       path="/discord"
@@ -54,6 +58,6 @@ export const AppRoutes: FC = () => (
       }}
       exact
     />
-    <Dao />
+    <Community />
   </Switch>
 )
