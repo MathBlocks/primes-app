@@ -11,6 +11,7 @@ import { Auction } from '../Auction'
 import { BatchAuction } from '../Auction/BatchAuction'
 import { PrimeAuction } from '../Auction/PrimeAuction'
 import { Contests } from '../Contests'
+import { WLTest } from '../Contests/WLTest'
 
 export const AppRoutes: FC = () => (
   <Switch>
@@ -49,6 +50,9 @@ export const AppRoutes: FC = () => (
     </Route>
     <Route path="/contests" exact>
       <Contests />
+    </Route>
+    <Route path="/contests/wltest" exact>
+      <WLTest />
     </Route>
     <Route
       path="/discord"
