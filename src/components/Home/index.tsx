@@ -115,9 +115,9 @@ export const Home: FC = () => (
       i.e. govern the community.
     </p>
     <div className="sale-text ">
-      <a href="http://localhost:3000/primes/auction/batch/0" className="rainbow rainbow_text_animated">
+      <Link to="/primes/auction/batch/0" className="rainbow rainbow_text_animated">
         Primes Public Sale has begun. Click here to mint.
-      </a>
+      </Link>
     </div>
 
     <h3>

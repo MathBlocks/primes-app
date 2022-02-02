@@ -35,9 +35,9 @@ export const Contests: FC = () => (
     </ul>
     <p>
       Join our <a href="https://mathblocks.io/discord">Discord</a>{' '}
-      and follow our{' '}
+      and follow us on{' '}
       <a href="https://twitter.com/mathblocks_io">Twitter</a> to get
-      notified when the contests begin.
+      notified when the challenges begin.
     </p>
     <h2>Primes Whitelist Test</h2>
     <p>
