@@ -28,10 +28,7 @@ export const Contests: FC = () => (
       A biweekly math challenge with prizes that involves{' '}
       <a href="https://projecteuler.net/">Project Euler</a> style
       questions: require more than mathematical insight, i.e.
-      programming, to solve. Similar to Project Euler, we will try to
-      keep a “one-minute rule”, that is, an efficient implementation
-      will allow a solution to be obtained on a modestly powered
-      computer in less than one minute.
+      programming, to solve.
     </p>
     <h4>Round 1 — Feb 5—7, 2022</h4>
     <p>
