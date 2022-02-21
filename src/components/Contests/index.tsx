@@ -25,7 +25,7 @@ export const Contests: FC = () => (
     </p>
     <h2>Proof of Math</h2>
     <p>
-      A biweekly math challenge with prizes that involves{' '}
+      A monthly math challenge with prizes that involves{' '}
       <a href="https://projecteuler.net/">Project Euler</a> style
       questions: require more than mathematical insight, i.e.
       programming, to solve.
@@ -59,7 +59,7 @@ export const Contests: FC = () => (
     </p>
 
     <h4>Round 2 — Feb 19—21, 2022</h4>
-    <p>Upcoming.</p>
+    <p>Ongoing.</p>
     <p>
       Join our <a href="https://mathblocks.io/discord">Discord</a>{' '}
       and follow us on{' '}
